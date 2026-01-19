@@ -8,6 +8,8 @@ from core.db.base import Base
 
 # IMPORTA MODELS PARA AUTOGENERATE
 from modules.tenants.models.tenant import TenantORM  # noqa
+from modules.crm.models.customer_orm import CustomerORM  # noqa
+from modules.crm.models.interaction_orm import InteractionORM  # noqa
 
 # Alembic Config
 config = context.config

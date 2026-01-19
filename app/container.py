@@ -1,4 +1,3 @@
-from modules.crm.repo import InMemoryCrmRepo
 from modules.crm.repo.sql import SqlCrmRepo
 from modules.crm.service.crm_service import CrmService
 from modules.tenants.repo.in_memory import InMemoryTenantRepo
@@ -51,4 +50,3 @@ def build_container() -> Container:
     c.inbound_service = inbound_service
 
     return c
-
