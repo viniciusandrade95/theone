@@ -7,7 +7,7 @@ from modules.crm.repo.sql import SqlCrmRepo
 from modules.crm.service.crm_service import CrmService
 from modules.iam.repo.in_memory import InMemoryUserRepo
 from modules.messaging.service.inbound_service import InboundMessagingService
-from modules.tenants.repo.in_memory import InMemoryTenantRepo
+from modules.tenants.repo.sql import SqlTenantRepo
 from modules.tenants.service.tenant_service import TenantService
 from tasks.workers.messaging.inbound_worker import InboundMessageWorker
 
@@ -30,7 +30,7 @@ def build_container() -> Container:
     c = Container()
 
     # 🔑 Tenants (IN-MEMORY por agora)
-    tenant_repo = InMemoryTenantRepo()
+    tenant_repo = SqlTenantRepo()
     tenant_service = TenantService(tenant_repo)
 
     # 🔑 Billing
