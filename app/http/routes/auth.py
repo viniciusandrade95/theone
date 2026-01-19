@@ -26,11 +26,15 @@ class AuthOut(BaseModel):
 @router.post("/register", response_model=AuthOut)
 def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tenant_header)):
     c = request.app.state.container
+    tenant_id = require_tenant_id()
+    if not c.tenant_service.exists(tenant_id):
+        c.tenant_service.create_tenant(tenant_id, name=tenant_id)
+
     svc = AuthService(c.users_repo, c.billing)
     user = svc.register(email=str(payload.email), password=payload.password)
 
     cfg = get_config()
-    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=require_tenant_id(), user_id=user.id)
+    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user.id)
     return AuthOut(user_id=user.id, token=token)
 
 
