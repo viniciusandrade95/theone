@@ -30,15 +30,17 @@ def create_app() -> FastAPI:
         tenant_header = cfg.TENANT_HEADER
         tenant_id = request.headers.get(tenant_header)
 
-        if not tenant_id:
-            return JSONResponse(
-                status_code=400, 
-                content={"error": "validation_error", "message": f"Missing tenant header: {tenant_header}"})
-        
-        set_tenant_id(tenant_id)
-
-
         try:
+            if not tenant_id:
+                return JSONResponse(
+                    status_code=400,
+                    content={"error": "validation_error", "message": f"Missing tenant header: {tenant_header}"})
+
+            container = request.app.state.container
+            if request.url.path != "/auth/register":
+                container.tenant_service.get_or_fail(tenant_id)
+            set_tenant_id(tenant_id)
+
             return await call_next(request)
         except Exception as err:
             http_err = to_http_error(err)
@@ -62,4 +64,3 @@ def app_factory():
 
 # For uvicorn: "uvicorn app.http.main:app"
 app = None  # type: ignore
-

@@ -1,7 +1,8 @@
 from sqlalchemy.exc import IntegrityError
 from core.db.session import get_session
 from modules.tenants.repo import TenantRepo
-from modules.tenants.models.tenant import TenantORM
+from modules.tenants.models.tenant import Tenant
+from modules.tenants.models.tenant_orm import TenantORM
 
 class SqlTenantRepo(TenantRepo):
 
@@ -22,6 +23,6 @@ class SqlTenantRepo(TenantRepo):
             row = db.get(TenantORM, tenant_id)
             if not row:
                 return None
-            return tenant.__class__(id=row.id, name=row.name)
+            return Tenant(id=row.id, name=row.name)
         finally:
             db.close()
