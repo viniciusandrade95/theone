@@ -1,19 +1,38 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
+
 from core.config import get_config
 
 _engine = None
-_Session = None
+_SessionLocal = None
 
-def get_engine():
-    global _engine
+
+def _get_engine():
+    global _engine, _SessionLocal
+
     if _engine is None:
         cfg = get_config()
-        _engine = create_engine(cfg.DATABASE_URL, pool_pre_ping=True)
+        _engine = create_engine(
+            cfg.DATABASE_URL,
+            pool_pre_ping=True,
+        )
+        _SessionLocal = sessionmaker(bind=_engine)
+
     return _engine
 
-def get_session():
-    global _Session
-    if _Session is None:
-        _Session = sessionmaker(bind=get_engine(), expire_on_commit=False)
-    return _Session()
+
+@contextmanager
+def db_session():
+    if _SessionLocal is None:
+        _get_engine()
+
+    session = _SessionLocal()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
