@@ -35,6 +35,8 @@ def create_app() -> FastAPI:
                 status_code=400, 
                 content={"error": "validation_error", "message": f"Missing tenant header: {tenant_header}"})
         
+        container = request.app.state.container
+        container.tenant_service.get_or_fail(tenant_id)
         set_tenant_id(tenant_id)
 
 
@@ -62,4 +64,3 @@ def app_factory():
 
 # For uvicorn: "uvicorn app.http.main:app"
 app = None  # type: ignore
-

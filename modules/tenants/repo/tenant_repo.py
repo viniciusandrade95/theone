@@ -5,7 +5,7 @@ from modules.tenants.models.tenant import Tenant
 class TenantRepo(ABC):
 
     @abstractmethod
-    def create(self, *, id: str, name: str) -> Tenant:
+    def create(self, tenant: Tenant) -> None:
         pass
 
     @abstractmethod
