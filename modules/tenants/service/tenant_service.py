@@ -13,7 +13,7 @@ class TenantService:
         return tenant
 
     def get_tenant(self, tenant_id: str) -> Tenant:
-        tenant = self.repo.get_by_id(tenant_id)
+        tenant = self.repo.get(tenant_id)
         if tenant is None:
             raise NotFoundError("Tenant not found", meta={"tenant_id": tenant_id})
         return tenant

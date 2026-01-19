@@ -1,16 +1,17 @@
 from modules.tenants.repo.tenant_repo import TenantRepo
 from modules.tenants.models.tenant import Tenant
+from core.errors import ConflictError
 
 
 class InMemoryTenantRepo(TenantRepo):
 
     def __init__(self):
-        self._tenants: dict[str, Tenant] = {}
+        self._items: dict[str, Tenant] = {}
 
-    def create(self, *, id: str, name: str) -> Tenant:
-        tenant = Tenant(id=id, name=name)
-        self._tenants[id] = tenant
-        return tenant
+    def create(self, tenant: Tenant) -> None:
+        if tenant.id in self._items:
+            raise ConflictError("tenant already exists")
+        self._items[tenant.id] = tenant
 
     def get(self, tenant_id: str) -> Tenant | None:
-        return self._tenants.get(tenant_id)
+        return self._items.get(tenant_id)

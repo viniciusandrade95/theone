@@ -12,9 +12,10 @@ from app.http.routes.analytics import router as analytics_router
 from app.http.routes.billing import router as billing_router
 from app.http.routes.messaging import router as messaging_router
 
+load_config()
 
 def create_app() -> FastAPI:
-    load_config()
+    
     cfg = get_config()
 
     app = FastAPI(title=cfg.APP_NAME)
