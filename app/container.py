@@ -23,6 +23,7 @@ class Container:
         self.crm: CrmService | None = None
         self.billing: BillingService | None = None
         self.analytics: AnalyticsService | None = None
+        self.tenant_service: TenantService | None = None
 
 
 def build_container() -> Container:
