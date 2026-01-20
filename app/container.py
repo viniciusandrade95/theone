@@ -3,6 +3,7 @@ from modules.analytics.repo.sql import SqlAnalyticsRepo
 from modules.analytics.service.analytics_service import AnalyticsService
 from modules.billing.repo import InMemoryBillingRepo
 from modules.billing.service.billing_service import BillingService
+from modules.crm.repo.in_memory import InMemoryCrmRepo
 from modules.crm.repo.sql import SqlCrmRepo
 from modules.crm.service.crm_service import CrmService
 from modules.iam.repo.in_memory import InMemoryUserRepo
@@ -38,7 +39,7 @@ def build_container() -> Container:
     billing_service = BillingService(billing_repo)
 
     # 🔑 CRM
-    crm_repo = SqlCrmRepo()
+    crm_repo = InMemoryCrmRepo()          #SqlCrmRepo()
     crm_service = CrmService(crm_repo, billing_service)
 
     # 🔑 Analytics

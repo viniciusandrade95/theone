@@ -11,6 +11,8 @@ from app.http.routes.crm import router as crm_router
 from app.http.routes.analytics import router as analytics_router
 from app.http.routes.billing import router as billing_router
 from app.http.routes.messaging import router as messaging_router
+from app.http.routes.tenants import router as tenants_router
+
 
 load_config()
 
@@ -25,6 +27,13 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def tenancy_middleware(request: Request, call_next):
+       
+        if request.url.path in ("/docs", "/openapi.json", "/redoc"):
+            return await call_next(request)
+
+        if request.url.path.startswith("/tenants"):
+            return await call_next(request)
+        
         clear_tenant_id()
 
         tenant_header = cfg.TENANT_HEADER
@@ -53,6 +62,7 @@ def create_app() -> FastAPI:
     app.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
     app.include_router(billing_router, prefix="/billing", tags=["billing"])
     app.include_router(messaging_router, prefix="/messaging", tags=["messaging"])
+    app.include_router(tenants_router, prefix="/tenants", tags=["tenants"])
 
     return app
 
