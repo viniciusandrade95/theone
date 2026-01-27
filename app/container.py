@@ -39,7 +39,7 @@ def build_container() -> Container:
     billing_service = BillingService(billing_repo)
 
     # 🔑 CRM
-    crm_repo = InMemoryCrmRepo()          #SqlCrmRepo()
+    crm_repo = SqlCrmRepo()          #SqlCrmRepo()
     crm_service = CrmService(crm_repo, billing_service)
 
     # 🔑 Analytics
