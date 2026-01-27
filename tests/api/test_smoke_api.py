@@ -1,9 +1,11 @@
+import os
+import uuid
+
 from fastapi.testclient import TestClient
+
 from app.http.main import create_app
 
-TENANT = "t1"
-
-import os
+TENANT = str(uuid.uuid4())
 os.environ.setdefault("ENV", "test")
 os.environ.setdefault("APP_NAME", "beauty-crm")
 os.environ.setdefault("DATABASE_URL", "dev")
