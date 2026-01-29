@@ -1,37 +1,30 @@
 from uuid import UUID
-from typing import List
 
 from sqlalchemy import select, func
-from sqlalchemy.orm import Session
-
 from core.db.session import db_session
-from core.tenancy import get_tenant_id
-
 from modules.crm.repo.crm_repo import CrmRepo
 from modules.crm.models.customer_orm import CustomerORM
 from modules.crm.models.interaction_orm import InteractionORM
 from modules.crm.models.customer import Customer
-from modules.crm.models.pipeline import PipelineStage
+from modules.crm.models.interaction import Interaction
 
 
 class SqlCrmRepo(CrmRepo):
+    def _coerce_uuid(self, value: str):
+        try:
+            return UUID(value)
+        except (TypeError, ValueError):
+            return value
 
     # -------------------
     # Customers
     # -------------------
 
-    def create_customer(
-        self,
-        *,
-        customer: Customer,
-    ) -> Customer:
-
-        tenant_id = get_tenant_id()
-
+    def create_customer(self, customer: Customer) -> None:
         with db_session() as session:
             orm = CustomerORM(
-                id=UUID(customer.id),
-                tenant_id=UUID(tenant_id),
+                id=self._coerce_uuid(customer.id),
+                tenant_id=self._coerce_uuid(customer.tenant_id),
                 name=customer.name,
                 phone=customer.phone,
                 email=customer.email,
@@ -41,16 +34,13 @@ class SqlCrmRepo(CrmRepo):
             )
             session.add(orm)
             session.flush()
-            return customer
 
-    def get_customer(self, customer_id: str) -> Customer | None:
-        tenant_id = get_tenant_id()
-
+    def get_customer(self, tenant_id: str, customer_id: str) -> Customer | None:
         with db_session() as session:
             stmt = (
                 select(CustomerORM)
-                .where(CustomerORM.id == UUID(customer_id))
-                .where(CustomerORM.tenant_id == UUID(tenant_id))
+                .where(CustomerORM.id == self._coerce_uuid(customer_id))
+                .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
             )
 
             orm = session.execute(stmt).scalar_one_or_none()
@@ -59,45 +49,37 @@ class SqlCrmRepo(CrmRepo):
 
             return self._to_domain(orm)
 
-    def find_by_phone(self, phone: str) -> Customer | None:
-        tenant_id = get_tenant_id()
-
+    def find_customer_by_phone(self, tenant_id: str, phone: str) -> Customer | None:
         with db_session() as session:
             stmt = (
                 select(CustomerORM)
-                .where(CustomerORM.tenant_id == UUID(tenant_id))
+                .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
                 .where(CustomerORM.phone == phone)
             )
             orm = session.execute(stmt).scalar_one_or_none()
             return self._to_domain(orm) if orm else None
 
-    def list_customers(self) -> List[Customer]:
-        tenant_id = get_tenant_id()
-
+    def list_customers(self, tenant_id: str) -> list[Customer]:
         with db_session() as session:
-            stmt = select(CustomerORM).where(CustomerORM.tenant_id == UUID(tenant_id))
+            stmt = select(CustomerORM).where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
             rows = session.execute(stmt).scalars().all()
             return [self._to_domain(r) for r in rows]
 
-    def count_customers(self) -> int:
-        tenant_id = get_tenant_id()
-
+    def count_customers(self, tenant_id: str) -> int:
         with db_session() as session:
             stmt = (
                 select(func.count())
                 .select_from(CustomerORM)
-                .where(CustomerORM.tenant_id == UUID(tenant_id))
+                .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
             )
             return session.execute(stmt).scalar_one()
 
     def update_customer(self, customer: Customer) -> None:
-        tenant_id = get_tenant_id()
-
         with db_session() as session:
             stmt = (
                 select(CustomerORM)
-                .where(CustomerORM.id == UUID(customer.id))
-                .where(CustomerORM.tenant_id == UUID(tenant_id))
+                .where(CustomerORM.id == self._coerce_uuid(customer.id))
+                .where(CustomerORM.tenant_id == self._coerce_uuid(customer.tenant_id))
             )
             orm = session.execute(stmt).scalar_one()
 
@@ -112,43 +94,31 @@ class SqlCrmRepo(CrmRepo):
     # Interactions
     # -------------------
 
-    def add_interaction(self, *, customer_id: str, interaction_type: str, payload: dict) -> None:
-        tenant_id = get_tenant_id()
-
+    def add_interaction(self, interaction: Interaction) -> None:
         with db_session() as session:
             orm = InteractionORM(
-                tenant_id=UUID(tenant_id),
-                customer_id=UUID(customer_id),
-                type=interaction_type,
-                payload=payload,
+                id=self._coerce_uuid(interaction.id),
+                tenant_id=self._coerce_uuid(interaction.tenant_id),
+                customer_id=self._coerce_uuid(interaction.customer_id),
+                type=interaction.type,
+                payload={"content": interaction.content},
             )
             session.add(orm)
 
-    def list_interactions(self, customer_id: str):
-        tenant_id = get_tenant_id()
-
+    def list_interactions(self, tenant_id: str, customer_id: str) -> list[Interaction]:
         with db_session() as session:
             stmt = (
                 select(InteractionORM)
-                .where(InteractionORM.tenant_id == UUID(tenant_id))
-                .where(InteractionORM.customer_id == UUID(customer_id))
+                .where(InteractionORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(InteractionORM.customer_id == self._coerce_uuid(customer_id))
                 .order_by(InteractionORM.created_at.desc())
             )
-            return session.execute(stmt).scalars().all()
+            rows = session.execute(stmt).scalars().all()
+            return [i.to_domain() for i in rows]
 
     # -------------------
     # Helpers
     # -------------------
 
     def _to_domain(self, orm: CustomerORM) -> Customer:
-        return Customer(
-            id=str(orm.id),
-            tenant_id=str(orm.tenant_id),
-            name=orm.name,
-            phone=orm.phone,
-            email=orm.email,
-            tags=frozenset(orm.tags or []),
-            consent_marketing=orm.consent_marketing,
-            stage=PipelineStage(orm.stage),
-            created_at=orm.created_at,
-        )
+        return orm.to_domain()

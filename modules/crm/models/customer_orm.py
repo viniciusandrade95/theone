@@ -4,6 +4,8 @@ from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.sql import func
 
 from core.db.base import Base
+from modules.crm.models.customer import Customer
+from modules.crm.models.pipeline import PipelineStage
 
 
 class CustomerORM(Base):
@@ -28,3 +30,16 @@ class CustomerORM(Base):
     stage = Column(String, nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    def to_domain(self) -> Customer:
+        return Customer(
+            id=str(self.id),
+            tenant_id=str(self.tenant_id),
+            name=self.name,
+            phone=self.phone,
+            email=self.email,
+            tags=frozenset(self.tags or []),
+            consent_marketing=self.consent_marketing,
+            stage=PipelineStage(self.stage),
+            created_at=self.created_at,
+        )
