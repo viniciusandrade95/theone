@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../../lib/api";
 import { setAuthToken, setTenantId } from "../../lib/auth";
@@ -13,13 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [tenantId, setTenantIdValue] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,10 +31,11 @@ export default function LoginPage() {
 
     try {
       const response = await api.post(
-        "/auth/login",
+        "/auth/register",
         {
           email,
           password,
+          full_name: fullName,
         },
         {
           headers: {
@@ -50,11 +52,11 @@ export default function LoginPage() {
       setAuthToken(token);
       setTenantId(tenantId);
       router.push("/dashboard");
-    } catch (loginError) {
+    } catch (registerError) {
       const message =
-        loginError instanceof Error
-          ? loginError.message
-          : "Login failed. Please try again.";
+        registerError instanceof Error
+          ? registerError.message
+          : "Registration failed. Please try again.";
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -65,9 +67,9 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-50 px-6 py-12">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
+          <CardTitle>Create your account</CardTitle>
           <CardDescription>
-            Sign in to your Beauty CRM workspace to manage tenants and customers.
+            Start a new tenant workspace and invite your team later.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,7 +79,16 @@ export default function LoginPage() {
               <Input
                 value={tenantId}
                 onChange={(event) => setTenantIdValue(event.target.value)}
-                placeholder="e.g. 9b0f..."
+                placeholder="e.g. acme-hq"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-semibold text-slate-700">
+              Full name
+              <Input
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                placeholder="Jane Doe"
                 required
               />
             </label>
@@ -107,12 +118,12 @@ export default function LoginPage() {
               </div>
             ) : null}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Sign in"}
+              {isSubmitting ? "Creating account..." : "Create account"}
             </Button>
             <p className="text-center text-xs text-slate-500">
-              New here?{" "}
-              <Link className="font-semibold text-slate-700 hover:text-slate-900" href="/register">
-                Create an account
+              Already have an account?{" "}
+              <Link className="font-semibold text-slate-700 hover:text-slate-900" href="/login">
+                Sign in
               </Link>
             </p>
           </form>
