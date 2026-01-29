@@ -1,62 +1,40 @@
+"use client";
+
+import Link from "next/link";
 import React from "react";
+import { useTenant } from "../../lib/tenant";
 
 export function TopBar() {
+  const { tenantId } = useTenant();
+
   return (
-    <div style={styles.container}>
+    <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p style={styles.title}>Dashboard</p>
-        <p style={styles.subtitle}>Welcome back to your workspace.</p>
+        <p className="text-xl font-semibold text-slate-900">Dashboard</p>
+        <p className="text-sm text-slate-500">
+          Welcome back to your workspace. Manage customers and insights.
+        </p>
       </div>
-      <div style={styles.profile}>
-        <span style={styles.avatar}>BC</span>
-        <div>
-          <p style={styles.name}>Beauty CRM</p>
-          <p style={styles.role}>Admin</p>
+      <div className="flex items-center gap-4">
+        <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+          Tenant: {tenantId || "Not set"}
+        </div>
+        <Link
+          href="/dashboard/settings"
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900"
+        >
+          Manage tenant
+        </Link>
+        <div className="flex items-center gap-2">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+            BC
+          </span>
+          <div className="text-sm">
+            <p className="font-semibold text-slate-900">Beauty CRM</p>
+            <p className="text-xs text-slate-500">Admin</p>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  title: {
-    margin: 0,
-    fontSize: "1.25rem",
-    fontWeight: 700,
-  },
-  subtitle: {
-    margin: 0,
-    color: "#64748b",
-  },
-  profile: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-  },
-  avatar: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "999px",
-    background: "#1e293b",
-    color: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: 700,
-  },
-  name: {
-    margin: 0,
-    fontWeight: 600,
-  },
-  role: {
-    margin: 0,
-    color: "#94a3b8",
-    fontSize: "0.85rem",
-  },
-};

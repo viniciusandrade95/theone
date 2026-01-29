@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const navItems = [
@@ -5,37 +6,31 @@ const navItems = [
   { label: "Customers", href: "/dashboard/customers" },
   { label: "Analytics", href: "/dashboard/analytics" },
   { label: "Settings", href: "/dashboard/settings" },
+  { label: "Logout", href: "/logout" },
 ];
 
 export function Sidebar() {
   return (
-    <div>
-      <h2 style={styles.brand}>Beauty CRM</h2>
-      <nav style={styles.nav}>
+    <div className="space-y-8">
+      <div className="space-y-1">
+        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Enterprise</p>
+        <h2 className="text-lg font-semibold">Beauty CRM</h2>
+      </div>
+      <nav className="grid gap-3 text-sm">
         {navItems.map((item) => (
-          <a key={item.href} href={item.href} style={styles.link}>
+          <Link
+            key={item.href}
+            href={item.href}
+            className="rounded-lg px-3 py-2 text-slate-200 transition hover:bg-slate-900 hover:text-white"
+          >
             {item.label}
-          </a>
+          </Link>
         ))}
       </nav>
+      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-xs text-slate-300">
+        <p className="font-semibold text-slate-100">Status</p>
+        <p className="mt-2">Foundation phase complete.</p>
+      </div>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  brand: {
-    margin: 0,
-    fontSize: "1.25rem",
-    fontWeight: 700,
-  },
-  nav: {
-    marginTop: "2rem",
-    display: "grid",
-    gap: "0.75rem",
-  },
-  link: {
-    color: "#e2e8f0",
-    textDecoration: "none",
-    fontSize: "0.95rem",
-  },
-};

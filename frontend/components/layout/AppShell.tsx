@@ -10,41 +10,16 @@ export function AppShell({
   sidebar: React.ReactNode;
 }) {
   return (
-    <div style={styles.container}>
-      <aside style={styles.sidebar}>{sidebar}</aside>
-      <div style={styles.main}>
-        <header style={styles.header}>{header}</header>
-        <section style={styles.content}>{children}</section>
+    <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[260px_1fr]">
+      <aside className="hidden bg-slate-950 px-6 py-8 text-white lg:block">
+        {sidebar}
+      </aside>
+      <div className="flex min-h-screen flex-col">
+        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-5 shadow-sm">
+          {header}
+        </header>
+        <section className="flex-1 px-6 py-8">{children}</section>
       </div>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    display: "grid",
-    gridTemplateColumns: "260px 1fr",
-    minHeight: "100vh",
-    background: "#f8fafc",
-  },
-  sidebar: {
-    background: "#0f172a",
-    color: "white",
-    padding: "2rem 1.5rem",
-  },
-  main: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "1.5rem 2rem",
-    background: "white",
-    borderBottom: "1px solid #e2e8f0",
-  },
-  content: {
-    padding: "2rem",
-  },
-};
