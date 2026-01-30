@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.sql import func
 
@@ -10,6 +10,10 @@ from modules.crm.models.pipeline import PipelineStage
 
 class CustomerORM(Base):
     __tablename__ = "customers"
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "phone", name="uq_customers_tenant_phone"),
+        UniqueConstraint("tenant_id", "email", name="uq_customers_tenant_email"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 

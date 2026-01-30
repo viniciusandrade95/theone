@@ -68,5 +68,5 @@ def test_not_null_columns():
     assert interaction_columns["tenant_id"] is False
     assert interaction_columns["customer_id"] is False
     assert interaction_columns["type"] is False
-    assert interaction_columns["content"] is False
+    assert interaction_columns["payload"] is False
     assert interaction_columns["created_at"] is False
