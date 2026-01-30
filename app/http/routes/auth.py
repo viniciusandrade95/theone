@@ -1,7 +1,9 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field
 
-from core.tenancy import require_tenant_id
+from core.tenancy import require_tenant_id, set_tenant_id, clear_tenant_id
 from core.errors import UnauthorizedError
 from core.config import get_config
 from app.auth_tokens import issue_token
@@ -23,6 +25,18 @@ class AuthOut(BaseModel):
     token: str
 
 
+class SignupIn(BaseModel):
+    tenant_name: str = Field(min_length=2)
+    email: EmailStr
+    password: str = Field(min_length=6)
+
+
+class SignupOut(BaseModel):
+    tenant_id: str
+    user_id: str
+    token: str
+
+
 @router.post("/register", response_model=AuthOut)
 def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tenant_header)):
     c = request.app.state.container
@@ -36,6 +50,26 @@ def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tena
     cfg = get_config()
     token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user.id)
     return AuthOut(user_id=user.id, token=token)
+
+
+@router.post("/signup", response_model=SignupOut)
+def signup(payload: SignupIn, request: Request):
+    c = request.app.state.container
+
+    tenant_id = str(uuid.uuid4())
+    tenant = c.tenant_service.create_tenant(tenant_id, name=payload.tenant_name)
+
+    clear_tenant_id()
+    set_tenant_id(tenant.id)
+    try:
+        svc = AuthService(c.users_repo, c.billing)
+        user = svc.register(email=str(payload.email), password=payload.password)
+    finally:
+        clear_tenant_id()
+
+    cfg = get_config()
+    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant.id, user_id=user.id)
+    return SignupOut(tenant_id=tenant.id, user_id=user.id, token=token)
 
 
 @router.post("/login", response_model=AuthOut)

@@ -1,4 +1,3 @@
-from core.events import EventBus, MessageReceived
 from modules.analytics.repo.sql import SqlAnalyticsRepo
 from modules.analytics.service.analytics_service import AnalyticsService
 from modules.billing.repo import InMemoryBillingRepo
@@ -6,11 +5,12 @@ from modules.billing.service.billing_service import BillingService
 from modules.crm.repo.in_memory import InMemoryCrmRepo
 from modules.crm.repo.sql import SqlCrmRepo
 from modules.crm.service.crm_service import CrmService
-from modules.iam.repo.in_memory import InMemoryUserRepo
+from modules.iam.repo.sql import SqlUserRepo
+from modules.messaging.repo.sql import SqlMessagingRepo
 from modules.messaging.service.inbound_service import InboundMessagingService
+from modules.messaging.service.inbound_webhook_service import InboundWebhookService
 from modules.tenants.repo.sql import SqlTenantRepo
 from modules.tenants.service.tenant_service import TenantService
-from tasks.workers.messaging.inbound_worker import InboundMessageWorker
 
 
 class Container:
@@ -19,12 +19,13 @@ class Container:
         self.billing_service: BillingService | None = None
         self.analytics_service: AnalyticsService | None = None
         self.inbound_service: InboundMessagingService | None = None
-        self.bus: EventBus | None = None
-        self.users_repo: InMemoryUserRepo | None = None
+        self.users_repo: SqlUserRepo | None = None
         self.crm: CrmService | None = None
         self.billing: BillingService | None = None
         self.analytics: AnalyticsService | None = None
         self.tenant_service: TenantService | None = None
+        self.messaging_repo: SqlMessagingRepo | None = None
+        self.inbound_webhook_service: InboundWebhookService | None = None
 
 
 def build_container() -> Container:
@@ -47,15 +48,12 @@ def build_container() -> Container:
     analytics_service = AnalyticsService(analytics_repo)
 
     # 🔑 Messaging
+    messaging_repo = SqlMessagingRepo()
     inbound_service = InboundMessagingService(crm_service)
+    inbound_webhook_service = InboundWebhookService(messaging_repo, crm_service, billing_service)
 
     # 🔑 IAM
-    users_repo = InMemoryUserRepo()
-
-    # 🔑 Event bus
-    bus = EventBus()
-    inbound_worker = InboundMessageWorker(inbound_service, billing_service)
-    bus.subscribe(MessageReceived, inbound_worker.handle)
+    users_repo = SqlUserRepo()
 
     # wire
     c.tenant_service = tenant_service
@@ -63,10 +61,11 @@ def build_container() -> Container:
     c.crm_service = crm_service
     c.analytics_service = analytics_service
     c.inbound_service = inbound_service
-    c.bus = bus
+    c.messaging_repo = messaging_repo
     c.users_repo = users_repo
     c.crm = crm_service
     c.billing = billing_service
     c.analytics = analytics_service
+    c.inbound_webhook_service = inbound_webhook_service
 
     return c

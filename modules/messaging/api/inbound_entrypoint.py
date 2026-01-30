@@ -1,8 +1,6 @@
-from core.events import EventBus, MessageReceived
-from core.tenancy import require_tenant_id
+from tasks.queue import enqueue_inbound_webhook
 
 
-def accept_inbound_webhook(payload: dict, bus: EventBus) -> dict:
-    tenant_id = require_tenant_id()
-    bus.publish(MessageReceived(tenant_id=tenant_id, payload=payload))
+def accept_inbound_webhook(*, payload: dict, signature_valid: bool) -> dict:
+    enqueue_inbound_webhook(payload=payload, signature_valid=signature_valid)
     return {"status": "accepted"}

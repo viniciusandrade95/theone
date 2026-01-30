@@ -17,9 +17,8 @@ import {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [tenantId, setTenantIdValue] = useState("");
+  const [tenantName, setTenantName] = useState("");
   const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,23 +29,19 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await api.post(
-        "/auth/register",
-        {
-          email,
-          password,
-          full_name: fullName,
-        },
-        {
-          headers: {
-            "X-Tenant-ID": tenantId,
-          },
-        },
-      );
+      const response = await api.post("/auth/signup", {
+        tenant_name: tenantName,
+        email,
+        password,
+      });
 
       const token = response.data?.token;
+      const tenantId = response.data?.tenant_id;
       if (!token) {
         throw new Error("Missing auth token in response.");
+      }
+      if (!tenantId) {
+        throw new Error("Missing tenant ID in response.");
       }
 
       setAuthToken(token);
@@ -69,26 +64,17 @@ export default function RegisterPage() {
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>
-            Start a new tenant workspace and invite your team later.
+            Start a new workspace and invite your team later.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Tenant ID
+              Workspace name
               <Input
-                value={tenantId}
-                onChange={(event) => setTenantIdValue(event.target.value)}
-                placeholder="e.g. acme-hq"
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Full name
-              <Input
-                value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
-                placeholder="Jane Doe"
+                value={tenantName}
+                onChange={(event) => setTenantName(event.target.value)}
+                placeholder="Acme Salon"
                 required
               />
             </label>
