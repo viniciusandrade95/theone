@@ -5,6 +5,7 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Customers", href: "/dashboard/customers" },
   { label: "Analytics", href: "/dashboard/analytics" },
+  { label: "WhatsApp Accounts", href: "/dashboard/admin/whatsapp-accounts" },
   { label: "Settings", href: "/dashboard/settings" },
   { label: "Logout", href: "/logout" },
 ];
