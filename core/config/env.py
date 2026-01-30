@@ -34,6 +34,10 @@ class AppConfig:
     # Observability
     LOG_LEVEL: str
 
+    # Queue
+    REDIS_URL: str
+    CELERY_TASK_ALWAYS_EAGER: bool
+
     # Tenancy
     TENANT_HEADER: str
 
@@ -60,4 +64,12 @@ class AppConfig:
             WHATSAPP_WEBHOOK_SECRET=_get(
                 "WHATSAPP_WEBHOOK_SECRET", required=False
             ),
+
+            REDIS_URL=_get("REDIS_URL", required=False, default="redis://localhost:6379/0"),
+            CELERY_TASK_ALWAYS_EAGER=bool(
+                str(_get("CELERY_TASK_ALWAYS_EAGER", required=False, default=""))
+                .strip()
+                .lower()
+                in {"1", "true", "yes"}
+            )
         )

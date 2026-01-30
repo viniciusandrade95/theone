@@ -10,6 +10,11 @@ from core.db.base import Base
 from modules.tenants.models.tenant_orm import TenantORM  # noqa
 from modules.crm.models.customer_orm import CustomerORM  # noqa
 from modules.crm.models.interaction_orm import InteractionORM  # noqa
+from modules.iam.models.user_orm import UserORM  # noqa
+from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM  # noqa
+from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa
+from modules.messaging.models.conversation_orm import ConversationORM  # noqa
+from modules.messaging.models.message_orm import MessageORM  # noqa
 
 # Alembic Config
 config = context.config
