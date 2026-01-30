@@ -4,6 +4,7 @@ from sqlalchemy import select, update, func
 from sqlalchemy.exc import IntegrityError
 
 from core.db.session import db_session
+from core.errors import ConflictError
 from modules.messaging.repo.messaging_repo import MessagingRepo
 from modules.messaging.models import WhatsAppAccount, WebhookEvent, Conversation, Message
 from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM
@@ -30,15 +31,21 @@ class SqlMessagingRepo(MessagingRepo):
             return row.to_domain() if row else None
 
     def create_whatsapp_account(self, account: WhatsAppAccount) -> None:
-        with db_session() as session:
-            session.add(
-                WhatsAppAccountORM(
-                    id=self._coerce_uuid(account.id),
-                    tenant_id=self._coerce_uuid(account.tenant_id),
-                    provider=account.provider,
-                    phone_number_id=account.phone_number_id,
-                    status=account.status,
+        try:
+            with db_session() as session:
+                session.add(
+                    WhatsAppAccountORM(
+                        id=self._coerce_uuid(account.id),
+                        tenant_id=self._coerce_uuid(account.tenant_id),
+                        provider=account.provider,
+                        phone_number_id=account.phone_number_id,
+                        status=account.status,
+                    )
                 )
+        except IntegrityError:
+            raise ConflictError(
+                "whatsapp_account_exists",
+                meta={"provider": account.provider, "phone_number_id": account.phone_number_id},
             )
 
     def record_webhook_event(self, event: WebhookEvent) -> bool:
