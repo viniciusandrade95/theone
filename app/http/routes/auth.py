@@ -31,6 +31,12 @@ class SignupIn(BaseModel):
     password: str = Field(min_length=6)
 
 
+class SignupOut(BaseModel):
+    tenant_id: str
+    user_id: str
+    token: str
+
+
 @router.post("/register", response_model=AuthOut)
 def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tenant_header)):
     c = request.app.state.container
@@ -46,7 +52,7 @@ def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tena
     return AuthOut(user_id=user.id, token=token)
 
 
-@router.post("/signup", response_model=AuthOut)
+@router.post("/signup", response_model=SignupOut)
 def signup(payload: SignupIn, request: Request):
     c = request.app.state.container
 
@@ -63,7 +69,7 @@ def signup(payload: SignupIn, request: Request):
 
     cfg = get_config()
     token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant.id, user_id=user.id)
-    return AuthOut(user_id=user.id, token=token)
+    return SignupOut(tenant_id=tenant.id, user_id=user.id, token=token)
 
 
 @router.post("/login", response_model=AuthOut)
