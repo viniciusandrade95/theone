@@ -5,7 +5,7 @@ from modules.billing.service.billing_service import BillingService
 from modules.crm.repo.in_memory import InMemoryCrmRepo
 from modules.crm.repo.sql import SqlCrmRepo
 from modules.crm.service.crm_service import CrmService
-from modules.iam.repo.in_memory import InMemoryUserRepo
+from modules.iam.repo.sql import SqlUserRepo
 from modules.messaging.repo.sql import SqlMessagingRepo
 from modules.messaging.service.inbound_service import InboundMessagingService
 from modules.messaging.service.inbound_webhook_service import InboundWebhookService
@@ -19,7 +19,7 @@ class Container:
         self.billing_service: BillingService | None = None
         self.analytics_service: AnalyticsService | None = None
         self.inbound_service: InboundMessagingService | None = None
-        self.users_repo: InMemoryUserRepo | None = None
+        self.users_repo: SqlUserRepo | None = None
         self.crm: CrmService | None = None
         self.billing: BillingService | None = None
         self.analytics: AnalyticsService | None = None
@@ -53,7 +53,7 @@ def build_container() -> Container:
     inbound_webhook_service = InboundWebhookService(messaging_repo, crm_service, billing_service)
 
     # 🔑 IAM
-    users_repo = InMemoryUserRepo()
+    users_repo = SqlUserRepo()
 
     # wire
     c.tenant_service = tenant_service

@@ -16,6 +16,7 @@ def _initialize_schema(engine) -> None:
     from modules.tenants.models.tenant_orm import TenantORM  # noqa: F401
     from modules.crm.models.customer_orm import CustomerORM  # noqa: F401
     from modules.crm.models.interaction_orm import InteractionORM  # noqa: F401
+    from modules.iam.models.user_orm import UserORM  # noqa: F401
     from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM  # noqa: F401
     from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa: F401
     from modules.messaging.models.conversation_orm import ConversationORM  # noqa: F401
