@@ -30,11 +30,13 @@
 - SQLAlchemy ORM model for `User`.
 - SQL repository implementing `UserRepo` interface.
 - Container wiring updated to use SQL repo for login/register.
+- Add `/auth/signup` to create tenant + user without requiring a tenant header.
 
 ### Acceptance Criteria
 - Register/login uses SQL repo and persists users across process restarts.
 - User email uniqueness enforced per tenant.
 - Existing API contracts preserved.
+- Signup creates tenant + user and returns a token without requiring `X-Tenant-ID`.
 
 ## Next Steps (Detailed)
 

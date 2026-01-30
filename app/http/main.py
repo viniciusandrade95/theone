@@ -31,7 +31,7 @@ def create_app() -> FastAPI:
         if request.url.path in ("/docs", "/openapi.json", "/redoc"):
             return await call_next(request)
 
-        if request.url.path.startswith("/tenants") or request.url.path.startswith("/messaging/inbound"):
+        if request.url.path.startswith("/tenants") or request.url.path.startswith("/messaging/inbound") or request.url.path == "/auth/signup":
             return await call_next(request)
         
         clear_tenant_id()
