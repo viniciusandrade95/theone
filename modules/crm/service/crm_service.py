@@ -19,9 +19,17 @@ class CrmService:
         self.repo = repo
         self.billing = billing
 
-    def create_customer(self, *, name: str, phone: str | None = None, email: str | None = None, tags: set[str] | None = None) -> Customer:
+    def create_customer(
+        self,
+        *,
+        name: str,
+        phone: str | None = None,
+        email: str | None = None,
+        tags: set[str] | None = None,
+        consent_marketing: bool = False,
+    ) -> Customer:
         tenant_id = require_tenant_id()
-        current = len(self.repo.list_customers(tenant_id))
+        current = self.repo.count_customers(tenant_id)
         res = self.billing.check_limit(kind="customers", current=current + 1)
         if not res.allowed:
             raise ForbiddenError("Plan limit exceeded", meta={"reason": res.reason})
@@ -33,6 +41,7 @@ class CrmService:
             phone=phone,
             email=email,
             tags=tags or set(),
+            consent_marketing=consent_marketing,
         )
         self.repo.create_customer(customer)
         return customer
@@ -43,6 +52,41 @@ class CrmService:
         if customer is None:
             raise NotFoundError("Customer not found", meta={"tenant_id": tenant_id, "customer_id": customer_id})
         return customer
+
+    def list_customers(
+        self,
+        *,
+        limit: int | None = None,
+        offset: int | None = None,
+        search: str | None = None,
+    ) -> list[Customer]:
+        tenant_id = require_tenant_id()
+        return self.repo.list_customers(tenant_id, limit=limit, offset=offset, search=search)
+
+    def count_customers(self, *, search: str | None = None) -> int:
+        tenant_id = require_tenant_id()
+        return self.repo.count_customers(tenant_id, search=search)
+
+    def update_customer(
+        self,
+        *,
+        customer_id: str,
+        name: str | None = None,
+        phone: str | None = None,
+        email: str | None = None,
+        tags: set[str] | None = None,
+        consent_marketing: bool | None = None,
+    ) -> Customer:
+        customer = self.get_customer(customer_id=customer_id)
+        updated = customer.with_updates(
+            name=name,
+            phone=phone,
+            email=email,
+            tags=tags,
+            consent_marketing=consent_marketing,
+        )
+        self.repo.update_customer(updated)
+        return updated
 
     def set_tags(self, *, customer_id: str, tags: set[str]) -> Customer:
         customer = self.get_customer(customer_id=customer_id)
@@ -81,6 +125,11 @@ class CrmService:
         updated = customer.with_stage(to_stage)
         self.repo.update_customer(updated)
         return updated
+
+    def delete_customer(self, *, customer_id: str) -> None:
+        tenant_id = require_tenant_id()
+        _ = self.get_customer(customer_id=customer_id)
+        self.repo.delete_customer(tenant_id, customer_id)
 
 
 ######################## messsaging

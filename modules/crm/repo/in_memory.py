@@ -23,8 +23,28 @@ class InMemoryCrmRepo(CrmRepo):
         key = (customer.tenant_id, customer.id)
         self._customers[key] = customer
 
-    def list_customers(self, tenant_id: str) -> list[Customer]:
-        return [c for (t, _), c in self._customers.items() if t == tenant_id]
+    def list_customers(
+        self,
+        tenant_id: str,
+        *,
+        limit: int | None = None,
+        offset: int | None = None,
+        search: str | None = None,
+    ) -> list[Customer]:
+        rows = [c for (t, _), c in self._customers.items() if t == tenant_id]
+        if search:
+            term = search.strip().lower()
+            rows = [
+                c
+                for c in rows
+                if term in c.name.lower()
+                or (c.email and term in c.email.lower())
+                or (c.phone and term in c.phone.lower())
+            ]
+        rows.sort(key=lambda c: c.created_at, reverse=True)
+        start = offset or 0
+        end = start + limit if limit is not None else None
+        return rows[start:end]
 
     def add_interaction(self, interaction: Interaction) -> None:
         key = (interaction.tenant_id, interaction.customer_id)
@@ -44,5 +64,9 @@ class InMemoryCrmRepo(CrmRepo):
         return None
 
 #################### tiers
-    def count_customers(self, tenant_id: str) -> int:
-        return sum(1 for (t, _), _c in self._customers.items() if t == tenant_id)
+    def count_customers(self, tenant_id: str, *, search: str | None = None) -> int:
+        return len(self.list_customers(tenant_id, search=search))
+
+    def delete_customer(self, tenant_id: str, customer_id: str) -> None:
+        self._customers.pop((tenant_id, customer_id), None)
+        self._interactions.pop((tenant_id, customer_id), None)

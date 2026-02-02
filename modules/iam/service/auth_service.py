@@ -42,3 +42,10 @@ class AuthService:
             raise UnauthorizedError("Invalid credentials")
 
         return user
+
+    def get_user(self, *, user_id: str) -> User:
+        tenant_id = require_tenant_id()
+        user = self.repo.get_by_id(tenant_id, user_id)
+        if user is None:
+            raise UnauthorizedError("User not found")
+        return user

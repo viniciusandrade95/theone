@@ -1,7 +1,7 @@
 """create tenants customers interactions with uuid
 
 Revision ID: bef04fb0b750
-Revises: 5f30581cbf4b
+Revises: 
 Create Date: 2026-01-27 06:04:41.003946
 
 """

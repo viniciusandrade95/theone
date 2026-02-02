@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from contextlib import contextmanager
 from sqlalchemy import text
+from contextvars import ContextVar
 
 from core.tenancy import get_tenant_id
 
@@ -10,6 +11,7 @@ from core.db.base import Base
 
 _engine = None
 _SessionLocal = None
+_current_session: ContextVar[Session | None] = ContextVar("db_session", default=None)
 
 
 def _initialize_schema(engine) -> None:
@@ -49,7 +51,13 @@ def db_session():
     if _SessionLocal is None:
         _get_engine()
 
+    existing_session = _current_session.get()
+    if existing_session is not None:
+        yield existing_session
+        return
+
     session = _SessionLocal()
+    token = _current_session.set(session)
     tenant_id = get_tenant_id()
     if tenant_id:
         try:
@@ -58,6 +66,7 @@ def db_session():
         except Exception:
             session.rollback()
             session.close()
+            _current_session.reset(token)
             raise
     try:
         yield session
@@ -67,3 +76,4 @@ def db_session():
         raise
     finally:
         session.close()
+        _current_session.reset(token)

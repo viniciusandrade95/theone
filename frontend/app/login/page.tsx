@@ -43,12 +43,13 @@ export default function LoginPage() {
       );
 
       const token = response.data?.token;
+      const responseTenantId = response.data?.tenant_id;
       if (!token) {
         throw new Error("Missing auth token in response.");
       }
 
       setAuthToken(token);
-      setTenantId(tenantId);
+      setTenantId(responseTenantId || tenantId);
       router.push("/dashboard");
     } catch (loginError) {
       const message =

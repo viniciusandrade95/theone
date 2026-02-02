@@ -27,6 +27,16 @@ class SqlUserRepo(UserRepo):
             row = session.execute(stmt).scalar_one_or_none()
             return row.to_domain() if row else None
 
+    def get_by_id(self, tenant_id: str, user_id: str) -> User | None:
+        with db_session() as session:
+            stmt = (
+                select(UserORM)
+                .where(UserORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(UserORM.id == self._coerce_uuid(user_id))
+            )
+            row = session.execute(stmt).scalar_one_or_none()
+            return row.to_domain() if row else None
+
     def create(self, user: User) -> None:
         try:
             with db_session() as session:
