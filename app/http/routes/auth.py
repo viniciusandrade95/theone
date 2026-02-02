@@ -64,16 +64,14 @@ def signup(payload: SignupIn, request: Request):
     c = request.app.state.container
 
     tenant_id = str(uuid.uuid4())
-    with db_session():
-        tenant = c.tenant_service.create_tenant(tenant_id, name=payload.tenant_name)
-
-        clear_tenant_id()
-        set_tenant_id(tenant.id)
-        try:
+    set_tenant_id(tenant_id)
+    try:
+        with db_session():
+            tenant = c.tenant_service.create_tenant(tenant_id, name=payload.tenant_name)
             svc = AuthService(c.users_repo, c.billing)
             user = svc.register(email=str(payload.email), password=payload.password)
-        finally:
-            clear_tenant_id()
+    finally:
+        clear_tenant_id()
 
     cfg = get_config()
     token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant.id, user_id=user.id)
