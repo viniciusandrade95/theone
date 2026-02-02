@@ -1,4 +1,5 @@
 import os
+import uuid
 
 import pytest
 from fastapi.testclient import TestClient
@@ -19,17 +20,31 @@ def reset_config_singleton(monkeypatch):
     monkeypatch.setattr(loader, "_config", None)
 
 
-def test_signup_creates_tenant_and_returns_token():
+def test_login_and_me_flow():
     app = create_app()
     client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
 
     response = client.post(
-        "/auth/signup",
-        json={"tenant_name": "Acme", "email": "a@b.com", "password": "secret123"},
+        "/auth/register",
+        headers={"X-Tenant-ID": tenant_id},
+        json={"email": "a@b.com", "password": "secret123"},
     )
     assert response.status_code == 200
-    body = response.json()
-    assert body["tenant_id"]
-    assert body["token"]
-    assert body["user_id"]
+
+    login = client.post(
+        "/auth/login",
+        headers={"X-Tenant-ID": tenant_id},
+        json={"email": "a@b.com", "password": "secret123"},
+    )
+    assert login.status_code == 200
+    token = login.json()["token"]
+
+    me = client.get(
+        "/auth/me",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+    )
+    assert me.status_code == 200
+    body = me.json()
+    assert body["tenant_id"] == tenant_id
     assert body["email"] == "a@b.com"

@@ -1,6 +1,7 @@
-from fastapi import Depends, Header, HTTPException, Request
+from fastapi import Depends, Header, Request
 from core.tenancy import set_tenant_id, clear_tenant_id, require_tenant_id
 from core.config import get_config
+from core.errors import UnauthorizedError, ValidationError
 from app.auth_tokens import verify_token
 
 
@@ -15,7 +16,7 @@ def tenant_dependency(x_tenant_id: str | None = Header(default=None, alias="X-Te
     # Para manter simples aqui, aceitamos X-Tenant-ID como default; o middleware vai garantir o resto.
 
     if not tenant_id:
-        raise HTTPException(status_code=400, detail="Missing tenant header")
+        raise ValidationError("Missing tenant header")
 
     clear_tenant_id()
     set_tenant_id(tenant_id)
@@ -25,18 +26,18 @@ def tenant_dependency(x_tenant_id: str | None = Header(default=None, alias="X-Te
 def require_user(request: Request, authorization: str | None = Header(default=None)):
     cfg = get_config()
     if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing bearer token")
+        raise UnauthorizedError("Missing bearer token")
 
     token = authorization.removeprefix("Bearer ").strip()
     try:
         parsed = verify_token(secret=cfg.SECRET_KEY, token=token)
     except RuntimeError as e:
-        raise HTTPException(status_code=401, detail=str(e))
+        raise UnauthorizedError(str(e))
 
     # Garante coerência tenant
     tenant_id = require_tenant_id()
     if parsed.tenant_id != tenant_id:
-        raise HTTPException(status_code=401, detail="tenant_mismatch")
+        raise UnauthorizedError("tenant_mismatch")
 
     # devolve identity mínima
     return {"user_id": parsed.user_id, "tenant_id": parsed.tenant_id}
@@ -47,5 +48,5 @@ def require_tenant_header(x_tenant_id: str = Header(..., alias="X-Tenant-ID")):
     # 1) Documentar no OpenAPI como required
     # 2) Bloquear requests sem header antes de chegar no handler
     if not x_tenant_id:
-        raise HTTPException(status_code=400, detail="Missing tenant header")
+        raise ValidationError("Missing tenant header")
     return x_tenant_id

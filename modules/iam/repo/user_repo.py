@@ -8,6 +8,10 @@ class UserRepo(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def get_by_id(self, tenant_id: str, user_id: str) -> User | None:
+        raise NotImplementedError
+
+    @abstractmethod
     def create(self, user: User) -> None:
         raise NotImplementedError
 
@@ -15,4 +19,3 @@ class UserRepo(ABC):
     @abstractmethod
     def count_users(self, tenant_id: str) -> int:
         raise NotImplementedError
-

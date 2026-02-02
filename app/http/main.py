@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import load_config, get_config
 from core.tenancy import set_tenant_id, clear_tenant_id
 from core.errors import to_http_error
+from core.errors.base import AppError
 
 from app.container import build_container
 from app.http.routes.auth import router as auth_router
@@ -22,8 +24,28 @@ def create_app() -> FastAPI:
 
     app = FastAPI(title=cfg.APP_NAME)
 
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     container = build_container()
     app.state.container = container
+
+    @app.exception_handler(AppError)
+    async def app_error_handler(request: Request, exc: AppError):
+        http_err = to_http_error(exc)
+        return JSONResponse(status_code=http_err.status_code, content=http_err.body)
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException):
+        return JSONResponse(status_code=exc.status_code, content={"error": "http_error", "message": exc.detail})
 
     @app.middleware("http")
     async def tenancy_middleware(request: Request, call_next):
@@ -31,7 +53,7 @@ def create_app() -> FastAPI:
         if request.url.path in ("/docs", "/openapi.json", "/redoc"):
             return await call_next(request)
 
-        if request.url.path.startswith("/tenants") or request.url.path.startswith("/messaging/inbound") or request.url.path == "/auth/signup":
+        if request.url.path.startswith("/messaging/inbound") or request.url.path == "/auth/signup":
             return await call_next(request)
         
         clear_tenant_id()
