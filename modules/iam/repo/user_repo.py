@@ -8,6 +8,11 @@ class UserRepo(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def list_by_email(self, email: str) -> list[User]:
+        """Return users across all tenants with this email."""
+        raise NotImplementedError
+
+    @abstractmethod
     def get_by_id(self, tenant_id: str, user_id: str) -> User | None:
         raise NotImplementedError
 

@@ -53,8 +53,15 @@ def create_app() -> FastAPI:
         if request.url.path in ("/docs", "/openapi.json", "/redoc"):
             return await call_next(request)
 
-        if request.url.path.startswith("/messaging/inbound") or request.url.path == "/auth/signup":
+        PUBLIC_PATHS = {
+            "/auth/signup",
+            "/auth/login_email",
+            "/auth/select_workspace",
+        }
+
+        if request.url.path.startswith("/messaging/inbound") or request.url.path in PUBLIC_PATHS:
             return await call_next(request)
+
         
         clear_tenant_id()
 
@@ -68,8 +75,8 @@ def create_app() -> FastAPI:
                     content={"error": "validation_error", "message": f"Missing tenant header: {tenant_header}"})
 
             container = request.app.state.container
-            if request.url.path != "/auth/register":
-                container.tenant_service.get_or_fail(tenant_id)
+            #if request.url.path != "/auth/register":
+            #    container.tenant_service.get_or_fail(tenant_id)
             set_tenant_id(tenant_id)
 
             return await call_next(request)

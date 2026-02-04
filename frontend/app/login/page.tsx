@@ -1,124 +1,221 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "../../lib/api";
-import { setAuthToken, setTenantId } from "../../lib/auth";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
-import Link from "next/link";
+import { api } from "@/lib/api";
+import { setAuthToken, setTenantId } from "@/lib/auth";
+
+type Workspace = { tenant_id: string; tenant_name: string };
+
+type LoginEmailResponse =
+  | {
+      mode: "authenticated";
+      auth: { user_id: string; tenant_id: string; email: string; token: string };
+      preauth_token: null;
+      workspaces: null;
+    }
+  | {
+      mode: "select_workspace";
+      auth: null;
+      preauth_token: string;
+      workspaces: Workspace[];
+    };
 
 export default function LoginPage() {
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [tenantId, setTenantIdValue] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const [preauthToken, setPreauthToken] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[] | null>(null);
+  const [selectedTenantId, setSelectedTenantId] = useState<string>("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isWorkspaceStep = useMemo(() => !!workspaces && !!preauthToken, [workspaces, preauthToken]);
+
+  async function onSubmitEmailPassword(e: React.FormEvent) {
     setError(null);
-    setIsSubmitting(true);
+    setLoading(true);
+
+    console.log("LOGIN CLICKED", email, password);
 
     try {
-      const response = await api.post(
-        "/auth/login",
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            "X-Tenant-ID": tenantId,
-          },
-        },
-      );
+      const resp = await api.post<LoginEmailResponse>("/auth/login_email", { email, password });
+      const data = resp.data;
 
-      const token = response.data?.token;
-      const responseTenantId = response.data?.tenant_id;
-      if (!token) {
-        throw new Error("Missing auth token in response.");
+      if (data.mode === "authenticated" && data.auth) {
+        setAuthToken(data.auth.token);
+        setTenantId(data.auth.tenant_id);
+        router.push("/dashboard");
+        return;
       }
 
-      setAuthToken(token);
-      setTenantId(responseTenantId || tenantId);
-      router.push("/dashboard");
-    } catch (loginError) {
-      const message =
-        loginError instanceof Error
-          ? loginError.message
-          : "Login failed. Please try again.";
-      setError(message);
+      if (data.mode === "select_workspace") {
+        setPreauthToken(data.preauth_token);
+        setWorkspaces(data.workspaces || []);
+        setSelectedTenantId(data.workspaces?.[0]?.tenant_id || "");
+        return;
+      }
+
+      setError("Unexpected login response.");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        "Login failed.";
+      setError(String(msg));
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
-  };
+  }
+
+  async function onContinueWorkspace() {
+    if (!preauthToken || !selectedTenantId) {
+      setError("Please select a workspace.");
+      return;
+    }
+
+    setError(null);
+    setLoading(true);
+
+    try {
+      const resp = await api.post("/auth/select_workspace", {
+        preauth_token: preauthToken,
+        tenant_id: selectedTenantId,
+      });
+
+      const auth = resp.data as { user_id: string; tenant_id: string; email: string; token: string };
+
+      setAuthToken(auth.token);
+      setTenantId(auth.tenant_id);
+
+      router.push("/dashboard");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        "Workspace selection failed.";
+      setError(String(msg));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function onBack() {
+    setError(null);
+    setLoading(false);
+    setPreauthToken(null);
+    setWorkspaces(null);
+    setSelectedTenantId("");
+  }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-50 px-6 py-12">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>
-            Sign in to your Beauty CRM workspace to manage tenants and customers.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Tenant ID
-              <Input
-                value={tenantId}
-                onChange={(event) => setTenantIdValue(event.target.value)}
-                placeholder="e.g. 9b0f..."
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Email
-              <Input
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 p-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-slate-900">
+            {isWorkspaceStep ? "Choose a workspace" : "Welcome back"}
+          </h1>
+          <p className="mt-1 text-sm text-slate-600">
+            {isWorkspaceStep ? "Select which workspace you want to access." : "Log in with your email and password."}
+          </p>
+        </div>
+
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {!isWorkspaceStep && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Email</label>
+              <input
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                placeholder="you@example.com"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                type="email"
-                placeholder="you@company.com"
-                required
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
-            </label>
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Password
-              <Input
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Password</label>
+              <input
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
                 type="password"
                 placeholder="••••••••"
-                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
-            </label>
-            {error ? (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                {error}
-              </div>
-            ) : null}
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Sign in"}
-            </Button>
-            <p className="text-center text-xs text-slate-500">
-              New here?{" "}
-              <Link className="font-semibold text-slate-700 hover:text-slate-900" href="/register">
-                Create an account
-              </Link>
-            </p>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
+            </div>
+
+            <button
+              type="submit"
+              onClick={onSubmitEmailPassword}
+              disabled={loading}
+              className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+            >
+              {loading ? "Logging in..." : "Log in"}
+            </button>
+
+            <div className="text-sm text-slate-600 text-center">
+              Don&apos;t have an account?{" "}
+              <a className="font-medium text-slate-900 hover:underline" href="/register">
+                Create one
+              </a>
+            </div>
+          </div>
+        )}
+
+        {isWorkspaceStep && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Workspace</label>
+              <select
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                value={selectedTenantId}
+                onChange={(e) => setSelectedTenantId(e.target.value)}
+              >
+                {(workspaces || []).map((w) => (
+                  <option key={w.tenant_id} value={w.tenant_id}>
+                    {w.tenant_name}
+                  </option>
+                ))}
+              </select>
+
+              <p className="mt-2 text-xs text-slate-500">
+                If names look identical, they are still different workspaces (MVP). Later we can show more metadata.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={onContinueWorkspace}
+              className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+            >
+              {loading ? "Continuing..." : "Continue"}
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={onBack}
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
+            >
+              Back
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

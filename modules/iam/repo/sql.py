@@ -27,6 +27,12 @@ class SqlUserRepo(UserRepo):
             row = session.execute(stmt).scalar_one_or_none()
             return row.to_domain() if row else None
 
+    def list_by_email(self, email: str) -> list[User]:
+        with db_session() as session:
+            stmt = select(UserORM).where(UserORM.email == email.strip().lower())
+            rows = session.execute(stmt).scalars().all()
+            return [r.to_domain() for r in rows]
+
     def get_by_id(self, tenant_id: str, user_id: str) -> User | None:
         with db_session() as session:
             stmt = (

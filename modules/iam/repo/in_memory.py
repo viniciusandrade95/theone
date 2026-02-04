@@ -10,6 +10,11 @@ class InMemoryUserRepo(UserRepo):
 
     def get_by_email(self, tenant_id: str, email: str) -> User | None:
         return self._users.get((tenant_id, email.strip().lower()))
+    
+    def list_by_email(self, email: str) -> list[User]:
+        email_norm = email.strip().lower()
+        return [u for (t, e), u in self._users.items() if e == email_norm]
+
 
     def get_by_id(self, tenant_id: str, user_id: str) -> User | None:
         for (tenant, _email), user in self._users.items():

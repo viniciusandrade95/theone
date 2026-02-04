@@ -49,3 +49,15 @@ class AuthService:
         if user is None:
             raise UnauthorizedError("User not found")
         return user
+
+    def authenticate_by_email_global(self, *, email: str, password: str) -> list[User]:
+        candidates = self.repo.list_by_email(email)
+        matches: list[User] = []
+        for u in candidates:
+            if verify_password(password, u.password_hash):
+                matches.append(u)
+
+        if not matches:
+            raise UnauthorizedError("Invalid credentials")
+
+        return matches

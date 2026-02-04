@@ -40,7 +40,8 @@ def _get_engine():
             pool_pre_ping=True,
         )
         _SessionLocal = sessionmaker(bind=_engine)
-        if cfg.ENV == "test" or cfg.DATABASE_URL == "dev":
+        # if cfg.ENV == "test" or cfg.DATABASE_URL == "dev":
+        if cfg.DATABASE_URL == "dev":
             _initialize_schema(_engine)
 
     return _engine
@@ -62,7 +63,9 @@ def db_session():
     if tenant_id:
         try:
             if session.bind and session.bind.dialect.name == "postgresql":
-                session.execute(text("SET LOCAL app.current_tenant_id = :tenant_id"), {"tenant_id": tenant_id})
+                #session.execute(text("SET LOCAL app.current_tenant_id = :tenant_id"), {"tenant_id": tenant_id})
+                session.execute(text("SELECT set_config('app.current_tenant_id', :tenant_id, true)"),
+                {"tenant_id": str(tenant_id)})
         except Exception:
             session.rollback()
             session.close()
