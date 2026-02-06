@@ -3,11 +3,11 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { clearAuth } from "@/lib/auth";
-
+import { appPath } from "@/lib/paths";
 const nav = [
-  { href: "/dashboard", label: "Home" },
-  { href: "/dashboard/customers", label: "Customers" },
-  { href: "/dashboard/appointments", label: "Appointments" },
+  { href: appPath("/dashboard"), label: "Home" },
+  { href: appPath("/dashboard/customers"), label: "Customers" },
+  { href: appPath("/dashboard/appointments"), label: "Appointments" },
 ];
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -47,7 +47,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50"
               onClick={() => {
                 clearAuth();
-                window.location.assign("/login");
+                window.location.assign(appPath("/login"));
+
               }}
             >
               Logout
@@ -64,7 +65,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 className="md:hidden rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50"
                 onClick={() => {
                   clearAuth();
-                  window.location.assign("/login");
+                  window.location.assign(appPath("/login"));
+
                 }}
               >
                 Logout

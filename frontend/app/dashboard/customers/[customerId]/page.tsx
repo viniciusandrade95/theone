@@ -10,6 +10,7 @@ import { Button } from "../../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { Input } from "../../../../components/ui/input";
 import { api } from "../../../../lib/api";
+import { appPath } from "@/lib/paths";
 
 type Customer = {
   id: string;
@@ -123,7 +124,7 @@ export default function CustomerDetailPage() {
                 <span className="font-semibold text-slate-700">Marketing consent:</span>{" "}
                 {customer.consent_marketing ? "Yes" : "No"}
               </p>
-              <Link href={`/dashboard/customers/${customer.id}`} className="text-xs text-slate-400">
+              <Link href={appPath("/dashboard/customers/${customer.id}")} className="text-xs text-slate-400">
                 ID: {customer.id}
               </Link>
             </CardContent>

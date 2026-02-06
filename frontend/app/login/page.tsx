@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { setAuthToken, setTenantId } from "@/lib/auth";
+import { appPath } from "@/lib/paths";
 
 type Workspace = {
   tenant_id: string;
@@ -66,7 +67,7 @@ export default function LoginPage() {
       if (data.mode === "authenticated" && data.auth) {
         setAuthToken(data.auth.token);
         setTenantId(data.auth.tenant_id);
-        router.push("/dashboard");
+        router.push(appPath("/dashboard"));
         return;
       }
 
@@ -116,7 +117,7 @@ export default function LoginPage() {
 
       setAuthToken(auth.token);
       setTenantId(auth.tenant_id);
-      router.push("/dashboard");
+      router.push(appPath("/dashboard"));
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ||
