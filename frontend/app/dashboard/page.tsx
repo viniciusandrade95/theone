@@ -1,50 +1,71 @@
-import { AppShell } from "../../components/layout/AppShell";
-import { Sidebar } from "../../components/layout/Sidebar";
-import { TopBar } from "../../components/layout/TopBar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+"use client";
 
-export default function DashboardPage() {
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
+
+type Me = {
+  user_id: string;
+  tenant_id: string;
+  email: string;
+};
+
+export default function DashboardHome() {
+  const [me, setMe] = useState<Me | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await api.get<Me>("/auth/me");
+        setMe(resp.data);
+      } catch (err: any) {
+        const msg =
+          err?.response?.data?.message ||
+          err?.response?.data?.detail ||
+          err?.response?.data?.error ||
+          "Failed to load /auth/me";
+        setError(String(msg));
+      }
+    })();
+  }, []);
+
   return (
-    <AppShell header={<TopBar />} sidebar={<Sidebar />}>
-      <section className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Your workspace is ready</CardTitle>
-            <CardDescription>
-              This is the foundation for your CRM, analytics, and messaging UI. Next up:
-              customers, interactions, and dashboards.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <div className="grid gap-4 md:grid-cols-3">
-          {[
-            {
-              title: "CRM",
-              body: "Customer profiles and interaction history.",
-            },
-            {
-              title: "Analytics",
-              body: "KPIs, growth charts, and insights.",
-            },
-            {
-              title: "Messaging",
-              body: "Unified inbox for inbound conversations.",
-            },
-          ].map((card) => (
-            <Card key={card.title}>
-              <CardHeader>
-                <CardTitle>{card.title}</CardTitle>
-                <CardDescription>{card.body}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-slate-500">
-                  Planned for Phase 2-3. Placeholder to align with enterprise roadmap.
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+    <div className="space-y-4">
+      <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+        <div className="text-lg font-semibold text-slate-900">
+          Dashboard ✅
         </div>
-      </section>
-    </AppShell>
+        <div className="mt-2 text-sm text-slate-600">
+          If you can see your email + tenant below, auth headers and RLS context are working.
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+        {!me ? (
+          <div className="text-sm text-slate-600">Loading /auth/me...</div>
+        ) : (
+          <div className="space-y-2 text-sm">
+            <div>
+              <span className="text-slate-600">Email:</span>{" "}
+              <span className="font-medium text-slate-900">{me.email}</span>
+            </div>
+            <div>
+              <span className="text-slate-600">Tenant:</span>{" "}
+              <span className="font-mono text-xs text-slate-900">{me.tenant_id}</span>
+            </div>
+            <div>
+              <span className="text-slate-600">User:</span>{" "}
+              <span className="font-mono text-xs text-slate-900">{me.user_id}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
