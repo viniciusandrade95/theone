@@ -8,6 +8,8 @@ const nav = [
   { href: appPath("/dashboard"), label: "Home" },
   { href: appPath("/dashboard/customers"), label: "Customers" },
   { href: appPath("/dashboard/appointments"), label: "Appointments" },
+  { href: appPath("/dashboard/services"), label: "Services" },
+
 ];
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
