@@ -5,12 +5,20 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { setAuthToken, setTenantId } from "@/lib/auth";
 
-type Workspace = { tenant_id: string; tenant_name: string };
+type Workspace = {
+  tenant_id: string;
+  tenant_name: string;
+};
 
 type LoginEmailResponse =
   | {
       mode: "authenticated";
-      auth: { user_id: string; tenant_id: string; email: string; token: string };
+      auth: {
+        user_id: string;
+        tenant_id: string;
+        email: string;
+        token: string;
+      };
       preauth_token: null;
       workspaces: null;
     }
@@ -29,21 +37,30 @@ export default function LoginPage() {
 
   const [preauthToken, setPreauthToken] = useState<string | null>(null);
   const [workspaces, setWorkspaces] = useState<Workspace[] | null>(null);
-  const [selectedTenantId, setSelectedTenantId] = useState<string>("");
+  const [selectedTenantId, setSelectedTenantId] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isWorkspaceStep = useMemo(() => !!workspaces && !!preauthToken, [workspaces, preauthToken]);
+  const isWorkspaceStep = useMemo(
+    () => !!preauthToken && !!workspaces,
+    [preauthToken, workspaces],
+  );
 
   async function onSubmitEmailPassword(e: React.FormEvent) {
+    e.preventDefault(); // 🔴 THIS WAS MISSING
+
     setError(null);
     setLoading(true);
 
     console.log("LOGIN CLICKED", email, password);
 
     try {
-      const resp = await api.post<LoginEmailResponse>("/auth/login_email", { email, password });
+      const resp = await api.post<LoginEmailResponse>(
+        "/auth/login_email",
+        { email, password },
+      );
+
       const data = resp.data;
 
       if (data.mode === "authenticated" && data.auth) {
@@ -56,7 +73,9 @@ export default function LoginPage() {
       if (data.mode === "select_workspace") {
         setPreauthToken(data.preauth_token);
         setWorkspaces(data.workspaces || []);
-        setSelectedTenantId(data.workspaces?.[0]?.tenant_id || "");
+        setSelectedTenantId(
+          data.workspaces?.[0]?.tenant_id || "",
+        );
         return;
       }
 
@@ -88,11 +107,15 @@ export default function LoginPage() {
         tenant_id: selectedTenantId,
       });
 
-      const auth = resp.data as { user_id: string; tenant_id: string; email: string; token: string };
+      const auth = resp.data as {
+        user_id: string;
+        tenant_id: string;
+        email: string;
+        token: string;
+      };
 
       setAuthToken(auth.token);
       setTenantId(auth.tenant_id);
-
       router.push("/dashboard");
     } catch (err: any) {
       const msg =
@@ -108,7 +131,6 @@ export default function LoginPage() {
 
   function onBack() {
     setError(null);
-    setLoading(false);
     setPreauthToken(null);
     setWorkspaces(null);
     setSelectedTenantId("");
@@ -122,7 +144,9 @@ export default function LoginPage() {
             {isWorkspaceStep ? "Choose a workspace" : "Welcome back"}
           </h1>
           <p className="mt-1 text-sm text-slate-600">
-            {isWorkspaceStep ? "Select which workspace you want to access." : "Log in with your email and password."}
+            {isWorkspaceStep
+              ? "Select which workspace you want to access."
+              : "Log in with your email and password."}
           </p>
         </div>
 
@@ -133,33 +157,39 @@ export default function LoginPage() {
         )}
 
         {!isWorkspaceStep && (
-          <div className="space-y-4">
+          <form
+            onSubmit={onSubmitEmailPassword}
+            className="space-y-4"
+          >
             <div>
-              <label className="block text-sm font-medium text-slate-700">Email</label>
+              <label className="block text-sm font-medium text-slate-700">
+                Email
+              </label>
               <input
-                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-                placeholder="you@example.com"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
+                required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">Password</label>
+              <label className="block text-sm font-medium text-slate-700">
+                Password
+              </label>
               <input
-                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
                 type="password"
-                placeholder="••••••••"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
+                required
               />
             </div>
 
             <button
               type="submit"
-              onClick={onSubmitEmailPassword}
               disabled={loading}
               className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
             >
@@ -168,38 +198,41 @@ export default function LoginPage() {
 
             <div className="text-sm text-slate-600 text-center">
               Don&apos;t have an account?{" "}
-              <a className="font-medium text-slate-900 hover:underline" href="/register">
+              <a
+                className="font-medium text-slate-900 hover:underline"
+                href="/register"
+              >
                 Create one
               </a>
             </div>
-          </div>
+          </form>
         )}
 
         {isWorkspaceStep && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700">Workspace</label>
+              <label className="block text-sm font-medium text-slate-700">
+                Workspace
+              </label>
               <select
-                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2"
                 value={selectedTenantId}
-                onChange={(e) => setSelectedTenantId(e.target.value)}
+                onChange={(e) =>
+                  setSelectedTenantId(e.target.value)
+                }
               >
-                {(workspaces || []).map((w) => (
+                {workspaces?.map((w) => (
                   <option key={w.tenant_id} value={w.tenant_id}>
                     {w.tenant_name}
                   </option>
                 ))}
               </select>
-
-              <p className="mt-2 text-xs text-slate-500">
-                If names look identical, they are still different workspaces (MVP). Later we can show more metadata.
-              </p>
             </div>
 
             <button
               type="button"
-              disabled={loading}
               onClick={onContinueWorkspace}
+              disabled={loading}
               className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
             >
               {loading ? "Continuing..." : "Continue"}
@@ -207,8 +240,8 @@ export default function LoginPage() {
 
             <button
               type="button"
-              disabled={loading}
               onClick={onBack}
+              disabled={loading}
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
             >
               Back
