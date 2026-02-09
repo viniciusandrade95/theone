@@ -183,16 +183,15 @@ def move_stage(customer_id: str, payload: MoveStageIn, request: Request, _tenant
 
 ##### service and appointments
 
-
 class ServiceIn(BaseModel):
-    name: str = Field(min_length=1)
-    price_cents: int = Field(ge=0)
-    duration_minutes: int = Field(ge=1)
+    name: str | None = Field(default=None, min_length=1)
+    price_cents: int | None = Field(default=None, ge=0)
+    duration_minutes: int | None = Field(default=None, ge=1)
 
 
 class ServiceOut(BaseModel):
     id: str
-    tenant_id: str
+    tenant_id: uuid
     name: str
     price_cents: int
     duration_minutes: int
@@ -254,9 +253,11 @@ def create_service(payload: ServiceIn, _tenant=Depends(require_tenant_header), _
 
 @router.patch("/services/{service_id}", response_model=ServiceOut)
 def update_service(service_id: str, payload: ServiceIn, _tenant=Depends(require_tenant_header), _user=Depends(require_user)):
+    fields = {k: v for k, v in payload.model_dump().items() if v is not None}
+
     with db_session() as session:
         repo = ServicesRepo(session)
-        s = repo.update(uuid.UUID(service_id), payload.model_dump())
+        s = repo.update(uuid.UUID(service_id), fields)
         session.commit()
         return ServiceOut(
             id=str(s.id),
