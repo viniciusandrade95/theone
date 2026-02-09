@@ -191,7 +191,7 @@ class ServiceIn(BaseModel):
 
 class ServiceOut(BaseModel):
     id: str
-    tenant_id: uuid
+    tenant_id: uuid.UUID
     name: str
     price_cents: int
     duration_minutes: int
@@ -208,7 +208,7 @@ class AppointmentIn(BaseModel):
 
 class AppointmentOut(BaseModel):
     id: str
-    tenant_id: str
+    tenant_id: uuid.UUID
     customer_id: str
     service_id: str | None
     starts_at: datetime
