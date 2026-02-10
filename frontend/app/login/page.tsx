@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/api-errors";
 import { setAuthToken, setTenantId } from "@/lib/auth";
 import { appPath } from "@/lib/paths";
 
@@ -81,13 +82,8 @@ export default function LoginPage() {
       }
 
       setError("Unexpected login response.");
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.detail ||
-        err?.response?.data?.error ||
-        "Login failed.";
-      setError(String(msg));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Login failed."));
     } finally {
       setLoading(false);
     }
@@ -118,13 +114,8 @@ export default function LoginPage() {
       setAuthToken(auth.token);
       setTenantId(auth.tenant_id);
       router.push(appPath("/dashboard"));
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.detail ||
-        err?.response?.data?.error ||
-        "Workspace selection failed.";
-      setError(String(msg));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Workspace selection failed."));
     } finally {
       setLoading(false);
     }

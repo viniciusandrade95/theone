@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
+import { parseApiError } from "@/lib/api-errors";
 import { appPath } from "@/lib/paths";
 
 export type AppointmentStatus = "booked" | "completed" | "cancelled" | "no_show";
@@ -52,20 +53,6 @@ type ConflictItem = {
   ends_at: string;
 };
 
-type ErrorPayload = {
-  message?: string;
-  detail?: string;
-  error?: string;
-  conflicts?: unknown;
-};
-
-type ApiError = {
-  response?: {
-    status?: number;
-    data?: ErrorPayload;
-  };
-};
-
 type AppointmentFormProps = {
   mode: "create" | "edit";
   values: AppointmentFormValues;
@@ -93,26 +80,6 @@ function toLocalDateTimeInput(value: Date): string {
   return `${year}-${month}-${day}T${hour}:${minute}`;
 }
 
-function toErrorMessage(error: unknown, fallback: string): string {
-  const maybe = error as ApiError;
-  return maybe?.response?.data?.message || maybe?.response?.data?.detail || maybe?.response?.data?.error || fallback;
-}
-
-function parseConflicts(payload: unknown): ConflictItem[] {
-  if (!Array.isArray(payload)) {
-    return [];
-  }
-  return payload.flatMap((item) => {
-    if (!item || typeof item !== "object") {
-      return [];
-    }
-    const value = item as Record<string, unknown>;
-    if (typeof value.id !== "string" || typeof value.starts_at !== "string" || typeof value.ends_at !== "string") {
-      return [];
-    }
-    return [{ id: value.id, starts_at: value.starts_at, ends_at: value.ends_at }];
-  });
-}
 
 function formatRange(startsAt: string, endsAt: string): string {
   const starts = new Date(startsAt);
@@ -150,6 +117,7 @@ export function AppointmentForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [conflicts, setConflicts] = useState<ConflictItem[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof AppointmentFormValues, string>>>({});
 
   const effectiveSubmitLabel = submitLabel ?? (mode === "create" ? "Create appointment" : "Save changes");
   const effectiveSubmittingLabel = submittingLabel ?? (mode === "create" ? "Creating..." : "Saving...");
@@ -253,6 +221,7 @@ export function AppointmentForm({
   function update(next: AppointmentFormValues) {
     setSubmitError(null);
     setConflicts([]);
+    setFieldErrors({});
     onChange(next);
   }
 
@@ -279,32 +248,38 @@ export function AppointmentForm({
     }
     if (!values.customer_id) {
       setSubmitError("Customer is required.");
+      setFieldErrors({ customer_id: "Customer is required." });
       return;
     }
     if (!values.starts_at) {
       setSubmitError("Start date/time is required.");
+      setFieldErrors({ starts_at: "Start date/time is required." });
       return;
     }
     if (!Number.isFinite(values.duration_minutes) || values.duration_minutes <= 0) {
       setSubmitError("Duration must be greater than 0.");
+      setFieldErrors({ duration_minutes: "Duration must be greater than 0." });
       return;
     }
 
     const startsAt = new Date(values.starts_at);
     if (Number.isNaN(startsAt.getTime())) {
       setSubmitError("Start date/time is invalid.");
+      setFieldErrors({ starts_at: "Start date/time is invalid." });
       return;
     }
 
     const endsAt = new Date(startsAt.getTime() + values.duration_minutes * 60_000);
     if (Number.isNaN(endsAt.getTime()) || endsAt <= startsAt) {
       setSubmitError("End date/time must be after start date/time.");
+      setFieldErrors({ starts_at: "End date/time must be after start date/time." });
       return;
     }
 
     setIsSubmitting(true);
     setSubmitError(null);
     setConflicts([]);
+    setFieldErrors({});
 
     try {
       await onSubmit({
@@ -318,19 +293,20 @@ export function AppointmentForm({
         notes: values.notes.trim() || null,
       });
     } catch (error: unknown) {
-      const maybe = error as ApiError;
-      if (maybe?.response?.status === 409) {
-        const conflictItems = parseConflicts(maybe?.response?.data?.conflicts);
-        if (conflictItems.length > 0) {
-          setConflicts(conflictItems);
-          setSubmitError("Conflicting appointment found. Choose a different time slot.");
-        } else {
-          setSubmitError("Conflicting appointment found.");
+      const parsed = parseApiError(
+        error,
+        mode === "create" ? "Unable to create appointment." : "Unable to update appointment.",
+      );
+      if (parsed.status === 409 || parsed.code === "APPOINTMENT_OVERLAP") {
+        if (parsed.conflicts.length > 0) {
+          setConflicts(parsed.conflicts);
         }
+        setSubmitError(parsed.message);
+      } else if (parsed.code === "VALIDATION_ERROR") {
+        setFieldErrors(parsed.fieldErrors as Partial<Record<keyof AppointmentFormValues, string>>);
+        setSubmitError(parsed.message);
       } else {
-        setSubmitError(
-          toErrorMessage(error, mode === "create" ? "Unable to create appointment." : "Unable to update appointment."),
-        );
+        setSubmitError(parsed.message);
       }
       return;
     } finally {
@@ -373,6 +349,7 @@ export function AppointmentForm({
               </option>
             ))}
           </select>
+          {fieldErrors.customer_id ? <p className="text-xs normal-case text-red-600">{fieldErrors.customer_id}</p> : null}
         </label>
 
         <label className="space-y-1 text-xs font-semibold uppercase text-slate-500">
@@ -394,6 +371,7 @@ export function AppointmentForm({
               </option>
             ))}
           </select>
+          {fieldErrors.service_id ? <p className="text-xs normal-case text-red-600">{fieldErrors.service_id}</p> : null}
         </label>
 
         <label className="space-y-1 text-xs font-semibold uppercase text-slate-500">
@@ -409,6 +387,7 @@ export function AppointmentForm({
               </option>
             ))}
           </select>
+          {fieldErrors.status ? <p className="text-xs normal-case text-red-600">{fieldErrors.status}</p> : null}
         </label>
 
         <label className="space-y-1 text-xs font-semibold uppercase text-slate-500">
@@ -419,6 +398,7 @@ export function AppointmentForm({
             onChange={(event) => update({ ...values, starts_at: event.target.value })}
             required
           />
+          {fieldErrors.starts_at ? <p className="text-xs normal-case text-red-600">{fieldErrors.starts_at}</p> : null}
         </label>
 
         <label className="space-y-1 text-xs font-semibold uppercase text-slate-500">
@@ -437,6 +417,9 @@ export function AppointmentForm({
             }
             required
           />
+          {fieldErrors.duration_minutes ? (
+            <p className="text-xs normal-case text-red-600">{fieldErrors.duration_minutes}</p>
+          ) : null}
         </label>
 
         <label className="space-y-1 text-xs font-semibold uppercase text-slate-500">
@@ -462,6 +445,9 @@ export function AppointmentForm({
             onChange={(event) => update({ ...values, cancelled_reason: event.target.value })}
             placeholder="Optional cancellation reason"
           />
+          {fieldErrors.cancelled_reason ? (
+            <p className="text-xs normal-case text-red-600">{fieldErrors.cancelled_reason}</p>
+          ) : null}
         </label>
       ) : null}
 

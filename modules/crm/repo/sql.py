@@ -1,8 +1,10 @@
 from uuid import UUID
+from datetime import datetime, timezone
 
 from sqlalchemy import String, cast, select, func, or_
 from core.db.session import db_session
-from core.errors import ValidationError
+from core.errors import NotFoundError, ValidationError
+from modules.audit.logging import record_audit_log, snapshot_orm
 from modules.crm.repo.crm_repo import CrmRepo
 from modules.crm.models.customer_orm import CustomerORM
 from modules.crm.models.interaction_orm import InteractionORM
@@ -47,6 +49,15 @@ class SqlCrmRepo(CrmRepo):
             )
             session.add(orm)
             session.flush()
+            record_audit_log(
+                session,
+                tenant_id=orm.tenant_id,
+                action="created",
+                entity_type="customer",
+                entity_id=orm.id,
+                before=None,
+                after=snapshot_orm(orm),
+            )
 
     def get_customer(self, tenant_id: str, customer_id: str) -> Customer | None:
         with db_session() as session:
@@ -54,6 +65,7 @@ class SqlCrmRepo(CrmRepo):
                 select(CustomerORM)
                 .where(CustomerORM.id == self._coerce_uuid(customer_id))
                 .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(CustomerORM.deleted_at.is_(None))
             )
 
             orm = session.execute(stmt).scalar_one_or_none()
@@ -68,6 +80,7 @@ class SqlCrmRepo(CrmRepo):
                 select(CustomerORM)
                 .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
                 .where(CustomerORM.phone == phone)
+                .where(CustomerORM.deleted_at.is_(None))
             )
             orm = session.execute(stmt).scalar_one_or_none()
             return self._to_domain(orm) if orm else None
@@ -94,7 +107,11 @@ class SqlCrmRepo(CrmRepo):
             raise ValidationError("invalid_sort_order", meta={"order": order, "allowed": ["asc", "desc"]})
 
         with db_session() as session:
-            stmt = select(CustomerORM).where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+            stmt = (
+                select(CustomerORM)
+                .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(CustomerORM.deleted_at.is_(None))
+            )
             if query:
                 term = f"%{query.strip().lower()}%"
                 stmt = stmt.where(
@@ -121,6 +138,7 @@ class SqlCrmRepo(CrmRepo):
                 select(func.count())
                 .select_from(CustomerORM)
                 .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(CustomerORM.deleted_at.is_(None))
             )
             if query:
                 term = f"%{query.strip().lower()}%"
@@ -141,8 +159,12 @@ class SqlCrmRepo(CrmRepo):
                 select(CustomerORM)
                 .where(CustomerORM.id == self._coerce_uuid(customer.id))
                 .where(CustomerORM.tenant_id == self._coerce_uuid(customer.tenant_id))
+                .where(CustomerORM.deleted_at.is_(None))
             )
-            orm = session.execute(stmt).scalar_one()
+            orm = session.execute(stmt).scalar_one_or_none()
+            if orm is None:
+                raise NotFoundError("customer_not_found", meta={"customer_id": customer.id})
+            before = snapshot_orm(orm)
 
             orm.name = customer.name
             orm.phone = customer.phone
@@ -151,6 +173,16 @@ class SqlCrmRepo(CrmRepo):
             orm.stage = customer.stage.value
             orm.consent_marketing = customer.consent_marketing
             orm.consent_marketing_at = customer.consent_marketing_at
+            session.flush()
+            record_audit_log(
+                session,
+                tenant_id=orm.tenant_id,
+                action="updated",
+                entity_type="customer",
+                entity_id=orm.id,
+                before=before,
+                after=snapshot_orm(orm),
+            )
 
     def delete_customer(self, tenant_id: str, customer_id: str) -> None:
         with db_session() as session:
@@ -160,8 +192,46 @@ class SqlCrmRepo(CrmRepo):
                 .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
             )
             orm = session.execute(stmt).scalar_one_or_none()
-            if orm:
-                session.delete(orm)
+            if orm is None or orm.deleted_at is not None:
+                return
+
+            before = snapshot_orm(orm)
+            orm.deleted_at = datetime.now(timezone.utc)
+            session.flush()
+            record_audit_log(
+                session,
+                tenant_id=orm.tenant_id,
+                action="deleted",
+                entity_type="customer",
+                entity_id=orm.id,
+                before=before,
+                after=snapshot_orm(orm),
+            )
+
+    def restore_customer(self, tenant_id: str, customer_id: str) -> None:
+        with db_session() as session:
+            stmt = (
+                select(CustomerORM)
+                .where(CustomerORM.id == self._coerce_uuid(customer_id))
+                .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(CustomerORM.deleted_at.is_not(None))
+            )
+            orm = session.execute(stmt).scalar_one_or_none()
+            if orm is None:
+                raise NotFoundError("customer_not_found", meta={"customer_id": customer_id})
+
+            before = snapshot_orm(orm)
+            orm.deleted_at = None
+            session.flush()
+            record_audit_log(
+                session,
+                tenant_id=orm.tenant_id,
+                action="updated",
+                entity_type="customer",
+                entity_id=orm.id,
+                before=before,
+                after=snapshot_orm(orm),
+            )
 
     # -------------------
     # Interactions

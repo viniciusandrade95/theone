@@ -1,6 +1,7 @@
 import axios from "axios";
 import { clearAuth, getAuthToken, getTenantId } from "./auth";
 import { appPath } from "@/lib/paths";
+import { parseApiError } from "@/lib/api-errors";
 
 export const API_ERROR_EVENT = "app:api-error";
 
@@ -36,8 +37,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r,
   (error) => {
-    const status = error?.response?.status;
-    const responseData = error?.response?.data;
+    const parsed = parseApiError(error, "Request failed.");
+    const status = parsed.status;
+    const responseData = parsed.payload;
 
     if (status === 401 && typeof window !== "undefined") {
       clearAuth();
@@ -45,13 +47,13 @@ api.interceptors.response.use(
     } else if (status === 403) {
       publishApiError({
         status: 403,
-        message: "You are not authorized to perform this action.",
+        message: parsed.message,
         payload: responseData,
       });
     } else if (status === 409) {
       publishApiError({
         status: 409,
-        message: "A conflict was detected. Review the details and try again.",
+        message: parsed.message,
         payload: responseData,
       });
     }

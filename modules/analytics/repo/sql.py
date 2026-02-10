@@ -19,7 +19,11 @@ class SqlAnalyticsRepo(AnalyticsRepo):
 
     def list_customers(self, tenant_id: str) -> list[Customer]:
         with db_session() as session:
-            stmt = select(CustomerORM).where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+            stmt = (
+                select(CustomerORM)
+                .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(CustomerORM.deleted_at.is_(None))
+            )
             return [c.to_domain() for c in session.scalars(stmt)]
 
     def list_interactions(self, tenant_id: str) -> list[Interaction]:
@@ -33,6 +37,7 @@ class SqlAnalyticsRepo(AnalyticsRepo):
         with db_session() as session:
             stmt = select(CustomerORM).where(
                 CustomerORM.tenant_id == self._coerce_uuid(tenant_id),
+                CustomerORM.deleted_at.is_(None),
                 CustomerORM.created_at >= start,
                 CustomerORM.created_at <= end,
             )

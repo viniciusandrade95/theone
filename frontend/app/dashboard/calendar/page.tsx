@@ -198,8 +198,9 @@ function minuteFromPointer(clientY: number, rect: DOMRect): number {
 }
 
 function toErrorMessage(error: unknown, fallback: string): string {
-  const response = (error as { response?: { data?: { message?: string; detail?: string; error?: string } } })?.response;
-  return response?.data?.message || response?.data?.detail || response?.data?.error || fallback;
+  const response = (error as { response?: { data?: { details?: { message?: string }; message?: string; detail?: string; error?: string } } })
+    ?.response;
+  return response?.data?.details?.message || response?.data?.message || response?.data?.detail || response?.data?.error || fallback;
 }
 
 function parseConflictItems(error: unknown): ConflictItem[] {

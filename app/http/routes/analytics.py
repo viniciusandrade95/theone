@@ -60,6 +60,7 @@ def _validate_range(from_dt: datetime, to_dt: datetime) -> tuple[datetime, datet
 def _appointment_filters(tenant_key, from_dt: datetime, to_dt: datetime, location_key=None):
     filters = [
         AppointmentORM.tenant_id == tenant_key,
+        AppointmentORM.deleted_at.is_(None),
         AppointmentORM.starts_at >= from_dt,
         AppointmentORM.starts_at < to_dt,
     ]
@@ -133,6 +134,7 @@ def overview(
                 ),
             )
             .where(*filters)
+            .where(CustomerORM.deleted_at.is_(None))
             .where(CustomerORM.created_at >= start)
             .where(CustomerORM.created_at < end)
         )
@@ -190,6 +192,7 @@ def services_breakdown(
                 and_(
                     ServiceORM.id == AppointmentORM.service_id,
                     ServiceORM.tenant_id == tenant_key,
+                    ServiceORM.deleted_at.is_(None),
                 ),
             )
             .where(*filters)
@@ -351,6 +354,7 @@ def at_risk_customers(
                 func.max(AppointmentORM.starts_at).label("last_appointment_at"),
             )
             .where(AppointmentORM.tenant_id == tenant_key)
+            .where(AppointmentORM.deleted_at.is_(None))
         )
         if location_key is not None:
             last_appointment_subquery = last_appointment_subquery.where(AppointmentORM.location_id == location_key)
@@ -367,6 +371,7 @@ def at_risk_customers(
             .select_from(CustomerORM)
             .join(last_appointment_subquery, last_appointment_subquery.c.customer_id == CustomerORM.id)
             .where(CustomerORM.tenant_id == tenant_key)
+            .where(CustomerORM.deleted_at.is_(None))
             .where(last_appointment_subquery.c.last_appointment_at < cutoff)
             .order_by(last_appointment_subquery.c.last_appointment_at.asc(), CustomerORM.name.asc())
             .limit(200)

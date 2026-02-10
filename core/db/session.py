@@ -40,6 +40,7 @@ def _initialize_schema(engine) -> None:
     from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa: F401
     from modules.messaging.models.conversation_orm import ConversationORM  # noqa: F401
     from modules.messaging.models.message_orm import MessageORM  # noqa: F401
+    from modules.audit.models.audit_log_orm import AuditLogORM  # noqa: F401
 
     Base.metadata.create_all(engine)
 

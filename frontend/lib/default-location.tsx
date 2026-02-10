@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/api-errors";
 
 export type DefaultLocation = {
   id: string;
@@ -20,20 +21,6 @@ type DefaultLocationContextValue = {
 
 const DefaultLocationContext = createContext<DefaultLocationContextValue | null>(null);
 
-function extractErrorMessage(error: unknown): string {
-  const maybe = error as {
-    response?: { data?: { message?: string; detail?: string; error?: string } };
-    message?: string;
-  };
-  return (
-    maybe?.response?.data?.message ||
-    maybe?.response?.data?.detail ||
-    maybe?.response?.data?.error ||
-    maybe?.message ||
-    "Unable to load default location."
-  );
-}
-
 export function DefaultLocationProvider({ children }: { children: React.ReactNode }) {
   const [defaultLocation, setDefaultLocation] = useState<DefaultLocation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +33,7 @@ export function DefaultLocationProvider({ children }: { children: React.ReactNod
       const response = await api.get<DefaultLocation>("/crm/locations/default");
       setDefaultLocation(response.data);
     } catch (err) {
-      setError(extractErrorMessage(err));
+      setError(getApiErrorMessage(err, "Unable to load default location."));
       setDefaultLocation(null);
     } finally {
       setIsLoading(false);

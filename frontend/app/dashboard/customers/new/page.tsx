@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
+import { parseApiError } from "@/lib/api-errors";
 import { useDefaultLocation } from "@/lib/default-location";
 import { appPath } from "@/lib/paths";
 
@@ -15,14 +16,11 @@ type Stage = "lead" | "booked" | "completed";
 
 type FormErrors = {
   name?: string;
+  phone?: string;
   email?: string;
+  stage?: string;
   global?: string;
 };
-
-function toErrorMessage(error: unknown): string {
-  const response = (error as { response?: { data?: { message?: string; detail?: string; error?: string } } })?.response;
-  return response?.data?.message || response?.data?.detail || response?.data?.error || "Unable to create customer.";
-}
 
 function parseEmail(value: string): string | null {
   const trimmed = value.trim();
@@ -116,8 +114,14 @@ export default function NewCustomerPage() {
 
       router.push(appPath(`/dashboard/customers/${customerId}`));
     } catch (submitError) {
-      const message = toErrorMessage(submitError);
-      setErrors((prev) => ({ ...prev, global: message }));
+      const parsed = parseApiError(submitError, "Unable to create customer.");
+      const nextErrors: FormErrors = { global: parsed.message };
+      for (const [field, message] of Object.entries(parsed.fieldErrors)) {
+        if (field === "name" || field === "phone" || field === "email" || field === "stage") {
+          nextErrors[field] = message;
+        }
+      }
+      setErrors(nextErrors);
     } finally {
       setIsSubmitting(false);
     }
@@ -161,11 +165,13 @@ export default function NewCustomerPage() {
                   <option value="booked">Booked</option>
                   <option value="completed">Completed</option>
                 </select>
+                {errors.stage ? <span className="text-xs text-red-600">{errors.stage}</span> : null}
               </label>
 
               <label className="space-y-2 text-sm font-semibold text-slate-700">
                 Phone
                 <Input value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="Recommended" />
+                {errors.phone ? <span className="text-xs text-red-600">{errors.phone}</span> : null}
               </label>
 
               <label className="space-y-2 text-sm font-semibold text-slate-700">

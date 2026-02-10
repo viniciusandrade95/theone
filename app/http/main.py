@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import load_config, get_config
 from core.tenancy import set_tenant_id, clear_tenant_id
-from core.errors import to_http_error
+from core.auth import clear_current_user_id
+from core.errors import to_http_error, from_http_exception
 from core.errors.base import AppError
 from core.db.session import reset_engine_state
 
@@ -45,10 +47,42 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
-        return JSONResponse(status_code=exc.status_code, content={"error": "http_error", "message": exc.detail})
+        normalized = from_http_exception(status_code=exc.status_code, detail=exc.detail)
+        return JSONResponse(status_code=normalized.status_code, content=normalized.body)
+
+    @app.exception_handler(RequestValidationError)
+    async def request_validation_handler(request: Request, exc: RequestValidationError):
+        normalized_errors: list[dict[str, object]] = []
+        fields: dict[str, str] = {}
+        for err in exc.errors():
+            loc = err.get("loc") or []
+            msg = str(err.get("msg") or "Invalid value")
+            normalized_errors.append(
+                {
+                    "loc": [str(item) for item in loc],
+                    "msg": msg,
+                    "type": str(err.get("type") or "validation_error"),
+                }
+            )
+            if len(loc) >= 2 and loc[0] in {"body", "query", "path"}:
+                field = str(loc[-1])
+                fields.setdefault(field, msg)
+
+        details = {"errors": normalized_errors}
+        if fields:
+            details["fields"] = fields
+
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": "VALIDATION_ERROR",
+                "details": details,
+            },
+        )
 
     @app.middleware("http")
     async def tenancy_middleware(request: Request, call_next):
+        clear_current_user_id()
         # CORS preflight requests do not include tenant headers.
         if request.method == "OPTIONS":
             return await call_next(request)
@@ -75,7 +109,11 @@ def create_app() -> FastAPI:
             if not tenant_id:
                 return JSONResponse(
                     status_code=400,
-                    content={"error": "validation_error", "message": f"Missing tenant header: {tenant_header}"})
+                    content={
+                        "error": "VALIDATION_ERROR",
+                        "details": {"message": f"Missing tenant header: {tenant_header}"},
+                    },
+                )
 
             container = request.app.state.container
             #if request.url.path != "/auth/register":
@@ -88,6 +126,7 @@ def create_app() -> FastAPI:
             return JSONResponse(status_code=http_err.status_code, content=http_err.body)
         finally:
             clear_tenant_id()
+            clear_current_user_id()
 
     app.include_router(auth_router, prefix="/auth", tags=["auth"])
     app.include_router(crm_router, prefix="/crm", tags=["crm"])

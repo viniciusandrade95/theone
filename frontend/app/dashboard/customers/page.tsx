@@ -36,8 +36,15 @@ type Paginated<T> = {
 const PAGE_SIZE = 25;
 
 function toErrorMessage(error: unknown): string {
-  const response = (error as { response?: { data?: { message?: string; detail?: string; error?: string } } })?.response;
-  return response?.data?.message || response?.data?.detail || response?.data?.error || "Unable to load customers.";
+  const response = (error as { response?: { data?: { details?: { message?: string }; message?: string; detail?: string; error?: string } } })
+    ?.response;
+  return (
+    response?.data?.details?.message ||
+    response?.data?.message ||
+    response?.data?.detail ||
+    response?.data?.error ||
+    "Unable to load customers."
+  );
 }
 
 function formatDateTime(value: string | null | undefined): string {

@@ -171,6 +171,14 @@ class CrmService:
         _ = self.get_customer(customer_id=customer_id)
         self.repo.delete_customer(tenant_id, customer_id)
 
+    def restore_customer(self, *, customer_id: str) -> Customer:
+        tenant_id = require_tenant_id()
+        self.repo.restore_customer(tenant_id, customer_id)
+        restored = self.repo.get_customer(tenant_id, customer_id)
+        if restored is None:
+            raise NotFoundError("Customer not found", meta={"tenant_id": tenant_id, "customer_id": customer_id})
+        return restored
+
 
 ######################## messsaging
 

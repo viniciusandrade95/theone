@@ -35,6 +35,7 @@ class CustomerORM(Base):
     stage = Column(String, nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     def to_domain(self) -> Customer:
         return Customer(

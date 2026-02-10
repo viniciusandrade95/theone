@@ -19,6 +19,7 @@ from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM  # 
 from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa
 from modules.messaging.models.conversation_orm import ConversationORM  # noqa
 from modules.messaging.models.message_orm import MessageORM  # noqa
+from modules.audit.models.audit_log_orm import AuditLogORM  # noqa
 
 # Alembic Config
 config = context.config

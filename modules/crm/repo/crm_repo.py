@@ -52,3 +52,6 @@ class CrmRepo(ABC):
 
     @abstractmethod
     def delete_customer(self, tenant_id: str, customer_id: str) -> None: ...
+
+    @abstractmethod
+    def restore_customer(self, tenant_id: str, customer_id: str) -> None: ...

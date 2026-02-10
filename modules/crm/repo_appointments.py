@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import List
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, delete, func, or_, select
+from sqlalchemy import and_, func, or_, select
 
 from core.errors import NotFoundError, ValidationError
+from modules.audit.logging import record_audit_log, snapshot_orm
 from modules.crm.models.appointment_orm import AppointmentORM
 from modules.crm.models.customer_orm import CustomerORM
 from modules.crm.models.location_orm import LocationORM
@@ -93,6 +94,7 @@ class AppointmentsRepo:
             select(CustomerORM.id)
             .where(CustomerORM.tenant_id == tenant_id)
             .where(CustomerORM.id == customer_id)
+            .where(CustomerORM.deleted_at.is_(None))
         )
         if self.session.execute(stmt).scalar_one_or_none() is None:
             raise ValidationError("customer_not_found", meta={"customer_id": str(customer_id)})
@@ -110,6 +112,7 @@ class AppointmentsRepo:
             select(ServiceORM.id)
             .where(ServiceORM.tenant_id == tenant_id)
             .where(ServiceORM.id == service_id)
+            .where(ServiceORM.deleted_at.is_(None))
         )
         if require_active:
             stmt = stmt.where(ServiceORM.is_active.is_(True))
@@ -156,6 +159,7 @@ class AppointmentsRepo:
             select(AppointmentORM)
             .where(AppointmentORM.tenant_id == tenant_id)
             .where(AppointmentORM.location_id == location_id)
+            .where(AppointmentORM.deleted_at.is_(None))
             .where(AppointmentORM.status != "cancelled")
             .where(AppointmentORM.starts_at < ends_at)
             .where(AppointmentORM.ends_at > starts_at)
@@ -241,9 +245,11 @@ class AppointmentsRepo:
                 and_(
                     CustomerORM.id == AppointmentORM.customer_id,
                     CustomerORM.tenant_id == tenant_id,
+                    CustomerORM.deleted_at.is_(None),
                 ),
             )
             .where(AppointmentORM.tenant_id == tenant_id)
+            .where(AppointmentORM.deleted_at.is_(None))
         )
         count_stmt = (
             select(func.count())
@@ -253,9 +259,11 @@ class AppointmentsRepo:
                 and_(
                     CustomerORM.id == AppointmentORM.customer_id,
                     CustomerORM.tenant_id == tenant_id,
+                    CustomerORM.deleted_at.is_(None),
                 ),
             )
             .where(AppointmentORM.tenant_id == tenant_id)
+            .where(AppointmentORM.deleted_at.is_(None))
         )
 
         if query:
@@ -337,6 +345,7 @@ class AppointmentsRepo:
                 and_(
                     CustomerORM.id == AppointmentORM.customer_id,
                     CustomerORM.tenant_id == tenant_id,
+                    CustomerORM.deleted_at.is_(None),
                 ),
             )
             .outerjoin(
@@ -344,9 +353,11 @@ class AppointmentsRepo:
                 and_(
                     ServiceORM.id == AppointmentORM.service_id,
                     ServiceORM.tenant_id == tenant_id,
+                    ServiceORM.deleted_at.is_(None),
                 ),
             )
             .where(AppointmentORM.tenant_id == tenant_id)
+            .where(AppointmentORM.deleted_at.is_(None))
             .where(AppointmentORM.starts_at < to_dt)
             .where(AppointmentORM.ends_at > from_dt)
             .order_by(AppointmentORM.starts_at.asc(), AppointmentORM.id.asc())
@@ -409,6 +420,15 @@ class AppointmentsRepo:
         )
         self.session.add(a)
         self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=a.tenant_id,
+            action="created",
+            entity_type="appointment",
+            entity_id=a.id,
+            before=None,
+            after=snapshot_orm(a),
+        )
         return a
 
     def update(self, tenant_id: uuid.UUID, appointment_id: uuid.UUID, fields: dict) -> AppointmentORM:
@@ -416,10 +436,13 @@ class AppointmentsRepo:
             select(AppointmentORM)
             .where(AppointmentORM.tenant_id == tenant_id)
             .where(AppointmentORM.id == appointment_id)
+            .where(AppointmentORM.deleted_at.is_(None))
         )
         a = self.session.execute(stmt).scalar_one_or_none()
         if a is None:
             raise NotFoundError("appointment_not_found", meta={"appointment_id": str(appointment_id)})
+        before = snapshot_orm(a)
+        previous_status = a.status
 
         next_customer_id = fields.get("customer_id", a.customer_id)
         next_location_id = fields.get("location_id", a.location_id)
@@ -455,13 +478,62 @@ class AppointmentsRepo:
         for key, value in fields.items():
             setattr(a, key, value)
         self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=a.tenant_id,
+            action="status_changed" if a.status != previous_status else "updated",
+            entity_type="appointment",
+            entity_id=a.id,
+            before=before,
+            after=snapshot_orm(a),
+        )
         return a
 
     def delete(self, tenant_id: uuid.UUID, appointment_id: uuid.UUID) -> None:
-        result = self.session.execute(
-            delete(AppointmentORM)
+        stmt = (
+            select(AppointmentORM)
             .where(AppointmentORM.tenant_id == tenant_id)
             .where(AppointmentORM.id == appointment_id)
+            .where(AppointmentORM.deleted_at.is_(None))
         )
-        if result.rowcount == 0:
+        appointment = self.session.execute(stmt).scalar_one_or_none()
+        if appointment is None:
             raise NotFoundError("appointment_not_found", meta={"appointment_id": str(appointment_id)})
+
+        before = snapshot_orm(appointment)
+        appointment.deleted_at = datetime.now(timezone.utc)
+        self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=appointment.tenant_id,
+            action="deleted",
+            entity_type="appointment",
+            entity_id=appointment.id,
+            before=before,
+            after=snapshot_orm(appointment),
+        )
+
+    def restore(self, tenant_id: uuid.UUID, appointment_id: uuid.UUID) -> AppointmentORM:
+        stmt = (
+            select(AppointmentORM)
+            .where(AppointmentORM.tenant_id == tenant_id)
+            .where(AppointmentORM.id == appointment_id)
+            .where(AppointmentORM.deleted_at.is_not(None))
+        )
+        appointment = self.session.execute(stmt).scalar_one_or_none()
+        if appointment is None:
+            raise NotFoundError("appointment_not_found", meta={"appointment_id": str(appointment_id)})
+
+        before = snapshot_orm(appointment)
+        appointment.deleted_at = None
+        self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=appointment.tenant_id,
+            action="updated",
+            entity_type="appointment",
+            entity_id=appointment.id,
+            before=before,
+            after=snapshot_orm(appointment),
+        )
+        return appointment

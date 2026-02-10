@@ -9,15 +9,21 @@ class InMemoryCrmRepo(CrmRepo):
         self._customers: dict[tuple[str, str], Customer] = {}
         # interactions: key (tenant_id, customer_id) -> list
         self._interactions: dict[tuple[str, str], list[Interaction]] = {}
+        # deleted customers tracked for soft-delete semantics
+        self._deleted_customers: set[tuple[str, str]] = set()
 
     def create_customer(self, customer: Customer) -> None:
         key = (customer.tenant_id, customer.id)
         if key in self._customers:
             raise ConflictError("Customer already exists", meta={"tenant_id": customer.tenant_id, "customer_id": customer.id})
         self._customers[key] = customer
+        self._deleted_customers.discard(key)
 
     def get_customer(self, tenant_id: str, customer_id: str) -> Customer | None:
-        return self._customers.get((tenant_id, customer_id))
+        key = (tenant_id, customer_id)
+        if key in self._deleted_customers:
+            return None
+        return self._customers.get(key)
 
     def update_customer(self, customer: Customer) -> None:
         key = (customer.tenant_id, customer.id)
@@ -34,7 +40,11 @@ class InMemoryCrmRepo(CrmRepo):
         sort: str = "created_at",
         order: str = "desc",
     ) -> list[Customer]:
-        rows = [c for (t, _), c in self._customers.items() if t == tenant_id]
+        rows = [
+            c
+            for key, c in self._customers.items()
+            if key[0] == tenant_id and key not in self._deleted_customers
+        ]
         if query:
             term = query.strip().lower()
             rows = [
@@ -94,14 +104,21 @@ class InMemoryCrmRepo(CrmRepo):
 
     def find_customer_by_phone(self, tenant_id: str, phone: str) -> Customer | None:
         phone_norm = phone.strip()
-        for (t, _), c in self._customers.items():
+        for key, c in self._customers.items():
+            if key in self._deleted_customers:
+                continue
+            t = key[0]
             if t == tenant_id and c.phone == phone_norm:
                 return c
         return None
 
 #################### tiers
     def count_customers(self, tenant_id: str, *, query: str | None = None, stage: str | None = None) -> int:
-        rows = [c for (t, _), c in self._customers.items() if t == tenant_id]
+        rows = [
+            c
+            for key, c in self._customers.items()
+            if key[0] == tenant_id and key not in self._deleted_customers
+        ]
         if query:
             term = query.strip().lower()
             rows = [
@@ -123,5 +140,11 @@ class InMemoryCrmRepo(CrmRepo):
         return len(rows)
 
     def delete_customer(self, tenant_id: str, customer_id: str) -> None:
-        self._customers.pop((tenant_id, customer_id), None)
-        self._interactions.pop((tenant_id, customer_id), None)
+        key = (tenant_id, customer_id)
+        if key in self._customers:
+            self._deleted_customers.add(key)
+
+    def restore_customer(self, tenant_id: str, customer_id: str) -> None:
+        key = (tenant_id, customer_id)
+        if key in self._customers:
+            self._deleted_customers.discard(key)

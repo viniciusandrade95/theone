@@ -6,6 +6,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 
 from core.errors import NotFoundError
+from modules.audit.logging import record_audit_log, snapshot_orm
 from modules.crm.models.location_orm import LocationORM
 
 
@@ -68,6 +69,15 @@ class LocationsRepo:
         )
         self.session.add(location)
         self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=location.tenant_id,
+            action="created",
+            entity_type="location",
+            entity_id=location.id,
+            before=None,
+            after=snapshot_orm(location),
+        )
         return location
 
     def list_locations(
@@ -108,8 +118,9 @@ class LocationsRepo:
             .where(LocationORM.deleted_at.is_(None))
             .where(LocationORM.is_active.is_(True))
             .order_by(LocationORM.created_at.asc())
+            .limit(1)
         )
-        return self.session.execute(stmt).scalar_one_or_none()
+        return self.session.execute(stmt).scalars().first()
 
     def ensure_default_location(self, tenant_id: str, default_timezone: str = "UTC") -> LocationORM:
         current = self.get_default_location(tenant_id)
@@ -129,6 +140,7 @@ class LocationsRepo:
         location = self.get_location(tenant_id, location_id, include_deleted=True)
         if location is None:
             raise NotFoundError("location_not_found", meta={"location_id": location_id})
+        before = snapshot_orm(location)
 
         for key, value in patch.items():
             if key == "email":
@@ -139,15 +151,36 @@ class LocationsRepo:
                 setattr(location, key, value)
         location.updated_at = datetime.now(timezone.utc)
         self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=location.tenant_id,
+            action="updated",
+            entity_type="location",
+            entity_id=location.id,
+            before=before,
+            after=snapshot_orm(location),
+        )
         return location
 
     def delete_location(self, tenant_id: str, location_id: str) -> None:
         location = self.get_location(tenant_id, location_id, include_deleted=True)
         if location is None:
             raise NotFoundError("location_not_found", meta={"location_id": location_id})
+        if location.deleted_at is not None:
+            return
 
+        before = snapshot_orm(location)
         now = datetime.now(timezone.utc)
         location.is_active = False
         location.deleted_at = now
         location.updated_at = now
         self.session.flush()
+        record_audit_log(
+            self.session,
+            tenant_id=location.tenant_id,
+            action="deleted",
+            entity_type="location",
+            entity_id=location.id,
+            before=before,
+            after=snapshot_orm(location),
+        )

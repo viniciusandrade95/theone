@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../../lib/api";
+import { getApiErrorMessage } from "../../lib/api-errors";
 import { setAuthToken, setTenantId } from "../../lib/auth";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -48,11 +49,7 @@ export default function RegisterPage() {
       setTenantId(tenantId);
       router.push("/dashboard");
     } catch (registerError) {
-      const message =
-        registerError instanceof Error
-          ? registerError.message
-          : "Registration failed. Please try again.";
-      setError(message);
+      setError(getApiErrorMessage(registerError, "Registration failed. Please try again."));
     } finally {
       setIsSubmitting(false);
     }

@@ -286,6 +286,13 @@ def delete_customer(customer_id: str, request: Request, _tenant=Depends(require_
     return {"status": "deleted"}
 
 
+@router.post("/customers/{customer_id}/restore")
+def restore_customer(customer_id: str, request: Request, _tenant=Depends(require_tenant_header), _user=Depends(require_user)):
+    c = request.app.state.container
+    cust = c.crm.restore_customer(customer_id=customer_id)
+    return _to_customer_out(cust)
+
+
 @router.post("/customers/{customer_id}/interactions")
 def add_interaction(customer_id: str, payload: AddInteractionIn, request: Request, _tenant=Depends(require_tenant_header), _user=Depends(require_user)):
     c = request.app.state.container
@@ -724,6 +731,18 @@ def delete_service(service_id: str, _tenant=Depends(require_tenant_header), _use
     return {"ok": True}
 
 
+@router.post("/services/{service_id}/restore", response_model=ServiceOut)
+def restore_service(service_id: str, _tenant=Depends(require_tenant_header), _user=Depends(require_user)):
+    tenant_id = uuid.UUID(require_tenant_id())
+    with db_session() as session:
+        repo = ServicesRepo(session)
+        try:
+            service = repo.restore(tenant_id=tenant_id, service_id=uuid.UUID(service_id))
+        except NotFoundError as err:
+            raise HTTPException(status_code=404, detail=err.message)
+        return _to_service_out(service)
+
+
 @router.get("/appointments", response_model=AppointmentListOut)
 def list_appointments(
     page: int = Query(default=1, ge=1),
@@ -891,3 +910,15 @@ def delete_appointment(appointment_id: str, _tenant=Depends(require_tenant_heade
         except NotFoundError as err:
             raise HTTPException(status_code=404, detail=err.message)
     return {"ok": True}
+
+
+@router.post("/appointments/{appointment_id}/restore", response_model=AppointmentOut)
+def restore_appointment(appointment_id: str, _tenant=Depends(require_tenant_header), _user=Depends(require_user)):
+    tenant_id = uuid.UUID(require_tenant_id())
+    with db_session() as session:
+        repo = AppointmentsRepo(session)
+        try:
+            appointment = repo.restore(tenant_id=tenant_id, appointment_id=uuid.UUID(appointment_id))
+        except NotFoundError as err:
+            raise HTTPException(status_code=404, detail=err.message)
+        return _to_appointment_out(appointment)

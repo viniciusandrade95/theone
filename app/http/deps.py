@@ -1,5 +1,6 @@
 from fastapi import Depends, Header, Request
 from core.tenancy import set_tenant_id, clear_tenant_id, require_tenant_id
+from core.auth import set_current_user_id
 from core.config import get_config
 from core.errors import UnauthorizedError, ValidationError
 from app.auth_tokens import verify_token
@@ -38,6 +39,8 @@ def require_user(request: Request, authorization: str | None = Header(default=No
     tenant_id = require_tenant_id()
     if parsed.tenant_id != tenant_id:
         raise UnauthorizedError("tenant_mismatch")
+
+    set_current_user_id(parsed.user_id)
 
     # devolve identity mínima
     return {"user_id": parsed.user_id, "tenant_id": parsed.tenant_id}
