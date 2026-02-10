@@ -19,6 +19,7 @@ class Customer:
     consent_marketing: bool
     stage: PipelineStage
     created_at: datetime
+    consent_marketing_at: datetime | None = None
 
     @staticmethod
     def create(
@@ -31,6 +32,7 @@ class Customer:
         tags: set[str] | None = None,
         consent_marketing: bool = False,
         stage: PipelineStage = PipelineStage.LEAD,
+        consent_marketing_at: datetime | None = None,
     ) -> "Customer":
         if not tenant_id or tenant_id.strip() == "":
             raise ValidationError("tenant_id is required")
@@ -54,6 +56,7 @@ class Customer:
             consent_marketing=bool(consent_marketing),
             stage=stage,
             created_at=_now(),
+            consent_marketing_at=consent_marketing_at,
         )
 
     def with_tags(self, tags: set[str]) -> "Customer":
@@ -68,6 +71,7 @@ class Customer:
             consent_marketing=self.consent_marketing,
             stage=self.stage,
             created_at=self.created_at,
+            consent_marketing_at=self.consent_marketing_at,
         )
 
     def with_stage(self, stage: PipelineStage) -> "Customer":
@@ -81,6 +85,7 @@ class Customer:
             consent_marketing=self.consent_marketing,
             stage=stage,
             created_at=self.created_at,
+            consent_marketing_at=self.consent_marketing_at,
         )
 
     def with_updates(
@@ -91,6 +96,7 @@ class Customer:
         email: str | None = None,
         tags: set[str] | None = None,
         consent_marketing: bool | None = None,
+        stage: PipelineStage | None = None,
     ) -> "Customer":
         new_name = self.name if name is None else name
         if not new_name or new_name.strip() == "":
@@ -110,6 +116,7 @@ class Customer:
             email=new_email.strip().lower() if new_email and new_email.strip() != "" else (None if new_email is not None else self.email),
             tags=new_tags,
             consent_marketing=self.consent_marketing if consent_marketing is None else bool(consent_marketing),
-            stage=self.stage,
+            stage=self.stage if stage is None else stage,
             created_at=self.created_at,
+            consent_marketing_at=self.consent_marketing_at,
         )

@@ -1,10 +1,13 @@
 import RequireAuth from "@/components/RequireAuth";
-import DashboardShell from "@/components/DashboardShell";
+import { DashboardLayout as DashboardAppLayout } from "@/components/dashboard/DashboardLayout";
+import { DefaultLocationProvider } from "@/lib/default-location";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardRouteLayout({ children }: { children: React.ReactNode }) {
   return (
     <RequireAuth>
-      <DashboardShell>{children}</DashboardShell>
+      <DefaultLocationProvider>
+        <DashboardAppLayout>{children}</DashboardAppLayout>
+      </DefaultLocationProvider>
     </RequireAuth>
   );
 }

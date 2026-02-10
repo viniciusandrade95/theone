@@ -7,9 +7,10 @@ function join(base: string, path: string) {
 }
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get("token");
+  const token = request.cookies.get("token")?.value;
+  const tenantId = request.cookies.get("tenant_id")?.value;
 
-  if (!token && !request.nextUrl.pathname.startsWith(join(request.nextUrl.basePath ?? "", "/login"))) {
+  if ((!token || !tenantId) && !request.nextUrl.pathname.startsWith(join(request.nextUrl.basePath ?? "", "/login"))) {
     const url = request.nextUrl.clone();
     url.pathname = join(request.nextUrl.basePath ?? "", "/login");
     return NextResponse.redirect(url);

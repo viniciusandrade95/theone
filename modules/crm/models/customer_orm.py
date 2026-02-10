@@ -1,6 +1,6 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.sql import func
 
 from core.db.base import Base
@@ -27,13 +27,14 @@ class CustomerORM(Base):
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True)
 
-    tags = Column(ARRAY(String), nullable=False, default=list)
+    tags = Column(JSON().with_variant(ARRAY(String), "postgresql"), nullable=False, default=list)
 
     consent_marketing = Column(Boolean, nullable=False, default=False)
+    consent_marketing_at = Column(DateTime(timezone=True), nullable=True)
 
     stage = Column(String, nullable=False)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     def to_domain(self) -> Customer:
         return Customer(
@@ -46,4 +47,5 @@ class CustomerORM(Base):
             consent_marketing=self.consent_marketing,
             stage=PipelineStage(self.stage),
             created_at=self.created_at,
+            consent_marketing_at=self.consent_marketing_at,
         )

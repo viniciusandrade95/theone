@@ -11,10 +11,9 @@ from core.db.session import db_session
 from core.security.hashing import verify_password
 
 from app.http.deps import require_tenant_header, require_user
+from modules.crm.repo_locations import LocationsRepo
 from modules.iam.service.auth_service import AuthService
-
-from fastapi import HTTPException
-from app.auth_tokens import verify_preauth_token
+from modules.tenants.repo.settings_sql import SqlTenantSettingsRepo
 
 
 router = APIRouter(tags=["auth"])
@@ -69,6 +68,15 @@ class SelectWorkspaceIn(BaseModel):
     tenant_id: UUID
 
 
+def _ensure_default_location(tenant_id: str) -> None:
+    with db_session() as session:
+        location = LocationsRepo(session).ensure_default_location(tenant_id)
+        settings_repo = SqlTenantSettingsRepo(session)
+        settings = settings_repo.get_or_create(tenant_id=tenant_id)
+        if settings.default_location_id != location.id:
+            settings_repo.update(tenant_id=tenant_id, patch={"default_location_id": str(location.id)})
+
+
 @router.post("/register", response_model=AuthOut)
 def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tenant_header)):
     c = request.app.state.container
@@ -78,6 +86,7 @@ def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tena
 
     svc = AuthService(c.users_repo, c.billing)
     user = svc.register(email=str(payload.email), password=payload.password)
+    _ensure_default_location(tenant_id)
 
     cfg = get_config()
     token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user.id)
@@ -93,11 +102,12 @@ def signup(payload: SignupIn, request: Request):
     # IMPORTANT: set tenant context BEFORE opening db_session()
     set_tenant_id(tenant_id)
     try:
-        with db_session():
+        with db_session() as session:
             tenant = c.tenant_service.create_tenant(tenant_id, name=payload.tenant_name)
 
             svc = AuthService(c.users_repo, c.billing)
             user = svc.register(email=str(payload.email), password=payload.password)
+            LocationsRepo(session).ensure_default_location(tenant.id)
     finally:
         clear_tenant_id()
 
@@ -115,6 +125,7 @@ def login(payload: RegisterIn, request: Request, _tenant=Depends(require_tenant_
 
     cfg = get_config()
     tenant_id = require_tenant_id()
+    _ensure_default_location(tenant_id)
     token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user.id)
     return AuthOut(user_id=user.id, tenant_id=tenant_id, email=user.email, token=token)
 
@@ -149,6 +160,7 @@ def login_email(payload: LoginEmailIn, request: Request):
 
     if len(valid) == 1:
         u = valid[0]
+        _ensure_default_location(u.tenant_id)
         token = issue_token(secret=cfg.SECRET_KEY, tenant_id=u.tenant_id, user_id=u.id)
         return LoginEmailOut(
             mode="authenticated",
@@ -171,6 +183,9 @@ def login_email(payload: LoginEmailIn, request: Request):
             uniq.append(w)
             seen.add(w.tenant_id)
 
+    for w in uniq:
+        _ensure_default_location(str(w.tenant_id))
+
     return LoginEmailOut(mode="select_workspace", preauth_token=preauth, workspaces=uniq)
 
 
@@ -191,6 +206,7 @@ def select_workspace(payload: SelectWorkspaceIn, request: Request):
         raise HTTPException(status_code=403, detail="Workspace not allowed")
 
     user_id = allowed[tenant_id]
+    _ensure_default_location(tenant_id)
     token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user_id)
 
     return AuthOut(user_id=user_id, tenant_id=tenant_id, email=preauth.email, token=token)

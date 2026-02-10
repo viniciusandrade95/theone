@@ -39,16 +39,16 @@ export default function WhatsAppAccountsPage() {
     <div className="space-y-6">
       <div>
         <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">WhatsApp Accounts</h1>
-        <p className="mt-2 text-sm text-slate-300">
+        <h1 className="text-3xl font-semibold text-slate-900">WhatsApp Accounts</h1>
+        <p className="mt-2 text-sm text-slate-500">
           Map provider phone number IDs to tenants so inbound webhooks resolve safely.
         </p>
       </div>
 
-      <Card className="border-slate-800 bg-slate-900/60 p-6">
+      <Card className="p-6">
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="grid gap-2">
-            <label className="text-sm text-slate-300" htmlFor="provider">Provider</label>
+            <label className="text-sm text-slate-700" htmlFor="provider">Provider</label>
             <Input
               id="provider"
               value={provider}
@@ -58,7 +58,7 @@ export default function WhatsAppAccountsPage() {
             />
           </div>
           <div className="grid gap-2">
-            <label className="text-sm text-slate-300" htmlFor="phoneNumberId">Phone Number ID</label>
+            <label className="text-sm text-slate-700" htmlFor="phoneNumberId">Phone Number ID</label>
             <Input
               id="phoneNumberId"
               value={phoneNumberId}
@@ -68,7 +68,7 @@ export default function WhatsAppAccountsPage() {
             />
           </div>
           <div className="grid gap-2">
-            <label className="text-sm text-slate-300" htmlFor="status">Status</label>
+            <label className="text-sm text-slate-700" htmlFor="status">Status</label>
             <Input
               id="status"
               value={status}
@@ -83,8 +83,8 @@ export default function WhatsAppAccountsPage() {
         </form>
       </Card>
 
-      {message ? <p className="text-sm text-emerald-400">{message}</p> : null}
-      {error ? <p className="text-sm text-rose-400">{error}</p> : null}
+      {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
+      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
     </div>
   );
 }

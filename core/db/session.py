@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from contextlib import contextmanager
 from sqlalchemy import text
+from sqlalchemy.pool import StaticPool
 from contextvars import ContextVar
 
 from core.tenancy import get_tenant_id
@@ -11,13 +12,29 @@ from core.db.base import Base
 
 _engine = None
 _SessionLocal = None
+_engine_url: str | None = None
+_schema_ready = False
 _current_session: ContextVar[Session | None] = ContextVar("db_session", default=None)
+
+
+def reset_engine_state() -> None:
+    global _engine, _SessionLocal, _engine_url, _schema_ready
+    if _engine is not None:
+        _engine.dispose()
+    _engine = None
+    _SessionLocal = None
+    _engine_url = None
+    _schema_ready = False
 
 
 def _initialize_schema(engine) -> None:
     from modules.tenants.models.tenant_orm import TenantORM  # noqa: F401
+    from modules.tenants.models.tenant_settings_orm import TenantSettingsORM  # noqa: F401
     from modules.crm.models.customer_orm import CustomerORM  # noqa: F401
     from modules.crm.models.interaction_orm import InteractionORM  # noqa: F401
+    from modules.crm.models.location_orm import LocationORM  # noqa: F401
+    from modules.crm.models.service_orm import ServiceORM  # noqa: F401
+    from modules.crm.models.appointment_orm import AppointmentORM  # noqa: F401
     from modules.iam.models.user_orm import UserORM  # noqa: F401
     from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM  # noqa: F401
     from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa: F401
@@ -28,21 +45,27 @@ def _initialize_schema(engine) -> None:
 
 
 def _get_engine():
-    global _engine, _SessionLocal
+    global _engine, _SessionLocal, _engine_url, _schema_ready
 
-    if _engine is None:
-        cfg = get_config()
-        database_url = cfg.DATABASE_URL
-        if database_url == "dev":
-            database_url = "sqlite+pysqlite:///:memory:"
-        _engine = create_engine(
-            database_url,
-            pool_pre_ping=True,
-        )
+    cfg = get_config()
+    database_url = cfg.DATABASE_URL
+    if database_url == "dev":
+        database_url = "sqlite+pysqlite:///:memory:"
+
+    if _engine is None or _engine_url != database_url:
+        engine_kwargs = {"pool_pre_ping": True}
+        if database_url.startswith("sqlite"):
+            engine_kwargs["connect_args"] = {"check_same_thread": False}
+            if ":memory:" in database_url:
+                engine_kwargs["poolclass"] = StaticPool
+        _engine = create_engine(database_url, **engine_kwargs)
         _SessionLocal = sessionmaker(bind=_engine)
-        # if cfg.ENV == "test" or cfg.DATABASE_URL == "dev":
-        if cfg.DATABASE_URL == "dev":
-            _initialize_schema(_engine)
+        _engine_url = database_url
+        _schema_ready = False
+
+    if cfg.DATABASE_URL == "dev" and not _schema_ready:
+        _initialize_schema(_engine)
+        _schema_ready = True
 
     return _engine
 

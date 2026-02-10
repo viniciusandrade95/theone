@@ -17,22 +17,38 @@ class CrmRepo(ABC):
         self,
         tenant_id: str,
         *,
-        limit: int | None = None,
-        offset: int | None = None,
-        search: str | None = None,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        stage: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
     ) -> list[Customer]: ...
 
     @abstractmethod
     def add_interaction(self, interaction: Interaction) -> None: ...
 
     @abstractmethod
-    def list_interactions(self, tenant_id: str, customer_id: str) -> list[Interaction]: ...
+    def list_interactions(
+        self,
+        tenant_id: str,
+        customer_id: str,
+        *,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
+    ) -> list[Interaction]: ...
 
     @abstractmethod
     def find_customer_by_phone(self, tenant_id: str, phone: str) -> Customer | None: ...
 
     @abstractmethod
-    def count_customers(self, tenant_id: str, *, search: str | None = None) -> int: ...
+    def count_customers(self, tenant_id: str, *, query: str | None = None, stage: str | None = None) -> int: ...
+
+    @abstractmethod
+    def count_interactions(self, tenant_id: str, customer_id: str, *, query: str | None = None) -> int: ...
 
     @abstractmethod
     def delete_customer(self, tenant_id: str, customer_id: str) -> None: ...

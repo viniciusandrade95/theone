@@ -8,8 +8,12 @@ from core.db.base import Base
 
 # IMPORTA MODELS PARA AUTOGENERATE
 from modules.tenants.models.tenant_orm import TenantORM  # noqa
+from modules.tenants.models.tenant_settings_orm import TenantSettingsORM  # noqa
 from modules.crm.models.customer_orm import CustomerORM  # noqa
 from modules.crm.models.interaction_orm import InteractionORM  # noqa
+from modules.crm.models.location_orm import LocationORM  # noqa
+from modules.crm.models.service_orm import ServiceORM  # noqa
+from modules.crm.models.appointment_orm import AppointmentORM  # noqa
 from modules.iam.models.user_orm import UserORM  # noqa
 from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM  # noqa
 from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa

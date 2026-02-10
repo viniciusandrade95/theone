@@ -1,8 +1,0 @@
-export default function AppointmentsPage() {
-  return (
-    <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
-      <div className="text-lg font-semibold text-slate-900">Appointments</div>
-      <div className="mt-2 text-sm text-slate-600">Coming next.</div>
-    </div>
-  );
-}

@@ -1,21 +1,12 @@
-# main.py / app.py / server.py
+"""
+Compatibility ASGI entrypoint.
 
-from core.config import load_config
+Supports:
+- uvicorn main:app
+- uvicorn main:main
+"""
 
-def bootstrap():
-    load_config()        # ← AQUI
-    start_http_server()  # framework / router / etc
+from app.http.main import app_factory
 
-# bootstrap()
-
-# main.py
-
-from core.config import load_config
-
-def main():
-    load_config()
-    print("Application started successfully")
-
-if __name__ == "__main__":
-    main()
-
+app = app_factory()
+main = app

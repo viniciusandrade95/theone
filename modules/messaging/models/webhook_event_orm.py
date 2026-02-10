@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.sql import func
 
@@ -17,7 +17,7 @@ class WebhookEventORM(Base):
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
     provider = Column(String, nullable=False)
     external_event_id = Column(String, nullable=False)
-    payload = Column(JSONB, nullable=False)
+    payload = Column(JSON().with_variant(JSONB, "postgresql"), nullable=False)
     signature_valid = Column(Boolean, nullable=False)
     status = Column(String, nullable=False, default="received")
     received_at = Column(DateTime(timezone=True), server_default=func.now())

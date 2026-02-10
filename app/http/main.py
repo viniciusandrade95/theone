@@ -6,6 +6,7 @@ from core.config import load_config, get_config
 from core.tenancy import set_tenant_id, clear_tenant_id
 from core.errors import to_http_error
 from core.errors.base import AppError
+from core.db.session import reset_engine_state
 
 from app.container import build_container
 from app.http.routes.auth import router as auth_router
@@ -16,20 +17,19 @@ from app.http.routes.messaging import router as messaging_router
 from app.http.routes.tenants import router as tenants_router
 
 
-load_config()
-
 def create_app() -> FastAPI:
-    
+    load_config()
     cfg = get_config()
+
+    if cfg.ENV == "test" and cfg.DATABASE_URL == "dev":
+        reset_engine_state()
 
     app = FastAPI(title=cfg.APP_NAME)
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-        ],
+        allow_origins=list(cfg.CORS_ALLOW_ORIGINS),
+        allow_origin_regex=cfg.CORS_ALLOW_ORIGIN_REGEX,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -49,6 +49,9 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def tenancy_middleware(request: Request, call_next):
+        # CORS preflight requests do not include tenant headers.
+        if request.method == "OPTIONS":
+            return await call_next(request)
        
         if request.url.path in ("/docs", "/openapi.json", "/redoc"):
             return await call_next(request)
@@ -99,7 +102,5 @@ def app_factory():
     return create_app()
 
 
-#app = create_app()
-
-# For uvicorn: "uvicorn app.http.main:app"
+# For uvicorn: "uvicorn app.http.main:app_factory --factory"
 app = None  # type: ignore

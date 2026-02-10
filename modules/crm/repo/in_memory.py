@@ -27,13 +27,16 @@ class InMemoryCrmRepo(CrmRepo):
         self,
         tenant_id: str,
         *,
-        limit: int | None = None,
-        offset: int | None = None,
-        search: str | None = None,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        stage: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
     ) -> list[Customer]:
         rows = [c for (t, _), c in self._customers.items() if t == tenant_id]
-        if search:
-            term = search.strip().lower()
+        if query:
+            term = query.strip().lower()
             rows = [
                 c
                 for c in rows
@@ -41,17 +44,50 @@ class InMemoryCrmRepo(CrmRepo):
                 or (c.email and term in c.email.lower())
                 or (c.phone and term in c.phone.lower())
             ]
-        rows.sort(key=lambda c: c.created_at, reverse=True)
-        start = offset or 0
-        end = start + limit if limit is not None else None
+        if stage:
+            rows = [c for c in rows if c.stage.value == stage]
+        if sort == "name":
+            rows.sort(key=lambda c: c.name.lower(), reverse=(order.lower() == "desc"))
+        elif sort == "email":
+            rows.sort(key=lambda c: (c.email or "").lower(), reverse=(order.lower() == "desc"))
+        elif sort == "phone":
+            rows.sort(key=lambda c: (c.phone or "").lower(), reverse=(order.lower() == "desc"))
+        else:
+            rows.sort(key=lambda c: c.created_at, reverse=(order.lower() == "desc"))
+        start = (page - 1) * page_size
+        end = start + page_size
         return rows[start:end]
 
     def add_interaction(self, interaction: Interaction) -> None:
         key = (interaction.tenant_id, interaction.customer_id)
         self._interactions.setdefault(key, []).append(interaction)
 
-    def list_interactions(self, tenant_id: str, customer_id: str) -> list[Interaction]:
-        return list(self._interactions.get((tenant_id, customer_id), []))
+    def list_interactions(
+        self,
+        tenant_id: str,
+        customer_id: str,
+        *,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
+    ) -> list[Interaction]:
+        rows = list(self._interactions.get((tenant_id, customer_id), []))
+        if query:
+            term = query.strip().lower()
+            rows = [
+                i
+                for i in rows
+                if term in i.type.lower() or term in i.content.lower()
+            ]
+        if sort == "type":
+            rows.sort(key=lambda i: i.type.lower(), reverse=(order.lower() == "desc"))
+        else:
+            rows.sort(key=lambda i: i.created_at, reverse=(order.lower() == "desc"))
+        start = (page - 1) * page_size
+        end = start + page_size
+        return rows[start:end]
 
 
 ###################### messaging
@@ -64,8 +100,27 @@ class InMemoryCrmRepo(CrmRepo):
         return None
 
 #################### tiers
-    def count_customers(self, tenant_id: str, *, search: str | None = None) -> int:
-        return len(self.list_customers(tenant_id, search=search))
+    def count_customers(self, tenant_id: str, *, query: str | None = None, stage: str | None = None) -> int:
+        rows = [c for (t, _), c in self._customers.items() if t == tenant_id]
+        if query:
+            term = query.strip().lower()
+            rows = [
+                c
+                for c in rows
+                if term in c.name.lower()
+                or (c.email and term in c.email.lower())
+                or (c.phone and term in c.phone.lower())
+            ]
+        if stage:
+            rows = [c for c in rows if c.stage.value == stage]
+        return len(rows)
+
+    def count_interactions(self, tenant_id: str, customer_id: str, *, query: str | None = None) -> int:
+        rows = list(self._interactions.get((tenant_id, customer_id), []))
+        if query:
+            term = query.strip().lower()
+            rows = [i for i in rows if term in i.type.lower() or term in i.content.lower()]
+        return len(rows)
 
     def delete_customer(self, tenant_id: str, customer_id: str) -> None:
         self._customers.pop((tenant_id, customer_id), None)

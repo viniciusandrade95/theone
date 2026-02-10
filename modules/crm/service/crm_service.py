@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from core.errors import NotFoundError, ValidationError
 from core.tenancy import require_tenant_id
 from modules.crm.models import Customer, Interaction, PipelineStage
@@ -27,6 +28,8 @@ class CrmService:
         email: str | None = None,
         tags: set[str] | None = None,
         consent_marketing: bool = False,
+        consent_marketing_at: datetime | None = None,
+        stage: PipelineStage = PipelineStage.LEAD,
     ) -> Customer:
         tenant_id = require_tenant_id()
         current = self.repo.count_customers(tenant_id)
@@ -42,6 +45,8 @@ class CrmService:
             email=email,
             tags=tags or set(),
             consent_marketing=consent_marketing,
+            consent_marketing_at=consent_marketing_at,
+            stage=stage,
         )
         self.repo.create_customer(customer)
         return customer
@@ -56,16 +61,27 @@ class CrmService:
     def list_customers(
         self,
         *,
-        limit: int | None = None,
-        offset: int | None = None,
-        search: str | None = None,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        stage: PipelineStage | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
     ) -> list[Customer]:
         tenant_id = require_tenant_id()
-        return self.repo.list_customers(tenant_id, limit=limit, offset=offset, search=search)
+        return self.repo.list_customers(
+            tenant_id,
+            page=page,
+            page_size=page_size,
+            query=query,
+            stage=stage.value if stage else None,
+            sort=sort,
+            order=order,
+        )
 
-    def count_customers(self, *, search: str | None = None) -> int:
+    def count_customers(self, *, query: str | None = None, stage: PipelineStage | None = None) -> int:
         tenant_id = require_tenant_id()
-        return self.repo.count_customers(tenant_id, search=search)
+        return self.repo.count_customers(tenant_id, query=query, stage=stage.value if stage else None)
 
     def update_customer(
         self,
@@ -76,6 +92,7 @@ class CrmService:
         email: str | None = None,
         tags: set[str] | None = None,
         consent_marketing: bool | None = None,
+        stage: PipelineStage | None = None,
     ) -> Customer:
         customer = self.get_customer(customer_id=customer_id)
         updated = customer.with_updates(
@@ -84,6 +101,7 @@ class CrmService:
             email=email,
             tags=tags,
             consent_marketing=consent_marketing,
+            stage=stage,
         )
         self.repo.update_customer(updated)
         return updated
@@ -109,10 +127,32 @@ class CrmService:
         self.repo.add_interaction(interaction)
         return interaction
 
-    def list_interactions(self, *, customer_id: str) -> list[Interaction]:
+    def list_interactions(
+        self,
+        *,
+        customer_id: str,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
+    ) -> list[Interaction]:
         tenant_id = require_tenant_id()
         _ = self.get_customer(customer_id=customer_id)
-        return self.repo.list_interactions(tenant_id, customer_id)
+        return self.repo.list_interactions(
+            tenant_id,
+            customer_id,
+            page=page,
+            page_size=page_size,
+            query=query,
+            sort=sort,
+            order=order,
+        )
+
+    def count_interactions(self, *, customer_id: str, query: str | None = None) -> int:
+        tenant_id = require_tenant_id()
+        _ = self.get_customer(customer_id=customer_id)
+        return self.repo.count_interactions(tenant_id, customer_id, query=query)
 
     def move_stage(self, *, customer_id: str, to_stage: PipelineStage) -> Customer:
         customer = self.get_customer(customer_id=customer_id)

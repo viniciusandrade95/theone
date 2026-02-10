@@ -1,7 +1,8 @@
 from uuid import UUID
 
-from sqlalchemy import select, func, or_
+from sqlalchemy import String, cast, select, func, or_
 from core.db.session import db_session
+from core.errors import ValidationError
 from modules.crm.repo.crm_repo import CrmRepo
 from modules.crm.models.customer_orm import CustomerORM
 from modules.crm.models.interaction_orm import InteractionORM
@@ -10,6 +11,17 @@ from modules.crm.models.interaction import Interaction
 
 
 class SqlCrmRepo(CrmRepo):
+    _CUSTOMER_SORT_FIELDS = {
+        "created_at": CustomerORM.created_at,
+        "name": CustomerORM.name,
+        "email": CustomerORM.email,
+        "phone": CustomerORM.phone,
+    }
+    _INTERACTION_SORT_FIELDS = {
+        "created_at": InteractionORM.created_at,
+        "type": InteractionORM.type,
+    }
+
     def _coerce_uuid(self, value: str):
         try:
             return UUID(value)
@@ -30,6 +42,7 @@ class SqlCrmRepo(CrmRepo):
                 email=customer.email,
                 tags=list(customer.tags),
                 consent_marketing=customer.consent_marketing,
+                consent_marketing_at=customer.consent_marketing_at,
                 stage=customer.stage.value,
             )
             session.add(orm)
@@ -63,14 +76,27 @@ class SqlCrmRepo(CrmRepo):
         self,
         tenant_id: str,
         *,
-        limit: int | None = None,
-        offset: int | None = None,
-        search: str | None = None,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        stage: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
     ) -> list[Customer]:
+        sort_column = self._CUSTOMER_SORT_FIELDS.get(sort)
+        if sort_column is None:
+            raise ValidationError(
+                "invalid_sort_field",
+                meta={"sort": sort, "allowed": sorted(self._CUSTOMER_SORT_FIELDS.keys())},
+            )
+        sort_order = order.lower()
+        if sort_order not in {"asc", "desc"}:
+            raise ValidationError("invalid_sort_order", meta={"order": order, "allowed": ["asc", "desc"]})
+
         with db_session() as session:
             stmt = select(CustomerORM).where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
-            if search:
-                term = f"%{search.strip().lower()}%"
+            if query:
+                term = f"%{query.strip().lower()}%"
                 stmt = stmt.where(
                     or_(
                         func.lower(CustomerORM.name).like(term),
@@ -78,23 +104,26 @@ class SqlCrmRepo(CrmRepo):
                         func.lower(CustomerORM.phone).like(term),
                     )
                 )
-            stmt = stmt.order_by(CustomerORM.created_at.desc())
-            if offset:
-                stmt = stmt.offset(offset)
-            if limit:
-                stmt = stmt.limit(limit)
+            if stage:
+                stmt = stmt.where(CustomerORM.stage == stage)
+            if sort_order == "desc":
+                stmt = stmt.order_by(sort_column.desc())
+            else:
+                stmt = stmt.order_by(sort_column.asc())
+            offset = (page - 1) * page_size
+            stmt = stmt.offset(offset).limit(page_size)
             rows = session.execute(stmt).scalars().all()
             return [self._to_domain(r) for r in rows]
 
-    def count_customers(self, tenant_id: str, *, search: str | None = None) -> int:
+    def count_customers(self, tenant_id: str, *, query: str | None = None, stage: str | None = None) -> int:
         with db_session() as session:
             stmt = (
                 select(func.count())
                 .select_from(CustomerORM)
                 .where(CustomerORM.tenant_id == self._coerce_uuid(tenant_id))
             )
-            if search:
-                term = f"%{search.strip().lower()}%"
+            if query:
+                term = f"%{query.strip().lower()}%"
                 stmt = stmt.where(
                     or_(
                         func.lower(CustomerORM.name).like(term),
@@ -102,6 +131,8 @@ class SqlCrmRepo(CrmRepo):
                         func.lower(CustomerORM.phone).like(term),
                     )
                 )
+            if stage:
+                stmt = stmt.where(CustomerORM.stage == stage)
             return session.execute(stmt).scalar_one()
 
     def update_customer(self, customer: Customer) -> None:
@@ -119,6 +150,7 @@ class SqlCrmRepo(CrmRepo):
             orm.tags = list(customer.tags)
             orm.stage = customer.stage.value
             orm.consent_marketing = customer.consent_marketing
+            orm.consent_marketing_at = customer.consent_marketing_at
 
     def delete_customer(self, tenant_id: str, customer_id: str) -> None:
         with db_session() as session:
@@ -146,16 +178,67 @@ class SqlCrmRepo(CrmRepo):
             )
             session.add(orm)
 
-    def list_interactions(self, tenant_id: str, customer_id: str) -> list[Interaction]:
+    def list_interactions(
+        self,
+        tenant_id: str,
+        customer_id: str,
+        *,
+        page: int = 1,
+        page_size: int = 25,
+        query: str | None = None,
+        sort: str = "created_at",
+        order: str = "desc",
+    ) -> list[Interaction]:
+        sort_column = self._INTERACTION_SORT_FIELDS.get(sort)
+        if sort_column is None:
+            raise ValidationError(
+                "invalid_sort_field",
+                meta={"sort": sort, "allowed": sorted(self._INTERACTION_SORT_FIELDS.keys())},
+            )
+        sort_order = order.lower()
+        if sort_order not in {"asc", "desc"}:
+            raise ValidationError("invalid_sort_order", meta={"order": order, "allowed": ["asc", "desc"]})
+
         with db_session() as session:
             stmt = (
                 select(InteractionORM)
                 .where(InteractionORM.tenant_id == self._coerce_uuid(tenant_id))
                 .where(InteractionORM.customer_id == self._coerce_uuid(customer_id))
-                .order_by(InteractionORM.created_at.desc())
             )
+            if query:
+                term = f"%{query.strip().lower()}%"
+                stmt = stmt.where(
+                    or_(
+                        func.lower(InteractionORM.type).like(term),
+                        func.lower(cast(InteractionORM.payload, String)).like(term),
+                    )
+                )
+            if sort_order == "desc":
+                stmt = stmt.order_by(sort_column.desc())
+            else:
+                stmt = stmt.order_by(sort_column.asc())
+            offset = (page - 1) * page_size
+            stmt = stmt.offset(offset).limit(page_size)
             rows = session.execute(stmt).scalars().all()
             return [i.to_domain() for i in rows]
+
+    def count_interactions(self, tenant_id: str, customer_id: str, *, query: str | None = None) -> int:
+        with db_session() as session:
+            stmt = (
+                select(func.count())
+                .select_from(InteractionORM)
+                .where(InteractionORM.tenant_id == self._coerce_uuid(tenant_id))
+                .where(InteractionORM.customer_id == self._coerce_uuid(customer_id))
+            )
+            if query:
+                term = f"%{query.strip().lower()}%"
+                stmt = stmt.where(
+                    or_(
+                        func.lower(InteractionORM.type).like(term),
+                        func.lower(cast(InteractionORM.payload, String)).like(term),
+                    )
+                )
+            return int(session.execute(stmt).scalar_one())
 
     # -------------------
     # Helpers
