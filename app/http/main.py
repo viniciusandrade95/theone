@@ -92,7 +92,7 @@ def create_app() -> FastAPI:
         if request.method == "OPTIONS":
             return await call_next(request)
        
-        if request.url.path in ("/docs", "/openapi.json", "/redoc", "/healthz"):
+        if request.url.path in ("/", "/docs", "/openapi.json", "/redoc", "/healthz", "/favicon.ico"):
             return await call_next(request)
 
         PUBLIC_PATHS = {

@@ -34,6 +34,9 @@ function appointmentHref(appointmentId: string) {
   return appPath(`/dashboard/appointments?appointment_id=${encoded}#appointment-${encoded}`);
 }
 
+const secondaryLinkClass =
+  "inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2";
+
 function StatCard({ label, value, hint }: { label: string; value: number; hint?: string }) {
   return (
     <Card>
@@ -177,11 +180,11 @@ export default function DashboardPage() {
         <CardHeader>
           <CardTitle>Quick actions</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
+      <CardContent className="flex flex-wrap gap-2">
           {quickActions.map((action) => (
-            <Button key={action.href} asChild variant="secondary">
-              <Link href={appPath(action.href)}>{action.label}</Link>
-            </Button>
+            <Link key={action.href} href={appPath(action.href)} className={secondaryLinkClass}>
+              {action.label}
+            </Link>
           ))}
         </CardContent>
       </Card>

@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: beauty-crm-api
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: ENV
+        value: production
+      - key: APP_NAME
+        value: beauty-crm
+      - key: TENANT_HEADER
+        value: X-Tenant-ID
+      # Set these in Render dashboard (do not commit real secrets):
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      # Important: set CORS_ALLOW_ORIGINS to your frontend Render URL, e.g.
+      # https://beauty-crm-frontend.onrender.com
+      - key: CORS_ALLOW_ORIGINS
+        sync: false
+
+  - type: web
+    name: beauty-crm-frontend
+    env: node
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- -H 0.0.0.0 -p $PORT
+    envVars:
+      # Set to the API Render URL, e.g. https://beauty-crm-api.onrender.com
+      - key: NEXT_PUBLIC_API_BASE_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+

@@ -3,7 +3,6 @@
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { appPath } from "@/lib/paths";
 
 export default function ImportCustomersPage() {
@@ -22,12 +21,14 @@ export default function ImportCustomersPage() {
           <p>
             For now, you can create customers manually. We will add a simple import flow in a follow-up PR.
           </p>
-          <Button asChild variant="secondary">
-            <Link href={appPath("/dashboard/customers/new")}>Create customer</Link>
-          </Button>
+          <Link
+            href={appPath("/dashboard/customers/new")}
+            className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+          >
+            Create customer
+          </Link>
         </CardContent>
       </Card>
     </div>
   );
 }
-
