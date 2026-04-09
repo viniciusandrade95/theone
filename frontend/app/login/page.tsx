@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/api-errors";
@@ -49,23 +49,11 @@ export default function LoginPage() {
     [preauthToken, workspaces],
   );
 
-  const [showDebug, setShowDebug] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    setShowDebug(params.get("debug") === "1");
-  }, []);
-
   async function onSubmitEmailPassword(e: React.FormEvent) {
     e.preventDefault(); // 🔴 THIS WAS MISSING
 
     setError(null);
     setLoading(true);
-
-    console.log("LOGIN CLICKED", email, password);
 
     try {
       const resp = await api.post<LoginEmailResponse>(
@@ -150,11 +138,6 @@ export default function LoginPage() {
               ? "Select which workspace you want to access."
               : "Log in with your email and password."}
           </p>
-          {showDebug ? (
-            <p className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
-              API baseURL: {String(api.defaults.baseURL || "")}
-            </p>
-          ) : null}
         </div>
 
         {error && (

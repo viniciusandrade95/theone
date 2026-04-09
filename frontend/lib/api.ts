@@ -19,10 +19,9 @@ function publishApiError(detail: ApiErrorDetail) {
 }
 
 export const api = axios.create({
-  // NOTE: Next.js bakes NEXT_PUBLIC_* at build time.
-  // If the env var is set to an empty string, `??` would keep it and axios would use relative URLs (same-origin),
-  // which typically hits the frontend service and returns 404 for API routes like /auth/signup.
-  baseURL: (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim() || "http://127.0.0.1:8000",
+  // Prefer same-origin requests in production, relying on Next.js route handlers to proxy to the API.
+  // This avoids CORS complexity and prevents mis-baked NEXT_PUBLIC_* env vars from breaking auth.
+  baseURL: "",
 });
 
 api.interceptors.request.use((config) => {

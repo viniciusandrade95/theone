@@ -31,9 +31,8 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm run start -- -H 0.0.0.0 -p $PORT
     envVars:
-      # Set to the API Render URL, e.g. https://beauty-crm-api.onrender.com
-      - key: NEXT_PUBLIC_API_BASE_URL
+      # Server-side proxy target for Next.js route handlers, e.g. https://beauty-crm-api.onrender.com
+      - key: API_BASE_URL
         sync: false
       - key: NODE_ENV
         value: production
-
