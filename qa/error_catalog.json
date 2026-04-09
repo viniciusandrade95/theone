@@ -1,0 +1,54 @@
+[
+  {
+    "id": "REG-2026-04-09-001",
+    "title": "Signup failed because audit_log table was missing in production",
+    "discovered_on": "2026-04-09",
+    "severity": "high",
+    "surface": "POST /auth/signup",
+    "symptom": "Signup returned 500 Internal Server Error.",
+    "root_cause": "Production database schema was behind application code. The backend attempted to insert into audit_log during default location creation, but the audit_log table did not exist.",
+    "fix": "Run Alembic migrations through head before promoting the backend deployment.",
+    "regression_tests": [
+      "tests/api/test_audit_soft_delete_api.py::test_soft_delete_restore_and_audit_log",
+      "tests/api/test_error_catalog.py::test_error_catalog_entries_reference_existing_tests"
+    ],
+    "reproduction": {
+      "preconditions": [
+        "Deploy backend code with audit logging enabled.",
+        "Do not apply the Alembic revision that creates audit_log."
+      ],
+      "steps": [
+        "Submit POST /auth/signup with tenant_name, email, and password.",
+        "Observe a 500 response and a backend traceback mentioning relation audit_log does not exist."
+      ],
+      "expected": "Signup succeeds and creates tenant, user, and default location.",
+      "actual": "Commit fails at session.commit because audit_log is missing."
+    }
+  },
+  {
+    "id": "REG-2026-04-09-002",
+    "title": "Appointment lifecycle flow must remain reproducible under simulation",
+    "discovered_on": "2026-04-09",
+    "severity": "medium",
+    "surface": "CRM appointments",
+    "symptom": "Operational mutations can drift from expected behavior if not exercised repeatedly.",
+    "root_cause": "Lifecycle paths such as reschedule, cancel, no_show, and complete are easy to break when the product evolves.",
+    "fix": "Keep a deterministic operational regression test and a reproducible simulator with persisted manifests.",
+    "regression_tests": [
+      "tests/api/test_appointment_operational_regressions.py::test_appointment_lifecycle_operational_flow",
+      "tests/api/test_error_catalog.py::test_error_catalog_entries_reference_existing_tests"
+    ],
+    "reproduction": {
+      "preconditions": [
+        "Have a tenant with at least one user, location, customer, and service."
+      ],
+      "steps": [
+        "Create appointments across multiple slots.",
+        "Mutate some to completed, some to cancelled, some to no_show, and reschedule others.",
+        "Verify list and analytics outputs remain coherent."
+      ],
+      "expected": "Lifecycle mutations succeed and are queryable afterwards.",
+      "actual": "Any future drift should be caught by the automated regression suite."
+    }
+  }
+]
