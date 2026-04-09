@@ -7,7 +7,18 @@ export function setAuthToken(token: string) {
 }
 
 export function getAuthToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  const fromStorage = localStorage.getItem(TOKEN_KEY);
+  if (fromStorage) {
+    return fromStorage;
+  }
+  const cookieEntry = document.cookie
+    .split(";")
+    .map((item) => item.trim())
+    .find((item) => item.startsWith("token="));
+  if (!cookieEntry) {
+    return null;
+  }
+  return decodeURIComponent(cookieEntry.replace("token=", ""));
 }
 
 export function clearAuth() {
