@@ -7,6 +7,7 @@ const SETTINGS_ITEMS = [
   { href: "/dashboard/settings/general", label: "General" },
   { href: "/dashboard/settings/calendar", label: "Calendar" },
   { href: "/dashboard/settings/location", label: "Location" },
+  { href: "/dashboard/settings/booking", label: "Booking" },
 ];
 
 function isActive(pathname: string, href: string): boolean {

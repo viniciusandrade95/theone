@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Text, ForeignKey
+from sqlalchemy import Boolean, Column, String, DateTime, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
@@ -43,6 +43,7 @@ class AppointmentORM(Base):
     ends_at = Column(DateTime(timezone=True), nullable=False)
 
     status = Column(String, nullable=False, server_default="booked")
+    needs_confirmation = Column(Boolean, nullable=False, server_default="false")
     cancelled_reason = Column(Text, nullable=True)
     status_updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     notes = Column(Text, nullable=True)

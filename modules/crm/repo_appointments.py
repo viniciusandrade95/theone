@@ -36,6 +36,7 @@ class AppointmentCreate:
     starts_at: datetime
     ends_at: datetime
     status: str = "booked"
+    needs_confirmation: bool = False
     notes: str | None = None
     cancelled_reason: str | None = None
     created_by_user_id: uuid.UUID | None = None
@@ -412,6 +413,7 @@ class AppointmentsRepo:
             starts_at=payload.starts_at,
             ends_at=payload.ends_at,
             status=status,
+            needs_confirmation=bool(payload.needs_confirmation),
             cancelled_reason=reason,
             status_updated_at=datetime.now(timezone.utc),
             notes=payload.notes,

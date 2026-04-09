@@ -510,6 +510,7 @@ class ServiceIn(BaseModel):
     price_cents: int | None = Field(default=None, ge=0)
     duration_minutes: int | None = Field(default=None, ge=1)
     is_active: bool | None = None
+    is_bookable_online: bool | None = None
 
 
 class ServiceOut(BaseModel):
@@ -519,6 +520,7 @@ class ServiceOut(BaseModel):
     price_cents: int
     duration_minutes: int
     is_active: bool
+    is_bookable_online: bool
 
 
 class ServiceListOut(BaseModel):
@@ -611,6 +613,7 @@ def _to_service_out(service) -> ServiceOut:
         price_cents=service.price_cents,
         duration_minutes=service.duration_minutes,
         is_active=service.is_active,
+        is_bookable_online=bool(getattr(service, "is_bookable_online", False)),
     )
 
 

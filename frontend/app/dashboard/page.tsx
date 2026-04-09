@@ -1,5 +1,281 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import { appPath } from "@/lib/paths";
+import type { DashboardAppointmentItem, DashboardOverview, InactiveCustomerItem } from "@/lib/contracts/dashboard";
+
+function toErrorMessage(error: unknown): string {
+  const response = (error as { response?: { data?: { details?: { message?: string }; message?: string; detail?: string; error?: string } } })
+    ?.response;
+  return (
+    response?.data?.details?.message ??
+    response?.data?.message ??
+    response?.data?.detail ??
+    response?.data?.error ??
+    "Failed to load dashboard."
+  );
+}
+
+function formatInTz(dtIso: string, tz: string, options: Intl.DateTimeFormatOptions) {
+  try {
+    return new Intl.DateTimeFormat(undefined, { timeZone: tz, ...options }).format(new Date(dtIso));
+  } catch {
+    return new Intl.DateTimeFormat(undefined, options).format(new Date(dtIso));
+  }
+}
+
+function appointmentHref(appointmentId: string) {
+  const encoded = encodeURIComponent(appointmentId);
+  return appPath(`/dashboard/appointments?appointment_id=${encoded}#appointment-${encoded}`);
+}
+
+function StatCard({ label, value, hint }: { label: string; value: number; hint?: string }) {
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-3xl font-semibold text-slate-900">{value}</p>
+        {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+function AppointmentRow({ item, tz, badge }: { item: DashboardAppointmentItem; tz: string; badge?: string }) {
+  const time = `${formatInTz(item.starts_at, tz, { hour: "2-digit", minute: "2-digit" })}–${formatInTz(item.ends_at, tz, {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
+  const meta = [item.service_name, item.location_name].filter(Boolean).join(" • ");
+
+  return (
+    <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 p-3">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href={appointmentHref(item.id)} className="text-sm font-semibold text-slate-900 hover:underline">
+            {time}
+          </Link>
+          {badge ? (
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{badge}</span>
+          ) : null}
+        </div>
+        <div className="mt-1 truncate text-sm text-slate-700">
+          <Link href={appPath(`/dashboard/customers/${encodeURIComponent(item.customer_id)}`)} className="hover:underline">
+            {item.customer_name}
+          </Link>
+        </div>
+        {meta ? <div className="mt-1 truncate text-xs text-slate-500">{meta}</div> : null}
+      </div>
+      <div className="shrink-0 text-right text-xs text-slate-500">
+        <div>{formatInTz(item.starts_at, tz, { weekday: "short", month: "short", day: "2-digit" })}</div>
+      </div>
+    </div>
+  );
+}
+
+function InactiveCustomerRow({ item }: { item: InactiveCustomerItem }) {
+  return (
+    <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 p-3">
+      <div className="min-w-0">
+        <Link
+          href={appPath(`/dashboard/customers/${encodeURIComponent(item.id)}`)}
+          className="text-sm font-semibold text-slate-900 hover:underline"
+        >
+          {item.name}
+        </Link>
+        <div className="mt-1 truncate text-xs text-slate-500">
+          {[item.phone, item.email].filter(Boolean).join(" • ") || "No contact info"}
+        </div>
+      </div>
+      <div className="shrink-0 text-right text-xs text-slate-500">
+        <div>{item.last_completed_at ? "Last visit:" : "Last visit:"}</div>
+        <div className="font-semibold text-slate-700">{item.last_completed_at ? new Date(item.last_completed_at).toLocaleDateString() : "Never"}</div>
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
-  redirect("/dashboard/calendar");
+  const [overview, setOverview] = useState<DashboardOverview | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    setLoadError(null);
+    void api
+      .get<DashboardOverview>("/crm/dashboard/overview")
+      .then((response) => {
+        if (!mounted) return;
+        setOverview(response.data);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        setLoadError(toErrorMessage(err));
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setIsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const tz = overview?.timezone ?? "UTC";
+
+  const quickActions = useMemo(
+    () => [
+      { label: "Create customer", href: "/dashboard/customers/new" },
+      { label: "Create appointment", href: "/dashboard/appointments" },
+      { label: "Send message", href: "/dashboard/customers" },
+      { label: "Enable booking online", href: "/dashboard/settings/booking" },
+      { label: "Import customers", href: "/dashboard/customers/import" },
+    ],
+    [],
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">Overview</h1>
+          <p className="text-sm text-slate-500">Operational snapshot for today (timezone: {tz}).</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="secondary" onClick={() => window.location.reload()} disabled={isLoading}>
+            Refresh
+          </Button>
+        </div>
+      </div>
+
+      {loadError ? (
+        <Card>
+          <CardContent className="py-4 text-sm text-rose-700">{loadError}</CardContent>
+        </Card>
+      ) : null}
+
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+        <StatCard label="Appointments today" value={overview?.counts.appointments_today_count ?? 0} />
+        <StatCard label="Pending confirmation" value={overview?.counts.appointments_pending_confirmation_count ?? 0} />
+        <StatCard label="Tasks today" value={overview?.counts.tasks_today_count ?? 0} hint="Not available yet" />
+        <StatCard label="Inactive customers" value={overview?.counts.inactive_customers_count ?? 0} />
+        <StatCard label="Scheduled reminders" value={overview?.counts.scheduled_reminders_count ?? 0} hint="Not available yet" />
+        <StatCard label="Recent no-shows" value={overview?.counts.recent_no_shows_count ?? 0} hint="Last 14 days" />
+        <StatCard label="New online bookings today" value={overview?.counts.new_online_bookings_count ?? 0} hint="Proxy-based" />
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick actions</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          {quickActions.map((action) => (
+            <Button key={action.href} asChild variant="secondary">
+              <Link href={appPath(action.href)}>{action.label}</Link>
+            </Button>
+          ))}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Appointments today</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {(overview?.sections.appointments_today ?? []).length === 0 ? (
+              <p className="text-sm text-slate-500">No appointments to handle today.</p>
+            ) : (
+              overview?.sections.appointments_today.map((item) => <AppointmentRow key={item.id} item={item} tz={tz} />)
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Appointments pending confirmation</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {(overview?.sections.appointments_pending_confirmation ?? []).length === 0 ? (
+              <p className="text-sm text-slate-500">No appointments pending confirmation.</p>
+            ) : (
+              overview?.sections.appointments_pending_confirmation.map((item) => (
+                <AppointmentRow key={item.id} item={item} tz={tz} badge="Needs confirmation" />
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Inactive customers</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {(overview?.sections.inactive_customers ?? []).length === 0 ? (
+              <p className="text-sm text-slate-500">No inactive customers found.</p>
+            ) : (
+              overview?.sections.inactive_customers.map((item) => <InactiveCustomerRow key={item.id} item={item} />)
+            )}
+            <p className="pt-2 text-xs text-slate-500">Inactive = no completed appointment in the last 60 days.</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>New online bookings today</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {(overview?.sections.new_online_bookings ?? []).length === 0 ? (
+              <p className="text-sm text-slate-500">No new online bookings today.</p>
+            ) : (
+              overview?.sections.new_online_bookings.map((item) => (
+                <AppointmentRow key={item.id} item={item} tz={tz} badge="Online booking (proxy)" />
+              ))
+            )}
+            <p className="pt-2 text-xs text-slate-500">
+              Uses proxy: created_by_user_id is empty and created_at is within today window.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent no-shows</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {(overview?.sections.recent_no_shows ?? []).length === 0 ? (
+              <p className="text-sm text-slate-500">No recent no-shows.</p>
+            ) : (
+              overview?.sections.recent_no_shows.map((item) => <AppointmentRow key={item.id} item={item} tz={tz} badge="No-show" />)
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tasks & reminders</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-slate-500">
+            <p>Tasks and scheduled reminders are not implemented yet in this MVP.</p>
+            {overview?.notes?.length ? (
+              <ul className="list-disc space-y-1 pl-5 text-xs">
+                {overview.notes.slice(0, 3).map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            ) : null}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }

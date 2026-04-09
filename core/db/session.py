@@ -30,6 +30,7 @@ def reset_engine_state() -> None:
 def _initialize_schema(engine) -> None:
     from modules.tenants.models.tenant_orm import TenantORM  # noqa: F401
     from modules.tenants.models.tenant_settings_orm import TenantSettingsORM  # noqa: F401
+    from modules.tenants.models.booking_settings_orm import BookingSettingsORM  # noqa: F401
     from modules.crm.models.customer_orm import CustomerORM  # noqa: F401
     from modules.crm.models.interaction_orm import InteractionORM  # noqa: F401
     from modules.crm.models.location_orm import LocationORM  # noqa: F401
@@ -40,6 +41,8 @@ def _initialize_schema(engine) -> None:
     from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa: F401
     from modules.messaging.models.conversation_orm import ConversationORM  # noqa: F401
     from modules.messaging.models.message_orm import MessageORM  # noqa: F401
+    from modules.messaging.models.message_template_orm import MessageTemplateORM  # noqa: F401
+    from modules.messaging.models.outbound_message_orm import OutboundMessageORM  # noqa: F401
     from modules.audit.models.audit_log_orm import AuditLogORM  # noqa: F401
 
     Base.metadata.create_all(engine)

@@ -17,6 +17,10 @@ from app.http.routes.analytics import router as analytics_router
 from app.http.routes.billing import router as billing_router
 from app.http.routes.messaging import router as messaging_router
 from app.http.routes.tenants import router as tenants_router
+from app.http.routes.booking import router as booking_router
+from app.http.routes.public_booking import router as public_booking_router
+from app.http.routes.outbound import router as outbound_router
+from app.http.routes.dashboard import router as dashboard_router
 
 
 def create_app() -> FastAPI:
@@ -96,7 +100,11 @@ def create_app() -> FastAPI:
             "/auth/select_workspace",
         }
 
-        if request.url.path.startswith("/messaging/inbound") or request.url.path in PUBLIC_PATHS:
+        if (
+            request.url.path.startswith("/messaging/inbound")
+            or request.url.path.startswith("/public/book")
+            or request.url.path in PUBLIC_PATHS
+        ):
             return await call_next(request)
 
         
@@ -134,6 +142,10 @@ def create_app() -> FastAPI:
     app.include_router(billing_router, prefix="/billing", tags=["billing"])
     app.include_router(messaging_router, prefix="/messaging", tags=["messaging"])
     app.include_router(tenants_router, prefix="/tenants", tags=["tenants"])
+    app.include_router(booking_router, prefix="/crm", tags=["crm"])
+    app.include_router(outbound_router, prefix="/crm", tags=["crm"])
+    app.include_router(dashboard_router, prefix="/crm", tags=["crm"])
+    app.include_router(public_booking_router, tags=["public"])
 
     return app
 

@@ -9,6 +9,7 @@ from core.db.base import Base
 # IMPORTA MODELS PARA AUTOGENERATE
 from modules.tenants.models.tenant_orm import TenantORM  # noqa
 from modules.tenants.models.tenant_settings_orm import TenantSettingsORM  # noqa
+from modules.tenants.models.booking_settings_orm import BookingSettingsORM  # noqa
 from modules.crm.models.customer_orm import CustomerORM  # noqa
 from modules.crm.models.interaction_orm import InteractionORM  # noqa
 from modules.crm.models.location_orm import LocationORM  # noqa
@@ -19,6 +20,8 @@ from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM  # 
 from modules.messaging.models.webhook_event_orm import WebhookEventORM  # noqa
 from modules.messaging.models.conversation_orm import ConversationORM  # noqa
 from modules.messaging.models.message_orm import MessageORM  # noqa
+from modules.messaging.models.message_template_orm import MessageTemplateORM  # noqa
+from modules.messaging.models.outbound_message_orm import OutboundMessageORM  # noqa
 from modules.audit.models.audit_log_orm import AuditLogORM  # noqa
 
 # Alembic Config

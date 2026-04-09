@@ -11,6 +11,7 @@ type Me = {
 };
 
 const pageTitleByPath: Array<{ path: string; title: string }> = [
+  { path: "/dashboard", title: "Overview" },
   { path: "/dashboard/calendar", title: "Calendar" },
   { path: "/dashboard/appointments", title: "Appointments" },
   { path: "/dashboard/customers", title: "Customers" },
@@ -20,8 +21,12 @@ const pageTitleByPath: Array<{ path: string; title: string }> = [
 ];
 
 function resolveTitle(pathname: string) {
-  const hit = pageTitleByPath.find((item) => pathname === item.path || pathname.startsWith(`${item.path}/`));
-  return hit?.title ?? "Dashboard";
+  const candidates = pageTitleByPath.filter((item) => pathname === item.path || pathname.startsWith(`${item.path}/`));
+  if (candidates.length === 0) {
+    return "Dashboard";
+  }
+  candidates.sort((a, b) => b.path.length - a.path.length);
+  return candidates[0]?.title ?? "Dashboard";
 }
 
 export function TopBar() {

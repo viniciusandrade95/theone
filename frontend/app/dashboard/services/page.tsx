@@ -13,6 +13,7 @@ type Service = {
   price_cents: number;
   duration_minutes: number;
   is_active: boolean;
+  is_bookable_online?: boolean;
 };
 
 type Paginated<T> = {
@@ -197,6 +198,19 @@ export default function ServicesPage() {
     }
   }
 
+  async function toggleBookableOnline(service: Service) {
+    setIsSaving(true);
+    setError(null);
+    try {
+      await api.patch(`/crm/services/${service.id}`, { is_bookable_online: !service.is_bookable_online });
+      await loadServices();
+    } catch (requestError) {
+      setError(toErrorMessage(requestError, "Unable to update booking visibility."));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PAGE_SIZE)), [total]);
 
   return (
@@ -260,6 +274,7 @@ export default function ServicesPage() {
                   <th className="px-4 py-3 font-semibold">Name</th>
                   <th className="px-4 py-3 font-semibold">Duration</th>
                   <th className="px-4 py-3 font-semibold">Price</th>
+                  <th className="px-4 py-3 font-semibold">Online booking</th>
                   <th className="px-4 py-3 font-semibold">Active</th>
                   <th className="px-4 py-3 font-semibold">Actions</th>
                 </tr>
@@ -267,13 +282,13 @@ export default function ServicesPage() {
               <tbody className="divide-y divide-slate-100 bg-white">
                 {isLoading ? (
                   <tr>
-                    <td className="px-4 py-6 text-slate-500" colSpan={5}>
+                    <td className="px-4 py-6 text-slate-500" colSpan={6}>
                       Loading services...
                     </td>
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
-                    <td className="px-4 py-6 text-slate-500" colSpan={5}>
+                    <td className="px-4 py-6 text-slate-500" colSpan={6}>
                       No services found.
                     </td>
                   </tr>
@@ -283,6 +298,17 @@ export default function ServicesPage() {
                       <td className="px-4 py-3 font-semibold text-slate-900">{service.name}</td>
                       <td className="px-4 py-3 text-slate-600">{service.duration_minutes} min</td>
                       <td className="px-4 py-3 text-slate-600">${(service.price_cents / 100).toFixed(2)}</td>
+                      <td className="px-4 py-3">
+                        <label className="flex items-center gap-2 text-sm text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(service.is_bookable_online)}
+                            disabled={isSaving}
+                            onChange={() => void toggleBookableOnline(service)}
+                          />
+                          <span className="text-xs text-slate-500">Show</span>
+                        </label>
+                      </td>
                       <td className="px-4 py-3">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-semibold ${

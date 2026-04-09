@@ -4,15 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
+  { label: "Overview", href: "/dashboard" },
   { label: "Calendar", href: "/dashboard/calendar" },
   { label: "Appointments", href: "/dashboard/appointments" },
   { label: "Customers", href: "/dashboard/customers" },
   { label: "Services", href: "/dashboard/services" },
+  { label: "Outbound", href: "/dashboard/outbound/templates" },
   { label: "Analytics", href: "/dashboard/analytics" },
   { label: "Settings", href: "/dashboard/settings" },
 ];
 
 function isActive(pathname: string, href: string) {
+  if (href === "/dashboard") {
+    return pathname === "/dashboard";
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

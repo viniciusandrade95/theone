@@ -22,6 +22,7 @@ class ServiceORM(Base):
     price_cents = Column(Integer, nullable=False)
     duration_minutes = Column(Integer, nullable=False)
     is_active = Column(Boolean, nullable=False, server_default="true")
+    is_bookable_online = Column(Boolean, nullable=False, server_default="false")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
