@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/api-errors";
 import { setAuthToken, setTenantId } from "@/lib/auth";
@@ -34,7 +33,6 @@ type LoginEmailResponse =
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,7 +49,15 @@ export default function LoginPage() {
     [preauthToken, workspaces],
   );
 
-  const showDebug = searchParams.get("debug") === "1";
+  const [showDebug, setShowDebug] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    setShowDebug(params.get("debug") === "1");
+  }, []);
 
   async function onSubmitEmailPassword(e: React.FormEvent) {
     e.preventDefault(); // 🔴 THIS WAS MISSING
