@@ -4,7 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { api } from "@/lib/api";
-import { toErrorMessage } from "@/lib/api-errors";
+import { getApiErrorMessage } from "@/lib/api-errors";
 
 type AssistantReply = {
   conversation_id: string;
@@ -48,7 +48,7 @@ export default function AssistantPage() {
       setSessionId(resp.data.session_id ?? null);
       setMessage("");
     } catch (err) {
-      setError(toErrorMessage(err as unknown, "Unable to reach assistant."));
+      setError(getApiErrorMessage(err as unknown, "Unable to reach assistant."));
     } finally {
       setBusy(false);
     }
@@ -66,7 +66,7 @@ export default function AssistantPage() {
       setSessionId(null);
       setReply(null);
     } catch (err) {
-      setError(toErrorMessage(err as unknown, "Unable to reset conversation."));
+      setError(getApiErrorMessage(err as unknown, "Unable to reset conversation."));
     } finally {
       setBusy(false);
     }
