@@ -23,6 +23,8 @@ from modules.messaging.models.message_orm import MessageORM  # noqa
 from modules.messaging.models.message_template_orm import MessageTemplateORM  # noqa
 from modules.messaging.models.outbound_message_orm import OutboundMessageORM  # noqa
 from modules.audit.models.audit_log_orm import AuditLogORM  # noqa
+from modules.chatbot.models.conversation_session_orm import ChatbotConversationSessionORM  # noqa
+from modules.assistant.models.prebook_request_orm import AssistantPrebookRequestORM  # noqa
 
 # Alembic Config
 config = context.config

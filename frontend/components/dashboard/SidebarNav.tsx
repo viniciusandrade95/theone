@@ -11,6 +11,7 @@ const navItems = [
   { label: "Services", href: "/dashboard/services" },
   { label: "Outbound", href: "/dashboard/outbound/templates" },
   { label: "Analytics", href: "/dashboard/analytics" },
+  { label: "Assistant", href: "/dashboard/assistant" },
   { label: "Settings", href: "/dashboard/settings" },
 ];
 

@@ -46,6 +46,30 @@ def require_user(request: Request, authorization: str | None = Header(default=No
     return {"user_id": parsed.user_id, "tenant_id": parsed.tenant_id}
 
 
+def require_user_or_assistant_connector(
+    request: Request,
+    authorization: str | None = Header(default=None),
+    x_assistant_token: str | None = Header(default=None, alias="X-Assistant-Token"),
+):
+    """Authenticate either a logged-in staff user (Bearer) or the chatbot connector (shared secret).
+
+    This is intended for server-to-server calls from `chatbot1` through TheOneConnector.
+    """
+    if authorization and authorization.startswith("Bearer "):
+        identity = require_user(request, authorization=authorization)
+        return {"mode": "user", **identity}
+
+    cfg = get_config()
+    expected = cfg.ASSISTANT_CONNECTOR_TOKEN
+    if not x_assistant_token:
+        raise UnauthorizedError("Missing bearer token")
+    if not expected or x_assistant_token.strip() != expected:
+        raise UnauthorizedError("Invalid assistant token")
+
+    tenant_id = require_tenant_id()
+    return {"mode": "assistant_connector", "user_id": None, "tenant_id": tenant_id}
+
+
 def require_tenant_header(x_tenant_id: str = Header(..., alias="X-Tenant-ID")):
     # O middleware já seta tenancy context. Isto serve para:
     # 1) Documentar no OpenAPI como required

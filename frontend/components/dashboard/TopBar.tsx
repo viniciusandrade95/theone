@@ -17,6 +17,7 @@ const pageTitleByPath: Array<{ path: string; title: string }> = [
   { path: "/dashboard/customers", title: "Customers" },
   { path: "/dashboard/services", title: "Services" },
   { path: "/dashboard/analytics", title: "Analytics" },
+  { path: "/dashboard/assistant", title: "Assistant" },
   { path: "/dashboard/settings", title: "Settings" },
 ];
 

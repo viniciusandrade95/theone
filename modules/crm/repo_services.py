@@ -15,6 +15,7 @@ class ServiceCreate:
     price_cents: int
     duration_minutes: int
     is_active: bool = True
+    is_bookable_online: bool = False
 
 
 class ServicesRepo:
@@ -85,6 +86,7 @@ class ServicesRepo:
             price_cents=payload.price_cents,
             duration_minutes=payload.duration_minutes,
             is_active=payload.is_active,
+            is_bookable_online=payload.is_bookable_online,
         )
         self.session.add(s)
         self.session.flush()
