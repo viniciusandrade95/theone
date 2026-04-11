@@ -67,8 +67,10 @@ class AppConfig:
 
     @staticmethod
     def load() -> "AppConfig":
+        env = _get("ENV")
+        assistant_token_required = env in {"prod", "production"}
         return AppConfig(
-            ENV=_get("ENV"),
+            ENV=env,
             APP_NAME=_get("APP_NAME"),
 
             HTTP_HOST=_get("HTTP_HOST", default="0.0.0.0"),
@@ -113,7 +115,7 @@ class AppConfig:
                 default="X-Assistant-Token",
             )
             or "X-Assistant-Token",
-            ASSISTANT_CONNECTOR_TOKEN=_get("ASSISTANT_CONNECTOR_TOKEN", required=False),
+            ASSISTANT_CONNECTOR_TOKEN=_get("ASSISTANT_CONNECTOR_TOKEN", required=assistant_token_required),
 
             REDIS_URL=_get("REDIS_URL", required=False, default="redis://localhost:6379/0"),
             CELERY_TASK_ALWAYS_EAGER=bool(

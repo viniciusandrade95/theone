@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import pytest
 from fastapi.testclient import TestClient
@@ -56,84 +57,208 @@ def _default_location(client: TestClient, *, tenant_id: str, token: str) -> str:
     return resp.json()["id"]
 
 
-def test_assistant_prebook_requires_token():
+def _future_date() -> str:
+    return (datetime.now(timezone.utc) + timedelta(days=2)).date().isoformat()
+
+
+def test_prebook_forbidden():
     app = create_app()
     client = TestClient(app)
     tenant_id = str(uuid.uuid4())
 
-    starts_at = (datetime.now(timezone.utc) + timedelta(hours=2)).replace(microsecond=0)
     resp = client.post(
         "/crm/assistant/prebook",
-        headers={"X-Tenant-ID": tenant_id},
+        headers={"X-Tenant-ID": tenant_id, "Idempotency-Key": "wf:test:missing-token"},
         json={
             "customer": {"name": "Maria", "phone": "+351900000000"},
-            "booking": {"service_id": str(uuid.uuid4()), "starts_at": starts_at.isoformat()},
+            "booking": {"service_id": str(uuid.uuid4()), "requested_date": _future_date(), "requested_time": "12:00"},
         },
     )
     assert resp.status_code == 401
 
+    wrong = client.post(
+        "/crm/assistant/prebook",
+        headers={"X-Tenant-ID": tenant_id, "X-Assistant-Token": "wrong", "Idempotency-Key": "wf:test:401"},
+        json={
+            "customer": {"name": "Maria", "phone": "+351900000000"},
+            "booking": {"service_id": str(uuid.uuid4()), "requested_date": _future_date(), "requested_time": "12:00"},
+        },
+    )
+    assert wrong.status_code == 401
 
-def test_assistant_prebook_creates_is_idempotent_and_handles_overlap():
+
+def test_prebook_forbidden_tenant_mismatch():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+
+    resp = client.post(
+        "/crm/assistant/prebook",
+        headers={"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token", "Idempotency-Key": "wf:test:403"},
+        json={
+            "tenant_id": str(uuid.uuid4()),
+            "customer": {"name": "Maria", "phone": "+351900000000"},
+            "booking": {"service_id": str(uuid.uuid4()), "requested_date": _future_date(), "requested_time": "12:00"},
+        },
+    )
+    assert resp.status_code == 403
+
+
+def test_prebook_validation_error():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+    service_id = _create_service(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
+
+    resp = client.post(
+        "/crm/assistant/prebook",
+        headers={"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token", "Idempotency-Key": "wf:test:422"},
+        json={
+            "customer": {"name": "Ana", "phone": "+351911111111"},
+            "booking": {
+                # missing booking.service_id
+                "requested_date": _future_date(),
+                "requested_time": "12:00",
+                "timezone": "Europe/Lisbon",
+            },
+        },
+    )
+    assert resp.status_code == 422
+    body = resp.json()
+    assert body["error"] == "VALIDATION_ERROR"
+    assert "service_id" in body["details"].get("fields", {})
+
+
+def test_prebook_success():
     app = create_app()
     client = TestClient(app)
     tenant_id = str(uuid.uuid4())
     token = _register_and_login(client, tenant_id)
 
     service_id = _create_service(client, tenant_id=tenant_id, token=token)
-    location_id = _default_location(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
 
-    starts_at = (datetime.now(timezone.utc) + timedelta(hours=2)).replace(microsecond=0)
+    future_date = _future_date()
 
-    headers = {"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token", "X-Trace-Id": "trace-1"}
+    headers = {"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token"}
     payload = {
         "customer": {"name": "Maria", "phone": "+351900000000"},
-        "booking": {"service_id": service_id, "starts_at": starts_at.isoformat()},
+        "booking": {
+            "service_id": service_id,
+            "requested_date": future_date,
+            "requested_time": "12:00",
+            "timezone": "Europe/Lisbon",
+            "notes": "qualquer nota",
+        },
     }
 
-    created = client.post("/crm/assistant/prebook", headers=headers, json=payload)
-    assert created.status_code == 201
-    body1 = created.json()
-    assert body1["ok"] is True
-    assert body1["status"] == "created"
-    appointment_id = body1["data"]["appointment_id"]
+    resp = client.post(
+        "/crm/assistant/prebook",
+        headers={**headers, "Idempotency-Key": "wf:test:201"},
+        json=payload,
+    )
+    assert resp.status_code == 201
+    body = resp.json()
+    assert body["ok"] is True
+    assert uuid.UUID(body["prebooking_id"])
+    assert body["reference"] == body["prebooking_id"]
+    assert body["message"] == "Pré-reserva criada com sucesso."
 
-    # Verify status + notes persisted.
+    expected_local = datetime.fromisoformat(f"{future_date}T12:00:00").replace(tzinfo=ZoneInfo("Europe/Lisbon"))
+    expected_utc = expected_local.astimezone(timezone.utc)
     listing = client.get(
         "/crm/appointments",
         headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
         params={
-            "from_dt": (starts_at - timedelta(hours=1)).isoformat(),
-            "to_dt": (starts_at + timedelta(hours=3)).isoformat(),
+            "status": "pending",
+            "from_dt": (expected_utc - timedelta(hours=1)).isoformat(),
+            "to_dt": (expected_utc + timedelta(hours=2)).isoformat(),
         },
     )
     assert listing.status_code == 200
-    appt = next(item for item in listing.json()["items"] if item["id"] == appointment_id)
-    assert appt["status"] == "pending"
-    assert appt["notes"] == "criado pelo assistant"
-    assert appt["location_id"] == location_id
-    assert appt["service_id"] == service_id
-    parsed_starts = datetime.fromisoformat(appt["starts_at"].replace("Z", "+00:00"))
-    parsed_ends = datetime.fromisoformat(appt["ends_at"].replace("Z", "+00:00"))
-    if parsed_starts.tzinfo is not None:
-        parsed_starts = parsed_starts.astimezone(timezone.utc).replace(tzinfo=None)
-    if parsed_ends.tzinfo is not None:
-        parsed_ends = parsed_ends.astimezone(timezone.utc).replace(tzinfo=None)
-    assert parsed_starts == starts_at.replace(tzinfo=None)
-    assert parsed_ends == (starts_at + timedelta(minutes=60)).replace(tzinfo=None)
+    item = next((row for row in listing.json()["items"] if row["id"] == body["prebooking_id"]), None)
+    assert item is not None
+    assert item["status"] == "pending"
+    assert item["notes"].startswith("criado pelo assistant")
+    assert "qualquer nota" in item["notes"]
 
-    existing = client.post("/crm/assistant/prebook", headers=headers, json=payload)
-    assert existing.status_code == 200
-    body2 = existing.json()
-    assert body2["status"] == "existing"
-    assert body2["data"]["appointment_id"] == appointment_id
 
-    overlap = client.post(
+def test_prebook_idempotent():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    service_id = _create_service(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
+
+    future_date = _future_date()
+    headers = {"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token", "Idempotency-Key": "wf:test:idem"}
+    payload = {
+        "customer": {"name": "Maria", "phone": "+351900000000"},
+        "booking": {"service_id": service_id, "requested_date": future_date, "requested_time": "12:00", "timezone": "Europe/Lisbon"},
+    }
+
+    r1 = client.post("/crm/assistant/prebook", headers=headers, json=payload)
+    assert r1.status_code == 201
+    body1 = r1.json()
+
+    r2 = client.post("/crm/assistant/prebook", headers=headers, json=payload)
+    assert r2.status_code == 201
+    assert r2.json() == body1
+
+
+def test_prebook_best_effort_slot_dedupe_returns_200():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    service_id = _create_service(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
+
+    future_date = _future_date()
+    headers = {"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token"}
+    payload = {
+        "customer": {"name": "Maria", "phone": "+351900000000"},
+        "booking": {"service_id": service_id, "requested_date": future_date, "requested_time": "12:00", "timezone": "Europe/Lisbon"},
+    }
+
+    r1 = client.post("/crm/assistant/prebook", headers={**headers, "Idempotency-Key": "wf:test:slot-dedupe:1"}, json=payload)
+    assert r1.status_code == 201
+    body1 = r1.json()
+
+    r2 = client.post("/crm/assistant/prebook", headers={**headers, "Idempotency-Key": "wf:test:slot-dedupe:2"}, json=payload)
+    assert r2.status_code == 200
+    assert r2.json()["prebooking_id"] == body1["prebooking_id"]
+
+
+def test_prebook_conflict():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    service_id = _create_service(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
+
+    future_date = _future_date()
+    headers = {"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token"}
+    base_booking = {"service_id": service_id, "requested_date": future_date, "requested_time": "12:00", "timezone": "Europe/Lisbon"}
+
+    ok = client.post(
         "/crm/assistant/prebook",
-        headers=headers,
-        json={
-            "customer": {"name": "Ana", "phone": "+351911111111"},
-            "booking": {"service_id": service_id, "starts_at": starts_at.isoformat()},
-        },
+        headers={**headers, "Idempotency-Key": "wf:test:slot:1"},
+        json={"customer": {"name": "Maria", "phone": "+351900000000"}, "booking": base_booking},
     )
-    assert overlap.status_code == 409
-    assert overlap.json()["error"] == "APPOINTMENT_OVERLAP"
+    assert ok.status_code == 201
+
+    conflict = client.post(
+        "/crm/assistant/prebook",
+        headers={**headers, "Idempotency-Key": "wf:test:slot:2"},
+        json={"customer": {"name": "Ana", "phone": "+351911111111"}, "booking": base_booking},
+    )
+    assert conflict.status_code == 409
+    assert conflict.json() == {"message": "Horário indisponível", "error_code": "conflict", "retriable": False}

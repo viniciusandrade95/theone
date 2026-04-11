@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { parseApiError } from "@/lib/api-errors";
 import { appPath } from "@/lib/paths";
 
-export type AppointmentStatus = "booked" | "completed" | "cancelled" | "no_show";
+export type AppointmentStatus = "pending" | "booked" | "completed" | "cancelled" | "no_show";
 
 export type AppointmentFormValues = {
   customer_id: string;
@@ -69,7 +69,7 @@ type AppointmentFormProps = {
   conflictHrefForId?: (id: string) => string;
 };
 
-const STATUSES: AppointmentStatus[] = ["booked", "completed", "cancelled", "no_show"];
+const STATUSES: AppointmentStatus[] = ["pending", "booked", "completed", "cancelled", "no_show"];
 
 function toLocalDateTimeInput(value: Date): string {
   const year = value.getFullYear();

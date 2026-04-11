@@ -1,3 +1,5 @@
+import hmac
+
 from fastapi import Depends, Header, Request
 from core.tenancy import set_tenant_id, clear_tenant_id, require_tenant_id
 from core.auth import set_current_user_id
@@ -65,7 +67,7 @@ def require_user_or_assistant_connector(
     provided = request.headers.get(header_name) or x_assistant_token
     if not provided:
         raise UnauthorizedError("Missing assistant token")
-    if not expected or provided.strip() != expected:
+    if not expected or not hmac.compare_digest(provided.strip(), expected):
         raise UnauthorizedError("Invalid assistant token")
 
     tenant_id = require_tenant_id()
@@ -87,7 +89,7 @@ def require_assistant_token(
     provided = request.headers.get(header_name) or x_assistant_token
     if not provided:
         raise UnauthorizedError("Missing assistant token")
-    if not expected or provided.strip() != expected:
+    if not expected or not hmac.compare_digest(provided.strip(), expected):
         raise UnauthorizedError("Invalid assistant token")
     return True
 

@@ -23,7 +23,6 @@ from app.http.routes.outbound import router as outbound_router
 from app.http.routes.dashboard import router as dashboard_router
 from app.http.routes.health import router as health_router
 from app.http.routes.chatbot import router as chatbot_router
-from app.http.routes.assistant import router as assistant_router
 
 
 def create_app() -> FastAPI:
@@ -148,7 +147,6 @@ def create_app() -> FastAPI:
     app.include_router(booking_router, prefix="/crm", tags=["crm"])
     app.include_router(outbound_router, prefix="/crm", tags=["crm"])
     app.include_router(dashboard_router, prefix="/crm", tags=["crm"])
-    app.include_router(assistant_router, prefix="/crm", tags=["assistant"])
     app.include_router(health_router, tags=["health"])
     app.include_router(public_booking_router, tags=["public"])
     app.include_router(chatbot_router, prefix="/api/chatbot", tags=["chatbot"])

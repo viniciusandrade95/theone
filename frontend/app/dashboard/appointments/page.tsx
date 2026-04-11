@@ -45,7 +45,7 @@ type Paginated<T> = {
 };
 
 const PAGE_SIZE = 25;
-const STATUSES: Array<"all" | AppointmentStatus> = ["all", "booked", "completed", "cancelled", "no_show"];
+const STATUSES: Array<"all" | AppointmentStatus> = ["all", "pending", "booked", "completed", "cancelled", "no_show"];
 
 function formatDateTime(value: string | null | undefined): string {
   if (!value) {
