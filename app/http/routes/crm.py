@@ -556,8 +556,10 @@ class AppointmentOut(BaseModel):
     id: str
     tenant_id: str
     customer_id: str
+    customer_name: str | None = None
     location_id: str
     service_id: str | None
+    service_name: str | None = None
     starts_at: datetime
     ends_at: datetime
     status: str
@@ -617,13 +619,20 @@ def _to_service_out(service) -> ServiceOut:
     )
 
 
-def _to_appointment_out(appointment) -> AppointmentOut:
+def _to_appointment_out(
+    appointment,
+    *,
+    customer_name: str | None = None,
+    service_name: str | None = None,
+) -> AppointmentOut:
     return AppointmentOut(
         id=str(appointment.id),
         tenant_id=str(appointment.tenant_id),
         customer_id=str(appointment.customer_id),
+        customer_name=customer_name,
         location_id=str(appointment.location_id),
         service_id=str(appointment.service_id) if appointment.service_id else None,
+        service_name=service_name,
         starts_at=appointment.starts_at,
         ends_at=appointment.ends_at,
         status=appointment.status,
@@ -789,7 +798,10 @@ def list_appointments(
             service_id=parsed_service_id,
         )
         return AppointmentListOut(
-            items=[_to_appointment_out(item) for item in items],
+            items=[
+                _to_appointment_out(appointment, customer_name=customer_name, service_name=service_name)
+                for appointment, customer_name, service_name in items
+            ],
             total=total,
             page=page,
             page_size=page_size,

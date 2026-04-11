@@ -13,7 +13,7 @@ from modules.crm.models.location_orm import LocationORM
 from modules.crm.models.service_orm import ServiceORM
 
 
-_ALLOWED_APPOINTMENT_STATUSES = {"booked", "completed", "cancelled", "no_show"}
+_ALLOWED_APPOINTMENT_STATUSES = {"pending", "booked", "completed", "cancelled", "no_show"}
 _ALLOWED_APPOINTMENT_SORT_FIELDS = {
     "starts_at": AppointmentORM.starts_at,
     "ends_at": AppointmentORM.ends_at,
@@ -219,7 +219,7 @@ class AppointmentsRepo:
         location_id: uuid.UUID | None = None,
         customer_id: uuid.UUID | None = None,
         service_id: uuid.UUID | None = None,
-    ) -> tuple[list[AppointmentORM], int]:
+    ) -> tuple[list[tuple[AppointmentORM, str, str | None]], int]:
         sort_column = _ALLOWED_APPOINTMENT_SORT_FIELDS.get(sort)
         if sort_column is None:
             raise ValidationError(
@@ -240,13 +240,25 @@ class AppointmentsRepo:
         notes_value = func.lower(func.coalesce(AppointmentORM.notes, ""))
 
         stmt = (
-            select(AppointmentORM)
+            select(
+                AppointmentORM,
+                CustomerORM.name.label("customer_name"),
+                ServiceORM.name.label("service_name"),
+            )
             .join(
                 CustomerORM,
                 and_(
                     CustomerORM.id == AppointmentORM.customer_id,
                     CustomerORM.tenant_id == tenant_id,
                     CustomerORM.deleted_at.is_(None),
+                ),
+            )
+            .outerjoin(
+                ServiceORM,
+                and_(
+                    ServiceORM.id == AppointmentORM.service_id,
+                    ServiceORM.tenant_id == tenant_id,
+                    ServiceORM.deleted_at.is_(None),
                 ),
             )
             .where(AppointmentORM.tenant_id == tenant_id)
@@ -308,7 +320,14 @@ class AppointmentsRepo:
             stmt = stmt.order_by(sort_column.asc())
         stmt = stmt.offset(offset).limit(page_size)
 
-        return list(self.session.execute(stmt).scalars().all()), total
+        rows = self.session.execute(stmt).all()
+        items: list[tuple[AppointmentORM, str, str | None]] = []
+        for row in rows:
+            appointment = row[0]
+            customer_name_value = str(row[1] or "").strip()
+            service_name_value = str(row[2]).strip() if row[2] is not None else None
+            items.append((appointment, customer_name_value, service_name_value))
+        return items, total
 
     def list_calendar(
         self,

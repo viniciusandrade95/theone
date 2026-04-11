@@ -25,8 +25,10 @@ type Customer = {
 type Appointment = {
   id: string;
   customer_id: string;
+  customer_name?: string | null;
   location_id: string;
   service_id: string | null;
+  service_name?: string | null;
   starts_at: string;
   ends_at: string;
   status: AppointmentStatus;
@@ -476,6 +478,15 @@ export default function AppointmentsPage() {
                 ) : (
                   items.map((appointment) => {
                     const isFocused = appointment.id === focusAppointmentId;
+                    const resolvedCustomerName =
+                      appointment.customer_name?.trim() ||
+                      customerNameById[appointment.customer_id] ||
+                      appointment.customer_id;
+                    const resolvedServiceName = appointment.service_id
+                      ? appointment.service_name?.trim() ||
+                        serviceNameById[appointment.service_id] ||
+                        appointment.service_id
+                      : null;
                     return (
                       <tr
                         id={`appointment-${appointment.id}`}
@@ -485,11 +496,9 @@ export default function AppointmentsPage() {
                       >
                         <td className="px-4 py-3 text-slate-700">{formatDateTime(appointment.starts_at)}</td>
                         <td className="px-4 py-3 text-slate-700">{formatDateTime(appointment.ends_at)}</td>
+                        <td className="px-4 py-3 text-slate-700">{resolvedCustomerName}</td>
                         <td className="px-4 py-3 text-slate-700">
-                          {customerNameById[appointment.customer_id] ?? appointment.customer_id}
-                        </td>
-                        <td className="px-4 py-3 text-slate-700">
-                          {appointment.service_id ? serviceNameById[appointment.service_id] ?? appointment.service_id : "-"}
+                          {resolvedServiceName || "-"}
                         </td>
                         <td className="px-4 py-3 capitalize text-slate-700">{appointment.status}</td>
                         <td className="px-4 py-3 text-slate-700">{formatDateTime(appointment.created_at)}</td>

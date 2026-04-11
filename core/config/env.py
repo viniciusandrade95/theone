@@ -62,6 +62,7 @@ class AppConfig:
     # Chatbot integration
     CHATBOT_SERVICE_BASE_URL: str | None
     CHATBOT_SERVICE_TIMEOUT_SECONDS: int
+    ASSISTANT_CONNECTOR_HEADER: str
     ASSISTANT_CONNECTOR_TOKEN: str | None
 
     @staticmethod
@@ -106,6 +107,12 @@ class AppConfig:
 
             CHATBOT_SERVICE_BASE_URL=_get("CHATBOT_SERVICE_BASE_URL", required=False),
             CHATBOT_SERVICE_TIMEOUT_SECONDS=int(_get("CHATBOT_SERVICE_TIMEOUT_SECONDS", required=False, default="15")),
+            ASSISTANT_CONNECTOR_HEADER=_get(
+                "ASSISTANT_CONNECTOR_HEADER",
+                required=False,
+                default="X-Assistant-Token",
+            )
+            or "X-Assistant-Token",
             ASSISTANT_CONNECTOR_TOKEN=_get("ASSISTANT_CONNECTOR_TOKEN", required=False),
 
             REDIS_URL=_get("REDIS_URL", required=False, default="redis://localhost:6379/0"),

@@ -60,14 +60,36 @@ def require_user_or_assistant_connector(
         return {"mode": "user", **identity}
 
     cfg = get_config()
+    header_name = (cfg.ASSISTANT_CONNECTOR_HEADER or "X-Assistant-Token").strip() or "X-Assistant-Token"
     expected = cfg.ASSISTANT_CONNECTOR_TOKEN
-    if not x_assistant_token:
-        raise UnauthorizedError("Missing bearer token")
-    if not expected or x_assistant_token.strip() != expected:
+    provided = request.headers.get(header_name) or x_assistant_token
+    if not provided:
+        raise UnauthorizedError("Missing assistant token")
+    if not expected or provided.strip() != expected:
         raise UnauthorizedError("Invalid assistant token")
 
     tenant_id = require_tenant_id()
     return {"mode": "assistant_connector", "user_id": None, "tenant_id": tenant_id}
+
+
+def require_assistant_token(
+    request: Request,
+    x_assistant_token: str | None = Header(default=None, alias="X-Assistant-Token"),
+):
+    """Authenticate server-to-server calls (assistant connector) using a shared secret header.
+
+    Header name is configurable via `ASSISTANT_CONNECTOR_HEADER` (default: `X-Assistant-Token`).
+    Secret is configured via `ASSISTANT_CONNECTOR_TOKEN`.
+    """
+    cfg = get_config()
+    header_name = (cfg.ASSISTANT_CONNECTOR_HEADER or "X-Assistant-Token").strip() or "X-Assistant-Token"
+    expected = cfg.ASSISTANT_CONNECTOR_TOKEN
+    provided = request.headers.get(header_name) or x_assistant_token
+    if not provided:
+        raise UnauthorizedError("Missing assistant token")
+    if not expected or provided.strip() != expected:
+        raise UnauthorizedError("Invalid assistant token")
+    return True
 
 
 def require_tenant_header(x_tenant_id: str = Header(..., alias="X-Tenant-ID")):
