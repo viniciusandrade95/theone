@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { clearAuth, getTenantId } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { appPath } from "@/lib/paths";
+import { MobileNav } from "@/components/dashboard/MobileNav";
+import { IconMenu, IconLogout } from "@/components/ui/icons";
 
 type Me = {
   email: string;
@@ -33,6 +35,7 @@ function resolveTitle(pathname: string) {
 export function TopBar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState<string | null>(null);
   const pageTitle = useMemo(() => resolveTitle(pathname), [pathname]);
@@ -69,17 +72,31 @@ export function TopBar() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur">
+      <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
       <div className="flex items-center justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(true)}
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white p-2 text-slate-700 transition-colors duration-200 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 lg:hidden"
+            aria-label="Open navigation menu"
+            aria-haspopup="dialog"
+            aria-expanded={mobileNavOpen}
+          >
+            <IconMenu className="h-5 w-5" />
+          </button>
+
+          <div>
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Beauty CRM</p>
           <h2 className="text-xl font-semibold text-slate-900">{pageTitle}</h2>
+          </div>
         </div>
 
         <div className="relative">
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="rounded-xl border border-slate-200 px-3 py-2 text-left text-sm hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 px-3 py-2 text-left text-sm transition-colors duration-200 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
           >
             <p className="font-semibold text-slate-900">{email ?? "User"}</p>
             <p className="text-xs text-slate-500">Tenant {tenantId ?? "-"}</p>
@@ -90,9 +107,10 @@ export function TopBar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-800 hover:bg-slate-100"
+                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-800 transition-colors duration-200 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
               >
                 Logout
+                <IconLogout className="h-4 w-4 text-slate-600" aria-hidden />
               </button>
             </div>
           ) : null}

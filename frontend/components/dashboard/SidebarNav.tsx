@@ -39,9 +39,9 @@ export function SidebarNav() {
               key={item.href}
               href={item.href}
               className={[
-                "mb-1 block rounded-xl px-3 py-2 text-sm font-medium transition",
+                "mb-1 block rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2",
                 active
-                  ? "bg-slate-900 text-white"
+                  ? "bg-brand-600 text-white"
                   : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
               ].join(" ")}
             >
