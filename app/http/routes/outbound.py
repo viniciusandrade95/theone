@@ -2,10 +2,11 @@ import urllib.parse
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Header, Query, Request
 from pydantic import BaseModel, Field
 
 from app.http.deps import require_tenant_header, require_user
+from core.config import get_config
 from core.db.session import db_session
 from core.errors import NotFoundError, ValidationError
 from core.tenancy import require_tenant_id
@@ -29,6 +30,9 @@ from modules.messaging.models.outbound_message_orm import OutboundMessageORM
 from sqlalchemy import select
 
 from core.observability.metrics import inc_counter
+from core.observability.tracing import require_trace_id
+from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM
+from modules.messaging.providers.meta_whatsapp_cloud import MetaWhatsAppCloudProvider
 
 
 router = APIRouter()
@@ -62,6 +66,20 @@ def _to_message_out(msg) -> dict:
         "error_message": msg.error_message,
         "sent_by_user_id": str(msg.sent_by_user_id) if msg.sent_by_user_id else None,
         "sent_at": msg.sent_at,
+        "provider": getattr(msg, "provider", None),
+        "provider_message_id": getattr(msg, "provider_message_id", None),
+        "recipient": getattr(msg, "recipient", None),
+        "delivery_status": getattr(msg, "delivery_status", None),
+        "delivery_status_updated_at": getattr(msg, "delivery_status_updated_at", None),
+        "error_code": getattr(msg, "error_code", None),
+        "idempotency_key": getattr(msg, "idempotency_key", None),
+        "trigger_type": getattr(msg, "trigger_type", None),
+        "trace_id": getattr(msg, "trace_id", None),
+        "conversation_id": str(msg.conversation_id) if getattr(msg, "conversation_id", None) else None,
+        "assistant_session_id": getattr(msg, "assistant_session_id", None),
+        "scheduled_for": getattr(msg, "scheduled_for", None),
+        "delivered_at": getattr(msg, "delivered_at", None),
+        "failed_at": getattr(msg, "failed_at", None),
         "created_at": msg.created_at,
         "updated_at": msg.updated_at,
     }
@@ -323,7 +341,13 @@ class SendOut(BaseModel):
 
 
 @router.post("/outbound/send", response_model=SendOut)
-def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_header), identity=Depends(require_user)):
+def send(
+    payload: SendIn,
+    request: Request,
+    _tenant=Depends(require_tenant_header),
+    identity=Depends(require_user),
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+):
     tenant_id_str = require_tenant_id()
     tenant_id = uuid.UUID(tenant_id_str)
     channel = normalize_channel(payload.channel)
@@ -368,6 +392,16 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
         if rendered_body is None:
             raise ValidationError("final_body_or_template_required")
 
+        trace_id = require_trace_id()
+        existing_by_key = repo.get_by_idempotency_key(tenant_id=tenant_id, idempotency_key=idempotency_key or "")
+        if existing_by_key is not None:
+            return SendOut(
+                ok=existing_by_key.status != "failed",
+                outbound_message=_to_message_out(existing_by_key),
+                whatsapp_url=None,
+                note="Idempotency-Key replay (returning existing outbound message).",
+            )
+
         # required contact for whatsapp deeplink
         phone_digits = _normalize_phone_for_wa(customer.phone or "")
         if phone_digits is None:
@@ -383,6 +417,12 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
                 error_message="customer_missing_valid_phone",
                 sent_by_user_id=user_id,
                 sent_at=None,
+                recipient=None,
+                delivery_status="failed",
+                error_code="customer_missing_valid_phone",
+                trigger_type="manual",
+                trace_id=trace_id,
+                idempotency_key=idempotency_key,
             )
             inc_counter(
                 "outbound_send_total",
@@ -390,10 +430,22 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
             )
             return SendOut(ok=False, outbound_message=_to_message_out(failed), whatsapp_url=None, note="Customer has no valid phone for WhatsApp.")
 
-        # prepare link
+        # Prefer provider-backed send when configured + tenant has an active WhatsApp account.
+        account = session.execute(
+            select(WhatsAppAccountORM)
+            .where(WhatsAppAccountORM.tenant_id == tenant_id)
+            .where(WhatsAppAccountORM.provider == "meta")
+            .where(WhatsAppAccountORM.status == "active")
+            .order_by(WhatsAppAccountORM.created_at.asc())
+        ).scalars().first()
+        provider = MetaWhatsAppCloudProvider()
+        provider_enabled = bool(getattr(get_config(), "WHATSAPP_CLOUD_ACCESS_TOKEN", None)) and account is not None
+
+        # NOTE: status='sent' is maintained for backwards compatibility in UI/history.
+        # Provider-backed delivery status is tracked in `delivery_status`.
+
         whatsapp_url = _whatsapp_deeplink(phone_digits=phone_digits, text=rendered_body)
 
-        # NOTE: in MVP, status='sent' means "assistido" (user initiated), not provider delivery confirmation.
         # Cheap dedupe for double-clicks: same customer + same body within a short window.
         now_utc = datetime.now(timezone.utc)
         window_start = now_utc - timedelta(seconds=10)
@@ -417,7 +469,7 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
                 whatsapp_url=whatsapp_url,
                 note="Duplicate send prevented (same body).",
             )
-        sent_at = now_utc
+        # Create baseline history row before attempting provider send.
         msg = repo.create_message(
             tenant_id=tenant_id,
             customer_id=customer.id,
@@ -426,22 +478,75 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
             type=t_type,
             channel=channel,
             rendered_body=rendered_body,
-            status="sent",
+            status="pending",
             error_message=None,
             sent_by_user_id=user_id,
-            sent_at=sent_at,
+            sent_at=None,
+            recipient=phone_digits,
+            delivery_status="queued" if provider_enabled else "unconfirmed",
+            delivery_status_updated_at=now_utc if provider_enabled else None,
+            trigger_type="manual",
+            trace_id=trace_id,
+            idempotency_key=idempotency_key,
         )
+
+        if provider_enabled and account is not None:
+            try:
+                res = provider.send_whatsapp_text(
+                    phone_number_id=account.phone_number_id,
+                    to_phone=phone_digits,
+                    body=rendered_body,
+                    trace_id=trace_id,
+                    idempotency_key=idempotency_key,
+                )
+                msg.provider = res.provider
+                msg.provider_message_id = res.provider_message_id
+                msg.delivery_status = "accepted"
+                msg.delivery_status_updated_at = now_utc
+                msg.status = "sent"
+                msg.sent_at = now_utc
+                session.add(msg)
+                session.flush()
+                inc_counter(
+                    "outbound_send_total",
+                    labels={"status": "sent", "channel": channel, "type": t_type},
+                )
+                request.app.state.container.crm.add_interaction(
+                    customer_id=str(customer.id),
+                    type="outbound_whatsapp",
+                    content=rendered_body,
+                )
+                return SendOut(
+                    ok=True,
+                    outbound_message=_to_message_out(msg),
+                    whatsapp_url=None,
+                    note="Sent via WhatsApp provider (delivery status will update via callbacks).",
+                )
+            except Exception as err:
+                repo.mark_failed(tenant_id=tenant_id, message_id=str(msg.id), error_message=str(err))
+                msg.error_code = "provider_send_failed"
+                session.add(msg)
+                session.flush()
+                inc_counter(
+                    "outbound_send_total",
+                    labels={"status": "failed", "channel": channel, "type": t_type},
+                )
+                return SendOut(
+                    ok=False,
+                    outbound_message=_to_message_out(msg),
+                    whatsapp_url=whatsapp_url,
+                    note="Provider send failed; falling back to WhatsApp deeplink.",
+                )
+
+        # Fallback: user-assisted deeplink initiation.
+        repo.mark_sent(tenant_id=tenant_id, message_id=str(msg.id), sent_at=now_utc)
         inc_counter(
             "outbound_send_total",
             labels={"status": "sent", "channel": channel, "type": t_type},
         )
 
         # side effect: interaction only when status=sent
-        request.app.state.container.crm.add_interaction(
-            customer_id=str(customer.id),
-            type="outbound_whatsapp",
-            content=rendered_body,
-        )
+        request.app.state.container.crm.add_interaction(customer_id=str(customer.id), type="outbound_whatsapp", content=rendered_body)
 
         return SendOut(
             ok=True,
@@ -481,6 +586,70 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
             return SendOut(ok=False, outbound_message=_to_message_out(msg), whatsapp_url=None, note="Customer has no valid phone for WhatsApp.")
 
         whatsapp_url = _whatsapp_deeplink(phone_digits=phone_digits, text=msg.rendered_body)
+
+        trace_id = require_trace_id()
+
+        account = session.execute(
+            select(WhatsAppAccountORM)
+            .where(WhatsAppAccountORM.tenant_id == tenant_id)
+            .where(WhatsAppAccountORM.provider == "meta")
+            .where(WhatsAppAccountORM.status == "active")
+            .order_by(WhatsAppAccountORM.created_at.asc())
+        ).scalars().first()
+        provider = MetaWhatsAppCloudProvider()
+        provider_enabled = bool(getattr(get_config(), "WHATSAPP_CLOUD_ACCESS_TOKEN", None)) and account is not None
+
+        now_utc = datetime.now(timezone.utc)
+        msg.status = "pending"
+        msg.error_message = None
+        msg.error_code = None
+        msg.delivery_status = "queued" if provider_enabled else "unconfirmed"
+        msg.delivery_status_updated_at = now_utc if provider_enabled else None
+        session.add(msg)
+        session.flush()
+
+        if provider_enabled and account is not None:
+            try:
+                res = provider.send_whatsapp_text(
+                    phone_number_id=account.phone_number_id,
+                    to_phone=phone_digits,
+                    body=msg.rendered_body,
+                    trace_id=trace_id,
+                )
+                msg.provider = res.provider
+                msg.provider_message_id = res.provider_message_id
+                msg.delivery_status = "accepted"
+                msg.delivery_status_updated_at = now_utc
+                msg.status = "sent"
+                msg.sent_at = now_utc
+                session.add(msg)
+                session.flush()
+                inc_counter(
+                    "outbound_send_total",
+                    labels={"status": "sent", "channel": msg.channel, "type": msg.type},
+                )
+                request.app.state.container.crm.add_interaction(
+                    customer_id=str(customer.id),
+                    type="outbound_whatsapp",
+                    content=msg.rendered_body,
+                )
+                return SendOut(
+                    ok=True,
+                    outbound_message=_to_message_out(msg),
+                    whatsapp_url=None,
+                    note="Resent via WhatsApp provider (delivery status will update via callbacks).",
+                )
+            except Exception as err:
+                repo.mark_failed(tenant_id=tenant_id, message_id=message_id, error_message=str(err))
+                msg.error_code = "provider_send_failed"
+                session.add(msg)
+                session.flush()
+                inc_counter(
+                    "outbound_send_total",
+                    labels={"status": "failed", "channel": msg.channel, "type": msg.type},
+                )
+                # fall back to deeplink-assisted send
+
         repo.mark_sent(tenant_id=tenant_id, message_id=message_id)
         inc_counter(
             "outbound_send_total",

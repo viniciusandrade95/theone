@@ -128,6 +128,7 @@ def create_app() -> FastAPI:
 
         if (
             request.url.path.startswith("/messaging/inbound")
+            or request.url.path.startswith("/messaging/delivery")
             or request.url.path.startswith("/public/book")
             or request.url.path in PUBLIC_PATHS
         ):

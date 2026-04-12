@@ -23,7 +23,17 @@ export type MessageTemplate = {
   updated_at: string;
 };
 
-export type OutboundMessageStatus = "pending" | "sent" | "failed";
+export type OutboundMessageStatus = "pending" | "sent" | "delivered" | "failed";
+
+export type OutboundDeliveryStatus =
+  | "queued"
+  | "accepted"
+  | "sent"
+  | "delivered"
+  | "read"
+  | "failed"
+  | "unconfirmed"
+  | null;
 
 export type OutboundMessage = {
   id: string;
@@ -38,6 +48,20 @@ export type OutboundMessage = {
   error_message: string | null;
   sent_by_user_id: string | null;
   sent_at: string | null;
+  provider?: string | null;
+  provider_message_id?: string | null;
+  recipient?: string | null;
+  delivery_status?: OutboundDeliveryStatus;
+  delivery_status_updated_at?: string | null;
+  error_code?: string | null;
+  idempotency_key?: string | null;
+  trigger_type?: string | null;
+  trace_id?: string | null;
+  conversation_id?: string | null;
+  assistant_session_id?: string | null;
+  scheduled_for?: string | null;
+  delivered_at?: string | null;
+  failed_at?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -77,4 +101,3 @@ export type SendResponse = {
   whatsapp_url?: string | null;
   note?: string | null;
 };
-

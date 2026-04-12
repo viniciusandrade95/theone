@@ -9,7 +9,8 @@ from modules.messaging.models.message_template_orm import MessageTemplateORM
 from modules.messaging.models.outbound_message_orm import OutboundMessageORM
 
 
-_ALLOWED_OUTBOUND_STATUSES = {"pending", "sent", "failed"}
+_ALLOWED_OUTBOUND_STATUSES = {"pending", "sent", "delivered", "failed"}
+_ALLOWED_DELIVERY_STATUSES = {"queued", "accepted", "sent", "delivered", "read", "failed", "unconfirmed"}
 
 
 def _now():
@@ -184,6 +185,17 @@ class OutboundRepo:
             raise NotFoundError("outbound_message_not_found", meta={"id": message_id})
         return row
 
+    def get_by_idempotency_key(self, *, tenant_id: uuid.UUID, idempotency_key: str) -> OutboundMessageORM | None:
+        key = (idempotency_key or "").strip()
+        if not key:
+            return None
+        stmt = (
+            select(OutboundMessageORM)
+            .where(OutboundMessageORM.tenant_id == tenant_id)
+            .where(OutboundMessageORM.idempotency_key == key)
+        )
+        return self.session.execute(stmt).scalar_one_or_none()
+
     def create_message(
         self,
         *,
@@ -198,10 +210,30 @@ class OutboundRepo:
         error_message: str | None,
         sent_by_user_id: uuid.UUID | None,
         sent_at: datetime | None,
+        provider: str | None = None,
+        provider_message_id: str | None = None,
+        recipient: str | None = None,
+        delivery_status: str | None = None,
+        delivery_status_updated_at: datetime | None = None,
+        error_code: str | None = None,
+        idempotency_key: str | None = None,
+        trigger_type: str | None = None,
+        trace_id: str | None = None,
+        conversation_id: uuid.UUID | None = None,
+        assistant_session_id: str | None = None,
+        scheduled_for: datetime | None = None,
+        delivered_at: datetime | None = None,
+        failed_at: datetime | None = None,
     ) -> OutboundMessageORM:
         normalized_status = (status or "").strip().lower()
         if normalized_status not in _ALLOWED_OUTBOUND_STATUSES:
             raise ValidationError("invalid_outbound_status", meta={"allowed": sorted(_ALLOWED_OUTBOUND_STATUSES)})
+        normalized_delivery_status = None
+        if delivery_status is not None:
+            normalized_delivery_status = (delivery_status or "").strip().lower()
+            if normalized_delivery_status not in _ALLOWED_DELIVERY_STATUSES:
+                raise ValidationError("invalid_delivery_status", meta={"allowed": sorted(_ALLOWED_DELIVERY_STATUSES)})
+        normalized_idempotency_key = (idempotency_key or "").strip() or None
         msg = OutboundMessageORM(
             id=uuid.uuid4(),
             tenant_id=tenant_id,
@@ -215,6 +247,20 @@ class OutboundRepo:
             error_message=error_message,
             sent_by_user_id=sent_by_user_id,
             sent_at=sent_at,
+            provider=(provider.strip().lower() if isinstance(provider, str) and provider.strip() else None),
+            provider_message_id=(provider_message_id.strip() if isinstance(provider_message_id, str) and provider_message_id.strip() else None),
+            recipient=(recipient.strip() if isinstance(recipient, str) and recipient.strip() else None),
+            delivery_status=normalized_delivery_status,
+            delivery_status_updated_at=delivery_status_updated_at,
+            error_code=(error_code.strip() if isinstance(error_code, str) and error_code.strip() else None),
+            idempotency_key=normalized_idempotency_key,
+            trigger_type=(trigger_type.strip().lower() if isinstance(trigger_type, str) and trigger_type.strip() else None),
+            trace_id=(trace_id.strip() if isinstance(trace_id, str) and trace_id.strip() else None),
+            conversation_id=conversation_id,
+            assistant_session_id=(assistant_session_id.strip() if isinstance(assistant_session_id, str) and assistant_session_id.strip() else None),
+            scheduled_for=scheduled_for,
+            delivered_at=delivered_at,
+            failed_at=failed_at,
             created_at=_now(),
             updated_at=_now(),
         )
@@ -226,6 +272,9 @@ class OutboundRepo:
         msg = self.get_message(tenant_id=tenant_id, message_id=message_id)
         msg.status = "failed"
         msg.error_message = error_message.strip()[:2000] if error_message else "unknown_error"
+        msg.delivery_status = "failed"
+        msg.delivery_status_updated_at = _now()
+        msg.failed_at = msg.failed_at or _now()
         msg.updated_at = _now()
         self.session.flush()
         return msg
@@ -235,7 +284,52 @@ class OutboundRepo:
         msg.status = "sent"
         msg.error_message = None
         msg.sent_at = sent_at or _now()
+        msg.delivery_status = msg.delivery_status or "unconfirmed"
+        msg.delivery_status_updated_at = msg.delivery_status_updated_at or _now()
         msg.updated_at = _now()
         self.session.flush()
         return msg
 
+    def find_by_provider_message_id(
+        self, *, tenant_id: uuid.UUID, provider: str, provider_message_id: str
+    ) -> OutboundMessageORM | None:
+        stmt = (
+            select(OutboundMessageORM)
+            .where(OutboundMessageORM.tenant_id == tenant_id)
+            .where(OutboundMessageORM.provider == provider)
+            .where(OutboundMessageORM.provider_message_id == provider_message_id)
+        )
+        return self.session.execute(stmt).scalar_one_or_none()
+
+    def update_delivery_status(
+        self,
+        *,
+        tenant_id: uuid.UUID,
+        message_id: uuid.UUID,
+        delivery_status: str,
+        error_code: str | None = None,
+        delivered_at: datetime | None = None,
+        failed_at: datetime | None = None,
+    ) -> OutboundMessageORM:
+        normalized = (delivery_status or "").strip().lower()
+        if normalized not in _ALLOWED_DELIVERY_STATUSES:
+            raise ValidationError("invalid_delivery_status", meta={"allowed": sorted(_ALLOWED_DELIVERY_STATUSES)})
+        stmt = (
+            select(OutboundMessageORM)
+            .where(OutboundMessageORM.tenant_id == tenant_id)
+            .where(OutboundMessageORM.id == message_id)
+        )
+        msg = self.session.execute(stmt).scalar_one()
+        msg.delivery_status = normalized
+        msg.delivery_status_updated_at = _now()
+        if normalized in {"delivered", "read"}:
+            msg.status = "delivered"
+            msg.delivered_at = delivered_at or msg.delivered_at or _now()
+            msg.error_message = None
+        if normalized == "failed":
+            msg.status = "failed"
+            msg.failed_at = failed_at or msg.failed_at or _now()
+            msg.error_code = (error_code or "").strip() or None
+        msg.updated_at = _now()
+        self.session.flush()
+        return msg
