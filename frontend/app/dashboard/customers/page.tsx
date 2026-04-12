@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { appPath } from "@/lib/paths";
 
@@ -207,7 +208,7 @@ export default function CustomersPage() {
             <select
               value={stageFilter}
               onChange={(event) => setStageFilter(event.target.value as "all" | Stage)}
-              className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-700"
+              className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-700 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
             >
               <option value="all">All stages</option>
               <option value="lead">Lead</option>
@@ -220,7 +221,7 @@ export default function CustomersPage() {
             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
           ) : null}
 
-          <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <div className="overflow-x-auto rounded-xl border border-slate-200" aria-busy={isLoading}>
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-slate-600">
                 <tr>
@@ -234,11 +235,28 @@ export default function CustomersPage() {
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {isLoading ? (
-                  <tr>
-                    <td className="px-4 py-6 text-slate-500" colSpan={6}>
-                      Loading customers...
-                    </td>
-                  </tr>
+                  Array.from({ length: 8 }).map((_, idx) => (
+                    <tr key={`skeleton-${idx}`}>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-40" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-28" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-44" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-20" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-32" />
+                      </td>
+                    </tr>
+                  ))
                 ) : customers.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-slate-500" colSpan={6}>
@@ -246,20 +264,32 @@ export default function CustomersPage() {
                     </td>
                   </tr>
                 ) : (
-                  customers.map((customer) => (
-                    <tr
-                      key={customer.id}
-                      className="cursor-pointer hover:bg-slate-50"
-                      onClick={() => router.push(appPath(`/dashboard/customers/${customer.id}`))}
-                    >
-                      <td className="px-4 py-3 font-semibold text-slate-900">{customer.name}</td>
-                      <td className="px-4 py-3 text-slate-600">{customer.phone ?? "-"}</td>
-                      <td className="px-4 py-3 text-slate-600">{customer.email ?? "-"}</td>
-                      <td className="px-4 py-3 capitalize text-slate-700">{customer.stage}</td>
-                      <td className="px-4 py-3 text-slate-600">{formatDate(customer.created_at)}</td>
-                      <td className="px-4 py-3 text-slate-600">{formatDateTime(nextAppointments[customer.id])}</td>
-                    </tr>
-                  ))
+                  customers.map((customer) => {
+                    const customerHref = appPath(`/dashboard/customers/${customer.id}`);
+                    return (
+                      <tr
+                        key={customer.id}
+                        className="cursor-pointer transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
+                        onClick={() => router.push(customerHref)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            router.push(customerHref);
+                          }
+                        }}
+                        tabIndex={0}
+                        role="link"
+                        aria-label={`Open customer ${customer.name}`}
+                      >
+                        <td className="px-4 py-3 font-semibold text-slate-900">{customer.name}</td>
+                        <td className="px-4 py-3 text-slate-600">{customer.phone ?? "-"}</td>
+                        <td className="px-4 py-3 text-slate-600">{customer.email ?? "-"}</td>
+                        <td className="px-4 py-3 capitalize text-slate-700">{customer.stage}</td>
+                        <td className="px-4 py-3 text-slate-600">{formatDate(customer.created_at)}</td>
+                        <td className="px-4 py-3 text-slate-600">{formatDateTime(nextAppointments[customer.id])}</td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
