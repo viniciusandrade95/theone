@@ -25,9 +25,15 @@ from modules.tenants.repo.settings_sql import SqlTenantSettingsRepo
 
 router = APIRouter()
 
-DEFAULT_ASSISTANT_APPOINTMENT_NOTES = "criado pelo assistant"
 SUCCESS_MESSAGE = "Pré-reserva criada com sucesso."
-_MAX_NOTES_LEN = 1000
+
+
+def _reference_for(appointment_id: uuid.UUID) -> str:
+    return f"PB-{appointment_id.hex[:8].upper()}"
+
+
+def _bad_request(message: str) -> JSONResponse:
+    return JSONResponse(status_code=400, content={"error": "BAD_REQUEST", "message": message})
 
 
 def _ensure_tz(tz_name: str) -> ZoneInfo:
@@ -100,6 +106,10 @@ def _resolve_customer(session, request: Request, *, tenant_uuid: uuid.UUID, payl
         return existing.id
 
     name = (payload.name or "").strip()
+    if not name:
+        raise ValidationError("missing_customer_name")
+    if not phone:
+        raise ValidationError("missing_customer_phone")
 
     container = request.app.state.container
     created = container.crm.create_customer(
@@ -194,6 +204,8 @@ def _resolve_window(*, booking, service: ServiceORM, location: LocationORM) -> t
             raise ValidationError("starts_at_must_be_timezone_aware")
         starts_utc = booking.starts_at.astimezone(timezone.utc)
     else:
+        if not (booking.requested_date or "").strip() or not (booking.requested_time or "").strip():
+            raise ValidationError("missing_requested_date_time")
         tz_name = (booking.timezone or "").strip() if getattr(booking, "timezone", None) else ""
         tz_name = tz_name or location.timezone
         tz = _ensure_tz(tz_name)
@@ -214,19 +226,6 @@ def _resolve_window(*, booking, service: ServiceORM, location: LocationORM) -> t
     return starts_utc, ends_utc
 
 
-def _compose_notes(user_notes: str | None) -> str:
-    base = DEFAULT_ASSISTANT_APPOINTMENT_NOTES
-    extra = (user_notes or "").strip()
-    if not extra:
-        return base
-    merged = f"{base} | {extra}"
-    if len(merged) <= _MAX_NOTES_LEN:
-        return merged
-    # Truncate user notes to fit.
-    allowed = max(0, _MAX_NOTES_LEN - len(base) - len(" | "))
-    return f"{base} | {extra[:allowed]}".rstrip()
-
-
 @router.post("/assistant/prebook", status_code=201)
 def prebook(
     payload: PrebookIn,
@@ -238,6 +237,8 @@ def prebook(
     tenant_id = require_tenant_id()
     if payload.tenant_id is not None and str(payload.tenant_id) != tenant_id:
         raise ForbiddenError("tenant_mismatch", meta={"header": tenant_id, "body": str(payload.tenant_id)})
+
+    trace_id = (request.headers.get("X-Trace-Id") or payload.trace_id or "").strip()
 
     effective_idem = (idempotency_key or payload.idempotency_key or "").strip() or None
 
@@ -262,10 +263,35 @@ def prebook(
             if existing is not None:
                 if existing.appointment_id is not None:
                     appointment_id = str(existing.appointment_id)
-                    return {"ok": True, "prebooking_id": appointment_id, "reference": appointment_id, "message": SUCCESS_MESSAGE}
+                    ref = _reference_for(uuid.UUID(appointment_id))
+                    return JSONResponse(
+                        status_code=200,
+                        content={
+                            "ok": True,
+                            "reference": ref,
+                            "status": "existing",
+                            "message": SUCCESS_MESSAGE,
+                            "trace_id": trace_id,
+                            "data": {
+                                "prebooking_id": appointment_id,
+                                "appointment_id": appointment_id,
+                                "customer_id": str(existing.customer_id) if existing.customer_id else None,
+                                "service_id": str(existing.service_id) if existing.service_id else None,
+                                "location_id": str(existing.location_id) if existing.location_id else None,
+                                "starts_at": existing.starts_at.isoformat() if existing.starts_at else None,
+                                "ends_at": existing.ends_at.isoformat() if existing.ends_at else None,
+                                "needs_confirmation": True,
+                            },
+                        },
+                    )
                 return JSONResponse(
                     status_code=409,
-                    content={"message": "Horário indisponível", "error_code": "conflict", "retriable": False},
+                    content={
+                        "error": "UNAVAILABLE",
+                        "message": "Pedido em processamento. Tente novamente.",
+                        "error_code": "conflict",
+                        "retriable": True,
+                    },
                 )
 
         try:
@@ -279,7 +305,9 @@ def prebook(
             service = _resolve_service(session, tenant_uuid=tenant_uuid, service_id=payload.booking.service_id)
             starts_utc, ends_utc = _resolve_window(booking=payload.booking, service=service, location=location)
             if ends_utc <= starts_utc:
-                return JSONResponse(status_code=400, content={"message": "ends_at must be after starts_at"})
+                return _bad_request("starts_at must be before ends_at")
+            if starts_utc <= datetime.now(timezone.utc):
+                return _bad_request("starts_at must be in the future")
 
             # Best-effort idempotency: reuse if same customer+location+service+starts_at already exists (and not cancelled).
             reuse_stmt = (
@@ -305,9 +333,26 @@ def prebook(
                         starts_at=starts_utc,
                         ends_at=ends_utc,
                     )
+                ref = _reference_for(reused_id)
                 return JSONResponse(
                     status_code=200,
-                    content={"ok": True, "prebooking_id": appointment_id, "reference": appointment_id, "message": SUCCESS_MESSAGE},
+                    content={
+                        "ok": True,
+                        "reference": ref,
+                        "status": "existing",
+                        "message": SUCCESS_MESSAGE,
+                        "trace_id": trace_id,
+                        "data": {
+                            "prebooking_id": appointment_id,
+                            "appointment_id": appointment_id,
+                            "customer_id": str(customer_id),
+                            "service_id": str(service.id),
+                            "location_id": str(location.id),
+                            "starts_at": starts_utc.isoformat(),
+                            "ends_at": ends_utc.isoformat(),
+                            "needs_confirmation": True,
+                        },
+                    },
                 )
 
             repo = AppointmentsRepo(session)
@@ -321,7 +366,7 @@ def prebook(
                     ends_at=ends_utc,
                     status="pending",
                     needs_confirmation=True,
-                    notes=_compose_notes(payload.booking.notes),
+                    notes=(payload.booking.notes or None),
                     created_by_user_id=None,
                     updated_by_user_id=None,
                 ),
@@ -339,32 +384,63 @@ def prebook(
                 )
 
             appointment_id = str(appointment.id)
-            return {"ok": True, "prebooking_id": appointment_id, "reference": appointment_id, "message": SUCCESS_MESSAGE}
-        except AppointmentOverlapError:
+            ref = _reference_for(appointment.id)
+            return {
+                "ok": True,
+                "reference": ref,
+                "status": "created",
+                "message": SUCCESS_MESSAGE,
+                "trace_id": trace_id,
+                "data": {
+                    "prebooking_id": appointment_id,
+                    "appointment_id": appointment_id,
+                    "customer_id": str(customer_id),
+                    "service_id": str(service.id),
+                    "location_id": str(location.id),
+                    "starts_at": starts_utc.isoformat(),
+                    "ends_at": ends_utc.isoformat(),
+                    "needs_confirmation": True,
+                },
+            }
+        except AppointmentOverlapError as err:
             if started is not None:
                 prebook_repo.delete(row=started)
+            conflict_ids = [str(item.get("id")) for item in (err.conflicts or []) if item.get("id")]
             return JSONResponse(
                 status_code=409,
-                content={"message": "Horário indisponível", "error_code": "conflict", "retriable": False},
+                content={
+                    "error": "APPOINTMENT_OVERLAP",
+                    "message": "Horário indisponível",
+                    "error_code": "conflict",
+                    "retriable": False,
+                    "conflicts": conflict_ids,
+                },
             )
         except ValidationError as err:
             if started is not None:
                 prebook_repo.delete(row=started)
-            if err.message in {
-                "missing_service_id",
-                "invalid_service_id",
-                "service_not_found",
-                "service_ambiguous",
-                "service_not_found_or_inactive",
-            }:
-                return JSONResponse(
-                    status_code=400,
-                    content={"error": "VALIDATION_ERROR", "details": {"message": err.message, **(err.meta or {})}},
-                )
-            return JSONResponse(
-                status_code=422,
-                content={"error": "VALIDATION_ERROR", "details": {"message": err.message, **(err.meta or {})}},
-            )
+            message = err.message
+            if message == "missing_customer_name":
+                return _bad_request("customer.name is required when customer_id is not provided")
+            if message == "missing_customer_phone":
+                return _bad_request("customer.phone is required when customer_id is not provided")
+            if message == "missing_requested_date_time":
+                return _bad_request("booking.starts_at or (booking.requested_date + booking.requested_time) is required")
+            if message == "invalid_requested_date":
+                return _bad_request("booking.requested_date must be YYYY-MM-DD")
+            if message == "invalid_requested_time":
+                return _bad_request("booking.requested_time must be HH:MM")
+            if message == "invalid_timezone":
+                return _bad_request("booking.timezone is invalid")
+            if message in {"missing_service_id", "invalid_service_id", "service_not_found_or_inactive", "service_not_found"}:
+                return _bad_request("booking.service_id is invalid or inactive")
+            if message in {"invalid_location_id", "location_not_found"}:
+                return _bad_request("booking.location_id is invalid")
+            if message in {"invalid_customer_id", "customer_not_found"}:
+                return _bad_request("customer.customer_id is invalid")
+            if message in {"starts_at_must_be_timezone_aware", "ends_at_must_be_timezone_aware"}:
+                return _bad_request("starts_at/ends_at must include timezone info")
+            return _bad_request("invalid payload")
         except Exception:
             if started is not None:
                 prebook_repo.delete(row=started)

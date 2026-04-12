@@ -64,6 +64,10 @@ def require_user_or_assistant_connector(
     cfg = get_config()
     header_name = (cfg.ASSISTANT_CONNECTOR_HEADER or "X-Assistant-Token").strip() or "X-Assistant-Token"
     expected = cfg.ASSISTANT_CONNECTOR_TOKEN
+    # MVP: when the shared secret is not configured, allow calls without the header.
+    if not expected:
+        tenant_id = require_tenant_id()
+        return {"mode": "assistant_connector", "user_id": None, "tenant_id": tenant_id}
     provided = request.headers.get(header_name) or x_assistant_token
     if not provided:
         raise UnauthorizedError("Missing assistant token")
@@ -86,6 +90,9 @@ def require_assistant_token(
     cfg = get_config()
     header_name = (cfg.ASSISTANT_CONNECTOR_HEADER or "X-Assistant-Token").strip() or "X-Assistant-Token"
     expected = cfg.ASSISTANT_CONNECTOR_TOKEN
+    # MVP: if secret isn't configured (e.g. local dev), don't enforce the header.
+    if not expected:
+        return True
     provided = request.headers.get(header_name) or x_assistant_token
     if not provided:
         raise UnauthorizedError("Missing assistant token")

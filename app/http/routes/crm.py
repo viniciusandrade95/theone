@@ -563,6 +563,7 @@ class AppointmentOut(BaseModel):
     starts_at: datetime
     ends_at: datetime
     status: str
+    needs_confirmation: bool
     cancelled_reason: str | None
     status_updated_at: datetime
     notes: str | None
@@ -636,6 +637,7 @@ def _to_appointment_out(
         starts_at=appointment.starts_at,
         ends_at=appointment.ends_at,
         status=appointment.status,
+        needs_confirmation=bool(getattr(appointment, "needs_confirmation", False)),
         cancelled_reason=appointment.cancelled_reason,
         status_updated_at=appointment.status_updated_at,
         notes=appointment.notes,

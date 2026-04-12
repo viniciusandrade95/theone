@@ -156,14 +156,17 @@ def test_prebook_success():
 
     resp = client.post(
         "/crm/assistant/prebook",
-        headers={**headers, "Idempotency-Key": "wf:test:201"},
+        headers={**headers, "Idempotency-Key": "wf:test:201", "X-Trace-Id": "trace_test_1"},
         json=payload,
     )
     assert resp.status_code == 201
     body = resp.json()
     assert body["ok"] is True
-    assert uuid.UUID(body["prebooking_id"])
-    assert body["reference"] == body["prebooking_id"]
+    assert body["status"] == "created"
+    assert body["trace_id"] == "trace_test_1"
+    assert body["reference"].startswith("PB-")
+    assert uuid.UUID(body["data"]["appointment_id"])
+    assert body["data"]["prebooking_id"] == body["data"]["appointment_id"]
     assert body["message"] == "Pré-reserva criada com sucesso."
 
     expected_local = datetime.fromisoformat(f"{future_date}T12:00:00").replace(tzinfo=ZoneInfo("Europe/Lisbon"))
@@ -178,11 +181,12 @@ def test_prebook_success():
         },
     )
     assert listing.status_code == 200
-    item = next((row for row in listing.json()["items"] if row["id"] == body["prebooking_id"]), None)
+    appointment_id = body["data"]["appointment_id"]
+    item = next((row for row in listing.json()["items"] if row["id"] == appointment_id), None)
     assert item is not None
     assert item["status"] == "pending"
-    assert item["notes"].startswith("criado pelo assistant")
-    assert "qualquer nota" in item["notes"]
+    assert item["notes"] == "qualquer nota"
+    assert item["needs_confirmation"] is True
 
 
 def test_prebook_idempotent():
@@ -204,10 +208,13 @@ def test_prebook_idempotent():
     r1 = client.post("/crm/assistant/prebook", headers=headers, json=payload)
     assert r1.status_code == 201
     body1 = r1.json()
+    assert body1["status"] == "created"
 
     r2 = client.post("/crm/assistant/prebook", headers=headers, json=payload)
-    assert r2.status_code == 201
-    assert r2.json() == body1
+    assert r2.status_code == 200
+    body2 = r2.json()
+    assert body2["status"] == "existing"
+    assert body2["data"]["appointment_id"] == body1["data"]["appointment_id"]
 
 
 def test_prebook_best_effort_slot_dedupe_returns_200():
@@ -232,7 +239,7 @@ def test_prebook_best_effort_slot_dedupe_returns_200():
 
     r2 = client.post("/crm/assistant/prebook", headers={**headers, "Idempotency-Key": "wf:test:slot-dedupe:2"}, json=payload)
     assert r2.status_code == 200
-    assert r2.json()["prebooking_id"] == body1["prebooking_id"]
+    assert r2.json()["data"]["appointment_id"] == body1["data"]["appointment_id"]
 
 
 def test_prebook_conflict():
@@ -261,4 +268,8 @@ def test_prebook_conflict():
         json={"customer": {"name": "Ana", "phone": "+351911111111"}, "booking": base_booking},
     )
     assert conflict.status_code == 409
-    assert conflict.json() == {"message": "Horário indisponível", "error_code": "conflict", "retriable": False}
+    body = conflict.json()
+    assert body["error"] == "APPOINTMENT_OVERLAP"
+    assert body["error_code"] == "conflict"
+    assert body["retriable"] is False
+    assert isinstance(body["conflicts"], list)
