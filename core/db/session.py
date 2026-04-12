@@ -43,9 +43,13 @@ def _initialize_schema(engine) -> None:
     from modules.messaging.models.message_orm import MessageORM  # noqa: F401
     from modules.messaging.models.message_template_orm import MessageTemplateORM  # noqa: F401
     from modules.messaging.models.outbound_message_orm import OutboundMessageORM  # noqa: F401
+    from modules.messaging.models.outbound_delivery_event_orm import OutboundDeliveryEventORM  # noqa: F401
     from modules.audit.models.audit_log_orm import AuditLogORM  # noqa: F401
     from modules.chatbot.models.conversation_session_orm import ChatbotConversationSessionORM  # noqa: F401
+    from modules.chatbot.models.conversation_message_orm import ChatbotConversationMessageORM  # noqa: F401
     from modules.assistant.models.prebook_request_orm import AssistantPrebookRequestORM  # noqa: F401
+    from modules.assistant.models.handoff_orm import AssistantHandoffORM  # noqa: F401
+    from modules.assistant.models.funnel_event_orm import AssistantFunnelEventORM  # noqa: F401
 
     Base.metadata.create_all(engine)
 

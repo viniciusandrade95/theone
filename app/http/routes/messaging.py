@@ -4,10 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 from core.config import get_config
 from core.errors import ConflictError
-from core.tenancy import require_tenant_id
+from core.tenancy import clear_tenant_id, require_tenant_id, set_tenant_id
 from app.http.deps import require_tenant_header, require_user
 from modules.messaging.models import WhatsAppAccount
 from modules.messaging.providers import verify_signature
+from modules.messaging.service.outbound_delivery_service import OutboundDeliveryService
 from tasks.queue import enqueue_inbound_webhook
 
 router = APIRouter()
@@ -49,6 +50,56 @@ async def inbound(payload: InboundIn, request: Request):
     except Exception:
         raise HTTPException(status_code=503, detail="queue_unavailable")
     return {"status": "accepted"}
+
+
+class OutboundDeliveryEventIn(BaseModel):
+    provider: str = Field(default="meta")
+    external_event_id: str
+    phone_number_id: str
+    provider_message_id: str | None = None
+    channel: str = Field(default="whatsapp")
+    status: str
+    error_code: str | None = None
+    payload: dict | None = None
+
+
+@router.post("/delivery")
+async def delivery_event(payload: OutboundDeliveryEventIn, request: Request):
+    """Provider callback ingestion for outbound delivery lifecycle.
+
+    - No tenant header is expected (provider-driven).
+    - Tenant is resolved via WhatsApp account routing (provider + phone_number_id).
+    """
+    cfg = get_config()
+    body = await request.body()
+    signature = request.headers.get("X-Hub-Signature-256")
+    if not verify_signature(secret=cfg.WHATSAPP_WEBHOOK_SECRET or "", payload=body, signature_header=signature):
+        raise HTTPException(status_code=401, detail="invalid_signature")
+
+    container = request.app.state.container
+    account = container.messaging_repo.get_whatsapp_account(provider=payload.provider, phone_number_id=payload.phone_number_id)
+    if account is None:
+        raise HTTPException(status_code=404, detail="whatsapp_account_not_found")
+
+    clear_tenant_id()
+    set_tenant_id(account.tenant_id)
+
+    from core.db.session import db_session  # local import to avoid cycles
+
+    with db_session() as session:
+        res = OutboundDeliveryService(session).ingest_event(
+            tenant_id=uuid.UUID(account.tenant_id),
+            provider=payload.provider,
+            external_event_id=payload.external_event_id,
+            provider_message_id=payload.provider_message_id,
+            channel=payload.channel,
+            status=payload.status,
+            error_code=payload.error_code,
+            payload=payload.payload,
+        )
+
+    clear_tenant_id()
+    return {"status": "accepted", **res}
 
 
 @router.post("/whatsapp-accounts")

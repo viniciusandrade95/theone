@@ -118,3 +118,24 @@ export type AssistantConsultResponseOutV1 = {
   updated_at: string;
 };
 
+// Slot finding v1 (assistant quick wins)
+export type AssistantSlotFindingOutcomeV1 = "success" | "missing_info" | "no_slots" | "invalid";
+
+export type AssistantAvailabilitySlotOutV1 = {
+  starts_at: string; // UTC RFC3339
+  ends_at: string; // UTC RFC3339
+  label: string; // local label (e.g. "10:30")
+};
+
+export type AssistantSlotSuggestionsActionV1 = {
+  type: "assistant.slot_suggestions.v1";
+  outcome: AssistantSlotFindingOutcomeV1;
+  trace_id: string;
+  service_id: string | null; // UUID
+  location_id: string | null; // UUID
+  date: string | null; // YYYY-MM-DD
+  timezone: string | null; // IANA TZ
+  slots: AssistantAvailabilitySlotOutV1[];
+  missing: string[];
+  message: string | null;
+};

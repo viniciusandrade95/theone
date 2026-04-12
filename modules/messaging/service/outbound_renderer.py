@@ -16,9 +16,12 @@ ALLOWED_TEMPLATE_TYPES: set[str] = {
     "simple_campaign",
     "tomorrow_open_slot",
     "internal_followup_support",
+    # Assistant automation confirmations (MVP)
+    "assistant_prebook_confirmation",
+    "assistant_handoff_confirmation",
 }
 
-ALLOWED_CHANNELS: set[str] = {"whatsapp"}
+ALLOWED_CHANNELS: set[str] = {"whatsapp", "email"}
 
 ALLOWED_VARIABLES: set[str] = {
     "customer_name",
@@ -118,4 +121,3 @@ def render_template(*, body: str, context: dict[str, str | None]) -> RenderResul
     if not rendered:
         raise ValidationError("rendered_body_empty")
     return RenderResult(rendered_body=rendered, variables_used=used)
-

@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator
+from sqlalchemy import select
 
 from core.errors import NotFoundError, ValidationError
 from app.http.deps import require_tenant_header, require_user
@@ -13,6 +14,7 @@ from modules.crm.models import PipelineStage
 
 from core.tenancy import require_tenant_id
 from core.db.session import db_session
+from core.observability.tracing import require_trace_id
 
 from modules.crm.api.contracts import (
     LocationCreate,
@@ -25,6 +27,12 @@ from modules.crm.repo_locations import LocationCreateData, LocationsRepo
 from modules.crm.repo_services import ServicesRepo, ServiceCreate
 from modules.crm.repo_appointments import AppointmentOverlapError, AppointmentsRepo, AppointmentCreate
 from modules.tenants.repo.settings_sql import SqlTenantSettingsRepo
+from modules.crm.models.appointment_orm import AppointmentORM
+from modules.assistant.models.prebook_request_orm import AssistantPrebookRequestORM
+from modules.assistant.service.funnel_events import (
+    ASSISTANT_CONVERSION_CONFIRMED,
+    AssistantFunnelEventsService,
+)
 
 router = APIRouter()
 
@@ -887,6 +895,7 @@ def update_appointment(
     identity=Depends(require_user),
 ):
     tenant_id = uuid.UUID(require_tenant_id())
+    trace_id = require_trace_id()
     fields = payload.model_dump(exclude_unset=True)
     if not fields:
         raise ValidationError("no_fields_provided")
@@ -905,6 +914,13 @@ def update_appointment(
 
     with db_session() as session:
         repo = AppointmentsRepo(session)
+        before_stmt = (
+            select(AppointmentORM.status, AppointmentORM.needs_confirmation, AppointmentORM.customer_id)
+            .where(AppointmentORM.tenant_id == tenant_id)
+            .where(AppointmentORM.id == appointment_uuid)
+            .where(AppointmentORM.deleted_at.is_(None))
+        )
+        before_row = session.execute(before_stmt).one_or_none()
         try:
             a = repo.update(tenant_id=tenant_id, appointment_id=appointment_uuid, fields=fields)
         except AppointmentOverlapError as err:
@@ -914,6 +930,36 @@ def update_appointment(
             )
         except NotFoundError as err:
             raise HTTPException(status_code=404, detail=err.message)
+
+        # Assistant conversion: operator confirms a pending assistant prebook to booked.
+        if before_row is not None:
+            before_status, before_needs_confirmation, before_customer_id = before_row
+            if (
+                str(before_status) == "pending"
+                and str(a.status) == "booked"
+                and bool(before_needs_confirmation or a.needs_confirmation)
+            ):
+                # Only attribute conversions for appointments created via assistant prebook.
+                prebook_stmt = (
+                    select(AssistantPrebookRequestORM.id)
+                    .where(AssistantPrebookRequestORM.tenant_id == tenant_id)
+                    .where(AssistantPrebookRequestORM.appointment_id == a.id)
+                    .limit(1)
+                )
+                if session.execute(prebook_stmt).scalar_one_or_none() is not None:
+                    AssistantFunnelEventsService(session).emit_once(
+                        tenant_id=tenant_id,
+                        dedupe_key=f"assistant_conversion_confirmed:{a.id}",
+                        event_name=ASSISTANT_CONVERSION_CONFIRMED,
+                        trace_id=trace_id,
+                        conversation_id=None,
+                        assistant_session_id=None,
+                        customer_id=before_customer_id,
+                        event_source="crm_appointment",
+                        related_entity_type="appointment",
+                        related_entity_id=a.id,
+                        metadata={"from_status": "pending", "to_status": "booked"},
+                    )
         return _to_appointment_out(a)
 
 

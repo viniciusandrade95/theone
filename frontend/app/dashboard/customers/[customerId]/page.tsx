@@ -353,7 +353,11 @@ export default function CustomerDetailPage() {
         channel: selectedTemplate.channel,
       });
       if (resp.data.ok) {
-        setSuccessMessage("Message prepared. Open WhatsApp to send.");
+        if (resp.data.whatsapp_url) {
+          setSuccessMessage("Message prepared. Open WhatsApp to send.");
+        } else {
+          setSuccessMessage(resp.data.note ?? "Message sent.");
+        }
         setLastWhatsappUrl(resp.data.whatsapp_url ?? null);
         setPreview(resp.data.outbound_message.rendered_body);
         await refreshOutboundHistory();
@@ -375,7 +379,11 @@ export default function CustomerDetailPage() {
     try {
       const resp = await api.post<SendResponse>(`/crm/outbound/${messageId}/resend`);
       if (resp.data.ok) {
-        setSuccessMessage("Message prepared again. Open WhatsApp to send.");
+        if (resp.data.whatsapp_url) {
+          setSuccessMessage("Message prepared again. Open WhatsApp to send.");
+        } else {
+          setSuccessMessage(resp.data.note ?? "Message sent.");
+        }
         setLastWhatsappUrl(resp.data.whatsapp_url ?? null);
       } else {
         setError(resp.data.note ?? "Unable to resend message.");

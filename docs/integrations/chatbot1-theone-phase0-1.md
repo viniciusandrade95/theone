@@ -75,6 +75,11 @@ Response (normalized):
 }
 ```
 
+Assistant quick win actions (server-appended, stable-ish for MVP):
+
+- `assistant.slot_suggestions.v1` — when intent indicates availability and enough context exists, includes `slots[]` sourced from the public booking availability engine.
+- `assistant.handoff.v1` — when handoff is requested, includes `handoff_id` and status.
+
 ### POST `/api/chatbot/reset`
 
 Request:
@@ -116,10 +121,21 @@ Fields persisted:
 - `surface`
 - `status`
 - `last_error`
+- `last_intent` (nullable)
+- `last_intent_confidence` (nullable)
+- `state_payload` (nullable, compact JSON)
+- `context_payload` (nullable, compact JSON)
+- `conversation_epoch` (int, reset boundary)
 - `created_at`, `updated_at`, `last_message_at`
 
 Uniqueness rule:
 - `(tenant_id, user_id, surface)` unique session scope for dashboard assistant usage.
+
+Implemented table: `chatbot_conversation_messages`.
+
+Purpose:
+- store a compact recent turn history for support/debugging
+- segment history by `conversation_epoch` so resets don't bleed state
 
 ### Release 1 prebooking idempotency
 
@@ -130,11 +146,20 @@ Purpose:
 - store the created `appointment_id` (prebooking reference) for duplicate retries
 - keep minimal linkage to `conversation_id`, `session_id` and `trace_id`
 
+Implemented table: `assistant_handoffs`.
+
+Purpose:
+- persist an MVP handoff-to-human record (tenant-scoped)
+- enable internal staff visibility via API without building a full queue system
+
 ## Environment variables
 
 - `CHATBOT_SERVICE_BASE_URL` (server-only, required for live upstream calls).
 - `CHATBOT_SERVICE_TIMEOUT_SECONDS` (defaults to `15`).
 - `ASSISTANT_CONNECTOR_TOKEN` (server-only shared secret for `chatbot1` -> `theone` connector calls).
+- Outbound provider config used by automatic confirmations:
+  - WhatsApp Cloud: `WHATSAPP_CLOUD_ACCESS_TOKEN`, `WHATSAPP_CLOUD_API_VERSION`, `WHATSAPP_CLOUD_TIMEOUT_SECONDS`
+  - Email SMTP: `SMTP_HOST`, `SMTP_FROM` (+ optional SMTP credentials)
 
 ## Security and boundary notes
 
@@ -142,7 +167,15 @@ Purpose:
 - `X-Trace-Id` is accepted and forwarded upstream.
 - If `X-Trace-Id` is missing, `theone` generates a server-side `trace_id` and returns it (also as response header `X-Trace-Id`).
 - Upstream credentials/URL remain server-side only.
-- WhatsApp integration is intentionally not in scope for these routes.
+- WhatsApp/Email provider delivery is handled by the outbound domain; assistant routes only trigger best-effort confirmations.
+
+## Automatic confirmations (MVP)
+
+For key assistant outcomes, `theone` can send automatic confirmations using outbound templates:
+- Prebook created (`assistant_prebook_confirmation`)
+- Handoff created (`assistant_handoff_confirmation`)
+
+Details (triggers, channel fallback, idempotency) are documented in `docs/features/assistant-automatic-confirmations.md`.
 
 ## Observability baseline (Week 1)
 
@@ -161,6 +194,18 @@ This repo exposes a minimal production-readiness foundation for assistant traffi
 - **Metrics**:
   - `GET /metrics` (Prometheus text format) does not require `X-Tenant-ID`.
   - Key metrics include `http_requests_total`, `http_request_duration_seconds`, and assistant-specific counters/histograms.
+
+## Assistant analytics (ROI)
+
+`theone` persists assistant funnel events (business-level, tenant-scoped) and exposes assistant-specific analytics:
+
+- `GET /analytics/assistant/overview`
+- `GET /analytics/assistant/funnel`
+- `GET /analytics/assistant/channels`
+- `GET /analytics/assistant/templates`
+- `GET /analytics/assistant/conversions`
+
+Taxonomy and semantics are documented in `docs/features/assistant-analytics-funnel.md`.
 
 ## Release 1: operational prebooking endpoint
 
@@ -234,3 +279,8 @@ Success response:
   }
 }
 ```
+
+## Assistant handoff MVP (internal visibility)
+
+- `GET /crm/assistant/handoffs` (staff auth) lists open handoffs created via assistant traffic.
+- Each handoff also writes a CRM interaction (`type="assistant_handoff"`) when customer context is known.

@@ -16,6 +16,11 @@ from core.observability.tracing import require_trace_id
 from core.tenancy import require_tenant_id
 
 from modules.assistant.repo.prebook_request_repo import AssistantPrebookRequestRepo
+from modules.assistant.service.funnel_events import (
+    ASSISTANT_PREBOOK_CREATED,
+    ASSISTANT_PREBOOK_REQUESTED,
+    AssistantFunnelEventsService,
+)
 from modules.crm.models.appointment_orm import AppointmentORM
 from modules.crm.models.customer_orm import CustomerORM
 from modules.crm.models.location_orm import LocationORM
@@ -24,6 +29,7 @@ from modules.crm.models.service_orm import ServiceORM
 from modules.crm.repo_appointments import AppointmentCreate, AppointmentOverlapError, AppointmentsRepo
 from modules.crm.repo_locations import LocationsRepo
 from modules.tenants.repo.settings_sql import SqlTenantSettingsRepo
+from modules.assistant.service.assistant_communication_service import AssistantCommunicationService
 
 
 router = APIRouter()
@@ -251,6 +257,30 @@ def prebook(
         container.tenant_service.get_or_fail(tenant_id)
 
         tenant_uuid = uuid.UUID(tenant_id)
+        funnel = AssistantFunnelEventsService(session)
+        if effective_idem is not None:
+            funnel.emit_once(
+                tenant_id=tenant_uuid,
+                dedupe_key=f"assistant_prebook_requested:{effective_idem}",
+                event_name=ASSISTANT_PREBOOK_REQUESTED,
+                trace_id=trace_id,
+                conversation_id=None,
+                assistant_session_id=payload.session_id,
+                customer_id=None,
+                event_source="assistant_prebook",
+                metadata={"idempotency_key": effective_idem},
+            )
+        else:
+            funnel.emit(
+                tenant_id=tenant_uuid,
+                event_name=ASSISTANT_PREBOOK_REQUESTED,
+                trace_id=trace_id,
+                conversation_id=None,
+                assistant_session_id=payload.session_id,
+                customer_id=None,
+                event_source="assistant_prebook",
+                metadata={"idempotency_key": None},
+            )
 
         prebook_repo = AssistantPrebookRequestRepo(session)
         started = None
@@ -274,6 +304,18 @@ def prebook(
                         status="existing",
                         appointment_id=appointment_id,
                         duration_ms=int(timer.seconds() * 1000),
+                    )
+                    funnel.emit_once(
+                        tenant_id=tenant_uuid,
+                        dedupe_key=f"assistant_prebook_created:{appointment_id}",
+                        event_name=ASSISTANT_PREBOOK_CREATED,
+                        trace_id=trace_id,
+                        assistant_session_id=payload.session_id,
+                        customer_id=existing.customer_id,
+                        event_source="assistant_prebook",
+                        related_entity_type="appointment",
+                        related_entity_id=uuid.UUID(appointment_id),
+                        metadata={"status": "existing", "reference": ref},
                     )
                     return JSONResponse(
                         status_code=200,
@@ -352,6 +394,18 @@ def prebook(
                     appointment_id=appointment_id,
                     duration_ms=int(timer.seconds() * 1000),
                 )
+                funnel.emit_once(
+                    tenant_id=tenant_uuid,
+                    dedupe_key=f"assistant_prebook_created:{appointment_id}",
+                    event_name=ASSISTANT_PREBOOK_CREATED,
+                    trace_id=trace_id,
+                    assistant_session_id=payload.session_id,
+                    customer_id=customer_id,
+                    event_source="assistant_prebook",
+                    related_entity_type="appointment",
+                    related_entity_id=reused_id,
+                    metadata={"status": "existing", "reference": ref},
+                )
                 return JSONResponse(
                     status_code=200,
                     content={
@@ -409,6 +463,37 @@ def prebook(
                 appointment_id=appointment_id,
                 duration_ms=int(timer.seconds() * 1000),
             )
+            funnel.emit_once(
+                tenant_id=tenant_uuid,
+                dedupe_key=f"assistant_prebook_created:{appointment_id}",
+                event_name=ASSISTANT_PREBOOK_CREATED,
+                trace_id=trace_id,
+                assistant_session_id=payload.session_id,
+                customer_id=customer_id,
+                event_source="assistant_prebook",
+                related_entity_type="appointment",
+                related_entity_id=appointment.id,
+                metadata={"status": "created", "reference": ref},
+            )
+            try:
+                AssistantCommunicationService(session).confirm_prebook_created(
+                    tenant_id=tenant_uuid,
+                    appointment_id=appointment.id,
+                    customer_id=customer_id,
+                    trace_id=trace_id,
+                    conversation_id=None,
+                    assistant_session_id=payload.session_id,
+                )
+            except Exception as err:
+                # Confirmations are best-effort; do not fail the prebook request.
+                log_event(
+                    "assistant_prebook_confirmation_failed",
+                    level="warning",
+                    tenant_id=tenant_id,
+                    trace_id=trace_id,
+                    appointment_id=appointment_id,
+                    error=str(err),
+                )
             return {
                 "ok": True,
                 "reference": ref,
