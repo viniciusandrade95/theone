@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, Header
 from pydantic import BaseModel, Field
 from requests import HTTPError, RequestException
@@ -9,10 +11,28 @@ from core.observability.tracing import require_trace_id
 from core.db.session import db_session
 from core.errors import ValidationError
 from modules.chatbot.repo.session_repo import ChatbotSessionRepo
+from modules.chatbot.repo.message_history_repo import ChatbotMessageHistoryRepo
 from modules.chatbot.service.chatbot_client import ChatbotClient
 from modules.chatbot.service.normalizer import normalize_chatbot_response
 
 router = APIRouter()
+
+_MAX_CONTEXT_BYTES = 8_000
+
+
+def _clamp_json(value: object, *, max_bytes: int = _MAX_CONTEXT_BYTES) -> dict | None:
+    if not isinstance(value, dict):
+        return None
+    # Avoid storing large/raw blobs. Best-effort clamp by serialized size.
+    try:
+        import json as _json
+
+        raw = _json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        if len(raw.encode("utf-8")) <= max_bytes:
+            return value
+    except Exception:
+        return None
+    return {"_truncated": True}
 
 
 class ChatbotMessageIn(BaseModel):
@@ -45,6 +65,7 @@ def chatbot_message(
 
     with db_session() as session:
         repo = ChatbotSessionRepo(session)
+        history = ChatbotMessageHistoryRepo(session)
         conversation = repo.get_or_create(
             tenant_id=tenant_id,
             user_id=user_id,
@@ -54,6 +75,9 @@ def chatbot_message(
             customer_id=payload.customer_id,
         )
 
+        # Persist the incoming user turn (compact).
+        history.append(conversation=conversation, role="user", content=payload.message)
+
         upstream_payload = {
             "client_id": client_id,
             "conversation_id": str(conversation.conversation_id),
@@ -62,7 +86,7 @@ def chatbot_message(
             "surface": payload.surface,
             "user_id": user_id,
             "tenant_id": tenant_id,
-            "customer_id": payload.customer_id,
+            "customer_id": payload.customer_id or (str(conversation.customer_id) if conversation.customer_id else None),
         }
 
         client = ChatbotClient()
@@ -72,10 +96,22 @@ def chatbot_message(
             status = err.response.status_code if err.response is not None else 502
             body = err.response.text if err.response is not None else str(err)
             repo.mark_message(entity=conversation, chatbot_session_id=payload.session_id, status="error", error=body)
+            history.append(
+                conversation=conversation,
+                role="system",
+                content="chatbot_upstream_failed",
+                meta={"status": status},
+            )
             log_event("assistant_chatbot_request_completed", level="error", surface="chatbot_message", status_code=status)
             raise ValidationError("Chatbot service request failed", meta={"status": status})
         except RequestException as err:
             repo.mark_message(entity=conversation, chatbot_session_id=payload.session_id, status="error", error=str(err))
+            history.append(
+                conversation=conversation,
+                role="system",
+                content="chatbot_upstream_failed",
+                meta={"status": 502},
+            )
             log_event("assistant_chatbot_request_completed", level="error", surface="chatbot_message", status_code=502)
             raise ValidationError("Chatbot service unavailable")
 
@@ -89,6 +125,49 @@ def chatbot_message(
         )
         normalized["trace_id"] = effective_trace_id
         normalized["client_id"] = client_id
+        # Persist assistant continuity state (best-effort).
+        intent_conf = raw.get("intent_confidence")
+        confidence = float(intent_conf) if isinstance(intent_conf, (int, float)) else None
+        state_payload = None
+        if isinstance(conversation.state_payload, dict):
+            state_payload = dict(conversation.state_payload)
+        else:
+            state_payload = {}
+        if normalized.get("handoff", {}).get("requested"):
+            state_payload["handoff"] = {
+                "requested": True,
+                "reason": normalized.get("handoff", {}).get("reason"),
+                "at": datetime.now(tz=timezone.utc).isoformat(),
+            }
+        context_payload = None
+        if isinstance(conversation.context_payload, dict):
+            context_payload = dict(conversation.context_payload)
+        else:
+            context_payload = {}
+        slots = _clamp_json(raw.get("slots"))
+        if slots is not None:
+            context_payload["slots"] = slots
+        ctx = _clamp_json(raw.get("context"))
+        if ctx is not None:
+            context_payload["context"] = ctx
+        repo.update_continuity(
+            entity=conversation,
+            last_intent=normalized.get("intent"),
+            last_intent_confidence=confidence,
+            state_payload=state_payload,
+            context_payload=context_payload,
+        )
+        history.append(
+            conversation=conversation,
+            role="assistant",
+            content=normalized.get("reply", {}).get("text") or "",
+            intent=normalized.get("intent"),
+            meta={
+                "status": normalized.get("status"),
+                "actions_count": len(normalized.get("reply", {}).get("actions") or []),
+                "handoff_requested": bool(normalized.get("handoff", {}).get("requested")),
+            },
+        )
         log_event("assistant_chatbot_request_completed", surface="chatbot_message", status_code=200, duration_ms=int(timer.seconds() * 1000))
         return normalized
 
@@ -110,6 +189,7 @@ def chatbot_reset(
 
     with db_session() as session:
         repo = ChatbotSessionRepo(session)
+        history = ChatbotMessageHistoryRepo(session)
         conversation = repo.get_or_create(
             tenant_id=tenant_id,
             user_id=user_id,
@@ -134,6 +214,7 @@ def chatbot_reset(
             raw = {"status": "ok"}
 
         repo.reset(entity=conversation)
+        history.append(conversation=conversation, role="system", content="reset", meta={"source": "api"})
 
         resp = {
             "ok": True,

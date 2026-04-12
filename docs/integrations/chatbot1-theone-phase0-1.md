@@ -116,10 +116,21 @@ Fields persisted:
 - `surface`
 - `status`
 - `last_error`
+- `last_intent` (nullable)
+- `last_intent_confidence` (nullable)
+- `state_payload` (nullable, compact JSON)
+- `context_payload` (nullable, compact JSON)
+- `conversation_epoch` (int, reset boundary)
 - `created_at`, `updated_at`, `last_message_at`
 
 Uniqueness rule:
 - `(tenant_id, user_id, surface)` unique session scope for dashboard assistant usage.
+
+Implemented table: `chatbot_conversation_messages`.
+
+Purpose:
+- store a compact recent turn history for support/debugging
+- segment history by `conversation_epoch` so resets don't bleed state
 
 ### Release 1 prebooking idempotency
 

@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.sql import func
 
 from core.db.base import Base
@@ -23,6 +23,13 @@ class ChatbotConversationSessionORM(Base):
     surface = Column(String(length=64), nullable=False, server_default="dashboard")
     status = Column(String(length=32), nullable=False, server_default="active")
     last_error = Column(Text, nullable=True)
+
+    # Lightweight assistant continuity (intent + compact state).
+    last_intent = Column(String(length=80), nullable=True)
+    last_intent_confidence = Column(Float, nullable=True)
+    state_payload = Column(JSON().with_variant(JSONB, "postgresql"), nullable=True)
+    context_payload = Column(JSON().with_variant(JSONB, "postgresql"), nullable=True)
+    conversation_epoch = Column(Integer, nullable=False, server_default="0")
 
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
