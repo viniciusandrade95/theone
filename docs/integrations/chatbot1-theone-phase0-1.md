@@ -26,10 +26,13 @@
 
 ### Still missing for Phase 2
 
-- **handoff orchestration contract** (agent queues/SLA ownership, domain event hooks).
+- **handoff orchestration** (workflow/queue/SLA ownership, domain event hooks).
 - **quote request domain endpoint** (no first-class quote aggregate yet).
 - **consultation request endpoint/workflow** (needs explicit aggregate + state transitions).
 - **tool-level assistant authorization policy matrix** (intent/action permissions by role).
+
+Contracts for the above assistant actions are defined (contract-first) in:
+- `docs/contracts/assistant-handoff-quote-consult-v1.md`
 
 ## New assistant proxy contract (stable frontend shape)
 
