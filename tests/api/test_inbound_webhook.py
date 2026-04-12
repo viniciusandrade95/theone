@@ -15,20 +15,20 @@ from modules.messaging.models import WhatsAppAccount
 def reset_config_singleton(monkeypatch):
     import core.config.loader as loader
     monkeypatch.setattr(loader, "_config", None)
-    os.environ.setdefault("ENV", "test")
-    os.environ.setdefault("APP_NAME", "beauty-crm")
-    os.environ.setdefault("DATABASE_URL", "dev")
-    os.environ.setdefault("SECRET_KEY", "test-secret")
-    os.environ.setdefault("TENANT_HEADER", "X-Tenant-ID")
-    os.environ.setdefault("WHATSAPP_WEBHOOK_SECRET", "whsec-test")
-    os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
+    os.environ["ENV"] = "test"
+    os.environ["APP_NAME"] = "beauty-crm"
+    os.environ["DATABASE_URL"] = "dev"
+    os.environ["SECRET_KEY"] = "test-secret"
+    os.environ["TENANT_HEADER"] = "X-Tenant-ID"
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "whsec-test"
+    os.environ["CELERY_TASK_ALWAYS_EAGER"] = "true"
     yield
     monkeypatch.setattr(loader, "_config", None)
     clear_tenant_id()
 
 
 def _sign(payload: dict, secret: str) -> str:
-    body = json.dumps(payload).encode("utf-8")
+    body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     import hmac
     import hashlib
 
@@ -44,6 +44,8 @@ def _setup_app():
     tenant_id = str(uuid.uuid4())
     set_tenant_id(tenant_id)
     app.state.container.tenant_service.create_tenant(tenant_id, name="Tenant")
+    from modules.billing.models import PlanTier
+    app.state.container.billing_service.set_plan(tier=PlanTier.PRO)
 
     account = WhatsAppAccount.create(
         account_id=str(uuid.uuid4()),

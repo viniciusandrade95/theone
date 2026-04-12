@@ -102,4 +102,3 @@ class BillingService:
             customers=UsageMetric(current=customers_current, max=limits.max_customers),
             automations=UsageMetric(current=automations_current, max=limits.max_automations),
         )
-

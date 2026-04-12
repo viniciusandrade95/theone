@@ -14,6 +14,7 @@ class Conversation:
     customer_id: str
     channel: str
     state: str
+    assistant_session_id: str | None
     last_message_at: datetime
 
     @staticmethod
@@ -24,6 +25,7 @@ class Conversation:
         customer_id: str,
         channel: str,
         state: str = "open",
+        assistant_session_id: str | None = None,
         last_message_at: datetime | None = None,
     ) -> "Conversation":
         if not conversation_id or conversation_id.strip() == "":
@@ -41,6 +43,7 @@ class Conversation:
             customer_id=customer_id.strip(),
             channel=channel.strip().lower(),
             state=state.strip().lower(),
+            assistant_session_id=assistant_session_id.strip() if isinstance(assistant_session_id, str) and assistant_session_id.strip() else None,
             last_message_at=last_message_at or _now(),
         )
 
@@ -51,5 +54,17 @@ class Conversation:
             customer_id=self.customer_id,
             channel=self.channel,
             state=self.state,
+            assistant_session_id=self.assistant_session_id,
             last_message_at=when or _now(),
+        )
+
+    def with_assistant_session(self, assistant_session_id: str | None) -> "Conversation":
+        return Conversation(
+            id=self.id,
+            tenant_id=self.tenant_id,
+            customer_id=self.customer_id,
+            channel=self.channel,
+            state=self.state,
+            assistant_session_id=assistant_session_id.strip() if isinstance(assistant_session_id, str) and assistant_session_id.strip() else None,
+            last_message_at=self.last_message_at,
         )

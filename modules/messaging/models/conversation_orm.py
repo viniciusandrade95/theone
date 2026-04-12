@@ -18,6 +18,7 @@ class ConversationORM(Base):
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.id", ondelete="CASCADE"), nullable=False)
     channel = Column(String, nullable=False)
     state = Column(String, nullable=False, default="open")
+    assistant_session_id = Column(String(255), nullable=True)
     last_message_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     def to_domain(self) -> Conversation:
@@ -27,5 +28,6 @@ class ConversationORM(Base):
             customer_id=str(self.customer_id),
             channel=self.channel,
             state=self.state,
+            assistant_session_id=self.assistant_session_id,
             last_message_at=self.last_message_at,
         )

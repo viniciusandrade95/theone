@@ -53,6 +53,13 @@ def create_app() -> FastAPI:
 
     container = build_container()
     app.state.container = container
+    try:
+        from tasks.queue import set_container_override
+
+        set_container_override(container)
+    except Exception:
+        # Best-effort; do not fail app startup if Celery/task module is not available.
+        pass
 
     ASSISTANT_SURFACE_PATHS = {"/api/chatbot/message", "/api/chatbot/reset", "/crm/assistant/prebook"}
 
@@ -130,6 +137,7 @@ def create_app() -> FastAPI:
         if (
             request.url.path.startswith("/messaging/inbound")
             or request.url.path.startswith("/messaging/delivery")
+            or request.url.path.startswith("/messaging/webhook")
             or request.url.path.startswith("/public/book")
             or request.url.path in PUBLIC_PATHS
         ):

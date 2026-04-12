@@ -104,6 +104,8 @@ class SqlMessagingRepo(MessagingRepo):
             existing = session.execute(stmt).scalar_one_or_none()
             if existing:
                 existing.last_message_at = conversation.last_message_at
+                if conversation.assistant_session_id is not None:
+                    existing.assistant_session_id = conversation.assistant_session_id
                 return existing.to_domain()
 
             orm = ConversationORM(
@@ -112,6 +114,7 @@ class SqlMessagingRepo(MessagingRepo):
                 customer_id=self._coerce_uuid(conversation.customer_id),
                 channel=conversation.channel,
                 state=conversation.state,
+                assistant_session_id=conversation.assistant_session_id,
                 last_message_at=conversation.last_message_at,
             )
             session.add(orm)
