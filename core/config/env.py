@@ -62,6 +62,15 @@ class AppConfig:
     WHATSAPP_CLOUD_API_VERSION: str
     WHATSAPP_CLOUD_TIMEOUT_SECONDS: int
 
+    # Messaging (Email / SMTP)
+    SMTP_HOST: str | None
+    SMTP_PORT: int
+    SMTP_USERNAME: str | None
+    SMTP_PASSWORD: str | None
+    SMTP_FROM: str | None
+    SMTP_TIMEOUT_SECONDS: int
+    SMTP_USE_STARTTLS: bool
+
     # Chatbot integration
     CHATBOT_SERVICE_BASE_URL: str | None
     CHATBOT_SERVICE_TIMEOUT_SECONDS: int
@@ -112,6 +121,16 @@ class AppConfig:
             WHATSAPP_CLOUD_ACCESS_TOKEN=_get("WHATSAPP_CLOUD_ACCESS_TOKEN", required=False),
             WHATSAPP_CLOUD_API_VERSION=_get("WHATSAPP_CLOUD_API_VERSION", required=False, default="v19.0") or "v19.0",
             WHATSAPP_CLOUD_TIMEOUT_SECONDS=int(_get("WHATSAPP_CLOUD_TIMEOUT_SECONDS", required=False, default="10")),
+
+            SMTP_HOST=_get("SMTP_HOST", required=False),
+            SMTP_PORT=int(_get("SMTP_PORT", required=False, default="587") or 587),
+            SMTP_USERNAME=_get("SMTP_USERNAME", required=False),
+            SMTP_PASSWORD=_get("SMTP_PASSWORD", required=False),
+            SMTP_FROM=_get("SMTP_FROM", required=False),
+            SMTP_TIMEOUT_SECONDS=int(_get("SMTP_TIMEOUT_SECONDS", required=False, default="10") or 10),
+            SMTP_USE_STARTTLS=bool(
+                str(_get("SMTP_USE_STARTTLS", required=False, default="true")).strip().lower() in {"1", "true", "yes"}
+            ),
 
             CHATBOT_SERVICE_BASE_URL=_get("CHATBOT_SERVICE_BASE_URL", required=False),
             CHATBOT_SERVICE_TIMEOUT_SECONDS=int(_get("CHATBOT_SERVICE_TIMEOUT_SECONDS", required=False, default="15")),

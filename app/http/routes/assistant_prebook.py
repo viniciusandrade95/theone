@@ -24,6 +24,7 @@ from modules.crm.models.service_orm import ServiceORM
 from modules.crm.repo_appointments import AppointmentCreate, AppointmentOverlapError, AppointmentsRepo
 from modules.crm.repo_locations import LocationsRepo
 from modules.tenants.repo.settings_sql import SqlTenantSettingsRepo
+from modules.assistant.service.assistant_communication_service import AssistantCommunicationService
 
 
 router = APIRouter()
@@ -409,6 +410,25 @@ def prebook(
                 appointment_id=appointment_id,
                 duration_ms=int(timer.seconds() * 1000),
             )
+            try:
+                AssistantCommunicationService(session).confirm_prebook_created(
+                    tenant_id=tenant_uuid,
+                    appointment_id=appointment.id,
+                    customer_id=customer_id,
+                    trace_id=trace_id,
+                    conversation_id=None,
+                    assistant_session_id=payload.session_id,
+                )
+            except Exception as err:
+                # Confirmations are best-effort; do not fail the prebook request.
+                log_event(
+                    "assistant_prebook_confirmation_failed",
+                    level="warning",
+                    tenant_id=tenant_id,
+                    trace_id=trace_id,
+                    appointment_id=appointment_id,
+                    error=str(err),
+                )
             return {
                 "ok": True,
                 "reference": ref,

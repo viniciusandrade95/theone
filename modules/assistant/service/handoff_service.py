@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from core.observability.logging import log_event
 from modules.assistant.repo.handoff_repo import AssistantHandoffRepo
+from modules.assistant.service.assistant_communication_service import AssistantCommunicationService
 from modules.crm.models.interaction_orm import InteractionORM
 
 
@@ -92,5 +93,33 @@ class AssistantHandoffService:
                     handoff_id=str(created.id),
                 )
 
-        return created, True
+        # Best-effort automatic confirmation for the customer.
+        try:
+            customer_uuid = uuid.UUID(customer_id) if customer_id else None
+        except Exception:
+            customer_uuid = None
+        try:
+            conversation_uuid = uuid.UUID(conversation_id)
+        except Exception:
+            conversation_uuid = None
+        try:
+            AssistantCommunicationService(self.session).confirm_handoff_created(
+                tenant_id=uuid.UUID(tenant_id),
+                handoff_id=created.id,
+                customer_id=customer_uuid,
+                trace_id=trace_id,
+                conversation_id=conversation_uuid,
+                assistant_session_id=session_id,
+            )
+        except Exception as err:
+            log_event(
+                "assistant_handoff_confirmation_failed",
+                level="warning",
+                tenant_id=tenant_id,
+                trace_id=trace_id,
+                conversation_id=conversation_id,
+                handoff_id=str(created.id),
+                error=str(err),
+            )
 
+        return created, True

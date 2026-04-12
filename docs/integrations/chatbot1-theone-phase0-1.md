@@ -157,6 +157,9 @@ Purpose:
 - `CHATBOT_SERVICE_BASE_URL` (server-only, required for live upstream calls).
 - `CHATBOT_SERVICE_TIMEOUT_SECONDS` (defaults to `15`).
 - `ASSISTANT_CONNECTOR_TOKEN` (server-only shared secret for `chatbot1` -> `theone` connector calls).
+- Outbound provider config used by automatic confirmations:
+  - WhatsApp Cloud: `WHATSAPP_CLOUD_ACCESS_TOKEN`, `WHATSAPP_CLOUD_API_VERSION`, `WHATSAPP_CLOUD_TIMEOUT_SECONDS`
+  - Email SMTP: `SMTP_HOST`, `SMTP_FROM` (+ optional SMTP credentials)
 
 ## Security and boundary notes
 
@@ -164,7 +167,15 @@ Purpose:
 - `X-Trace-Id` is accepted and forwarded upstream.
 - If `X-Trace-Id` is missing, `theone` generates a server-side `trace_id` and returns it (also as response header `X-Trace-Id`).
 - Upstream credentials/URL remain server-side only.
-- WhatsApp integration is intentionally not in scope for these routes.
+- WhatsApp/Email provider delivery is handled by the outbound domain; assistant routes only trigger best-effort confirmations.
+
+## Automatic confirmations (MVP)
+
+For key assistant outcomes, `theone` can send automatic confirmations using outbound templates:
+- Prebook created (`assistant_prebook_confirmation`)
+- Handoff created (`assistant_handoff_confirmation`)
+
+Details (triggers, channel fallback, idempotency) are documented in `docs/features/assistant-automatic-confirmations.md`.
 
 ## Observability baseline (Week 1)
 

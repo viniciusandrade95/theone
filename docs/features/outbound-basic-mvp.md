@@ -15,15 +15,19 @@ Permitir comunicação outbound **simples e rastreável** (principalmente 1:1) c
 - CRUD em `/crm/outbound/templates`
 - `type` suportados:
   - `booking_confirmation`, `reminder_24h`, `reminder_3h`, `post_service_followup`, `review_request`, `reactivation`, `simple_campaign`, `tomorrow_open_slot`, `internal_followup_support`
+  - `assistant_prebook_confirmation`, `assistant_handoff_confirmation` (automação do assistant)
 - Variáveis suportadas:
   - `{{customer_name}}`
   - `{{appointment_date}}`, `{{appointment_time}}`
   - `{{service_name}}`, `{{location_name}}`
   - `{{business_name}}`
+ - `channel` suportados para templates:
+   - `whatsapp`, `email`
 
 ### Preview e envio manual
 - Preview: `POST /crm/outbound/preview` (renderiza e valida contexto)
 - Envio: `POST /crm/outbound/send`
+  - **manual send** permanece suportado apenas para `channel=whatsapp`
   - preferencialmente envia via provider (WhatsApp Cloud) se configurado + tenant tiver `whatsapp_accounts` ativo
   - fallback: gera deeplink `wa.me` (envio assistido)
   - guarda histórico em `outbound_messages` (inclui `provider_message_id` quando aplicável)
@@ -61,6 +65,8 @@ Variáveis de ambiente relevantes:
 - `WHATSAPP_CLOUD_ACCESS_TOKEN`, `WHATSAPP_CLOUD_API_VERSION`, `WHATSAPP_CLOUD_TIMEOUT_SECONDS` (envio via provider)
 
 ## Fora de scope neste PR
-- automações e gatilhos automáticos
-- múltiplos canais
+- automações genéricas (journeys/campanhas). Apenas confirmações automáticas do assistant.
+- múltiplos canais no envio manual (UI)
 - campanhas massivas / segmentação / journeys
+
+> Nota: automações do assistant (confirmações automáticas) são documentadas em `docs/features/assistant-automatic-confirmations.md`.

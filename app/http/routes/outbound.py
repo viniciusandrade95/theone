@@ -352,6 +352,8 @@ def send(
     tenant_id = uuid.UUID(tenant_id_str)
     channel = normalize_channel(payload.channel)
     t_type = normalize_type(payload.type)
+    if channel != "whatsapp":
+        raise ValidationError("unsupported_channel_for_manual_send", meta={"channel": channel})
 
     user_id = None
     if identity and identity.get("user_id"):
@@ -571,6 +573,8 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
         msg = repo.get_message(tenant_id=tenant_id, message_id=message_id)
         if msg.status != "failed":
             raise ValidationError("resend_only_failed")
+        if (msg.channel or "").strip().lower() != "whatsapp":
+            raise ValidationError("unsupported_channel_for_manual_send", meta={"channel": msg.channel})
 
         customer = session.get(CustomerORM, msg.customer_id)
         if customer is None or customer.tenant_id != tenant_id or customer.deleted_at is not None:
