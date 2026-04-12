@@ -7,6 +7,7 @@ from tasks.workers.messaging.inbound_worker import process_inbound_webhook
 
 _celery_app: Celery | None = None
 _inbound_task = None
+_container_override = None
 
 
 def create_celery_app() -> Celery:
@@ -56,12 +57,22 @@ class InboundWebhookTask(Task):
 
 
 def _inbound_webhook_task(self, payload: dict, signature_valid: bool) -> dict:
-    container = build_container()
+    container = _container_override or build_container()
     return process_inbound_webhook(
         inbound_service=container.inbound_webhook_service,
         payload=payload,
         signature_valid=signature_valid,
     )
+
+
+def set_container_override(container) -> None:
+    """Best-effort in-process override used by API-driven tests / local eager execution.
+
+    In production, Celery workers run in a separate process so this override is not expected
+    to be set; workers will build their own container.
+    """
+    global _container_override
+    _container_override = container
 
 
 def enqueue_inbound_webhook(*, payload: dict, signature_valid: bool):

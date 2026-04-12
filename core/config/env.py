@@ -58,6 +58,7 @@ class AppConfig:
 
     # Messaging (WhatsApp)
     WHATSAPP_WEBHOOK_SECRET: str | None
+    WHATSAPP_WEBHOOK_VERIFY_TOKEN: str | None
     WHATSAPP_CLOUD_ACCESS_TOKEN: str | None
     WHATSAPP_CLOUD_API_VERSION: str
     WHATSAPP_CLOUD_TIMEOUT_SECONDS: int
@@ -118,6 +119,7 @@ class AppConfig:
             WHATSAPP_WEBHOOK_SECRET=_get(
                 "WHATSAPP_WEBHOOK_SECRET", required=False
             ),
+            WHATSAPP_WEBHOOK_VERIFY_TOKEN=_get("WHATSAPP_WEBHOOK_VERIFY_TOKEN", required=False),
             WHATSAPP_CLOUD_ACCESS_TOKEN=_get("WHATSAPP_CLOUD_ACCESS_TOKEN", required=False),
             WHATSAPP_CLOUD_API_VERSION=_get("WHATSAPP_CLOUD_API_VERSION", required=False, default="v19.0") or "v19.0",
             WHATSAPP_CLOUD_TIMEOUT_SECONDS=int(_get("WHATSAPP_CLOUD_TIMEOUT_SECONDS", required=False, default="10")),

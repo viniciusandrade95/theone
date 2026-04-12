@@ -23,11 +23,11 @@ from core.errors import ForbiddenError
 def reset_config_singleton(monkeypatch):
     import core.config.loader as loader
     monkeypatch.setattr(loader, "_config", None)
-    os.environ.setdefault("ENV", "test")
-    os.environ.setdefault("APP_NAME", "beauty-crm")
-    os.environ.setdefault("DATABASE_URL", "dev")
-    os.environ.setdefault("SECRET_KEY", "test-secret")
-    os.environ.setdefault("TENANT_HEADER", "X-Tenant-ID")
+    os.environ["ENV"] = "test"
+    os.environ["APP_NAME"] = "beauty-crm"
+    os.environ["DATABASE_URL"] = "dev"
+    os.environ["SECRET_KEY"] = "test-secret"
+    os.environ["TENANT_HEADER"] = "X-Tenant-ID"
     yield
     monkeypatch.setattr(loader, "_config", None)
     clear_tenant_id()
@@ -57,9 +57,8 @@ def _setup_dependencies():
 
 def test_inbound_worker_blocks_whatsapp_when_plan_disabled():
     tenant_id, messaging_repo, crm, billing = _setup_dependencies()
-    billing.set_plan(tier=PlanTier.STARTER)
-
     set_tenant_id(tenant_id)
+    billing.set_plan(tier=PlanTier.STARTER)
     crm.create_customer(name="Bea", phone="351111")
 
     inbound_service = InboundWebhookService(messaging_repo, crm, billing)
@@ -81,9 +80,8 @@ def test_inbound_worker_blocks_whatsapp_when_plan_disabled():
 
 def test_inbound_worker_accepts_whatsapp_when_plan_enabled():
     tenant_id, messaging_repo, crm, billing = _setup_dependencies()
-    billing.set_plan(tier=PlanTier.PRO)
-
     set_tenant_id(tenant_id)
+    billing.set_plan(tier=PlanTier.PRO)
     crm.create_customer(name="Bea", phone="351111")
 
     inbound_service = InboundWebhookService(messaging_repo, crm, billing)

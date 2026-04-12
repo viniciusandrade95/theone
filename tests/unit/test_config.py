@@ -41,6 +41,18 @@ def test_load_config_fails_fast_when_required_env_missing():
 
 
 def test_load_config_applies_defaults_for_optional_env():
+    _clear_env(
+        [
+            "WHATSAPP_WEBHOOK_SECRET",
+            "WHATSAPP_WEBHOOK_VERIFY_TOKEN",
+            "WHATSAPP_CLOUD_ACCESS_TOKEN",
+            "SMTP_HOST",
+            "SMTP_FROM",
+            "CHATBOT_SERVICE_BASE_URL",
+            "ASSISTANT_CONNECTOR_TOKEN",
+            "ASSISTANT_CONNECTOR_HEADER",
+        ]
+    )
     _set_env({
         "ENV": "local",
         "APP_NAME": "beauty-crm",

@@ -23,6 +23,7 @@
 - **assistant messaging proxy**: `POST /api/chatbot/message`.
 - **assistant session reset proxy**: `POST /api/chatbot/reset`.
 - **assistant operational endpoint (Release 1)**: `POST /crm/assistant/prebook` (creates a real prebooking/appointment in `theone`).
+- **WhatsApp bot MVP (optional)**: `GET/POST /messaging/webhook` (Meta WhatsApp Cloud webhook → routes to tenant + forwards to chatbot + replies via WhatsApp Cloud API).
 
 ### Still missing for Phase 2
 
