@@ -75,6 +75,11 @@ Response (normalized):
 }
 ```
 
+Assistant quick win actions (server-appended, stable-ish for MVP):
+
+- `assistant.slot_suggestions.v1` — when intent indicates availability and enough context exists, includes `slots[]` sourced from the public booking availability engine.
+- `assistant.handoff.v1` — when handoff is requested, includes `handoff_id` and status.
+
 ### POST `/api/chatbot/reset`
 
 Request:
@@ -140,6 +145,12 @@ Purpose:
 - enforce `idempotency_key` for assistant-driven prebooking creation
 - store the created `appointment_id` (prebooking reference) for duplicate retries
 - keep minimal linkage to `conversation_id`, `session_id` and `trace_id`
+
+Implemented table: `assistant_handoffs`.
+
+Purpose:
+- persist an MVP handoff-to-human record (tenant-scoped)
+- enable internal staff visibility via API without building a full queue system
 
 ## Environment variables
 
@@ -245,3 +256,8 @@ Success response:
   }
 }
 ```
+
+## Assistant handoff MVP (internal visibility)
+
+- `GET /crm/assistant/handoffs` (staff auth) lists open handoffs created via assistant traffic.
+- Each handoff also writes a CRM interaction (`type="assistant_handoff"`) when customer context is known.

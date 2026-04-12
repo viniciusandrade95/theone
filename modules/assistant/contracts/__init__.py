@@ -8,6 +8,11 @@ from modules.assistant.contracts.common import AssistantActionEnvelopeV1, Assist
 from modules.assistant.contracts.handoff import AssistantHandoffRequestInV1, AssistantHandoffResponseOutV1
 from modules.assistant.contracts.quote import AssistantQuoteRequestInV1, AssistantQuoteResponseOutV1
 from modules.assistant.contracts.consult import AssistantConsultRequestInV1, AssistantConsultResponseOutV1
+from modules.assistant.contracts.slot_finding import (
+    AssistantSlotFindingRequestInV1,
+    AssistantSlotFindingResponseOutV1,
+    AssistantSlotSuggestionsActionV1,
+)
 
 __all__ = [
     "AssistantActionEnvelopeV1",
@@ -19,5 +24,7 @@ __all__ = [
     "AssistantQuoteResponseOutV1",
     "AssistantConsultRequestInV1",
     "AssistantConsultResponseOutV1",
+    "AssistantSlotFindingRequestInV1",
+    "AssistantSlotFindingResponseOutV1",
+    "AssistantSlotSuggestionsActionV1",
 ]
-

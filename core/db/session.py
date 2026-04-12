@@ -47,6 +47,7 @@ def _initialize_schema(engine) -> None:
     from modules.chatbot.models.conversation_session_orm import ChatbotConversationSessionORM  # noqa: F401
     from modules.chatbot.models.conversation_message_orm import ChatbotConversationMessageORM  # noqa: F401
     from modules.assistant.models.prebook_request_orm import AssistantPrebookRequestORM  # noqa: F401
+    from modules.assistant.models.handoff_orm import AssistantHandoffORM  # noqa: F401
 
     Base.metadata.create_all(engine)
 

@@ -170,6 +170,10 @@ def _get_public_settings_or_404(slug: str):
             return None, _not_found("Link de marcação não encontrado.")
         if not settings.booking_enabled:
             return None, _not_found("Este link de marcação não está ativo.")
+        # Ensure settings is safe to use outside this DB session.
+        # `db_session()` commits and expires instances by default; without expunging, routes
+        # may hit DetachedInstanceError when reading attributes after the context closes.
+        session.expunge(settings)
         return settings, None
 
 

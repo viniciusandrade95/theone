@@ -14,6 +14,7 @@ from modules.chatbot.repo.session_repo import ChatbotSessionRepo
 from modules.chatbot.repo.message_history_repo import ChatbotMessageHistoryRepo
 from modules.chatbot.service.chatbot_client import ChatbotClient
 from modules.chatbot.service.normalizer import normalize_chatbot_response
+from modules.assistant.service.assistant_quickwins import apply_assistant_quickwins
 
 router = APIRouter()
 
@@ -123,33 +124,48 @@ def chatbot_message(
             conversation_id=str(conversation.conversation_id),
             chatbot_session_id=chatbot_session_id,
         )
+
+        # Apply thin assistant orchestration (slot suggestions / handoff MVP).
+        quickwin = apply_assistant_quickwins(
+            session=session,
+            tenant_id=tenant_id,
+            user_id=user_id,
+            trace_id=effective_trace_id,
+            conversation=conversation,
+            normalized=normalized,
+            raw=raw,
+        )
+        normalized = quickwin.normalized
+
         normalized["trace_id"] = effective_trace_id
         normalized["client_id"] = client_id
+
         # Persist assistant continuity state (best-effort).
         intent_conf = raw.get("intent_confidence")
         confidence = float(intent_conf) if isinstance(intent_conf, (int, float)) else None
-        state_payload = None
-        if isinstance(conversation.state_payload, dict):
-            state_payload = dict(conversation.state_payload)
-        else:
-            state_payload = {}
+
+        state_payload = dict(conversation.state_payload) if isinstance(conversation.state_payload, dict) else {}
+        context_payload = dict(conversation.context_payload) if isinstance(conversation.context_payload, dict) else {}
+
+        if quickwin.booking_state:
+            state_payload.update(quickwin.booking_state)
+        if quickwin.booking_context:
+            context_payload.update(quickwin.booking_context)
+
         if normalized.get("handoff", {}).get("requested"):
             state_payload["handoff"] = {
                 "requested": True,
                 "reason": normalized.get("handoff", {}).get("reason"),
                 "at": datetime.now(tz=timezone.utc).isoformat(),
             }
-        context_payload = None
-        if isinstance(conversation.context_payload, dict):
-            context_payload = dict(conversation.context_payload)
-        else:
-            context_payload = {}
+
         slots = _clamp_json(raw.get("slots"))
         if slots is not None:
             context_payload["slots"] = slots
         ctx = _clamp_json(raw.get("context"))
         if ctx is not None:
             context_payload["context"] = ctx
+
         repo.update_continuity(
             entity=conversation,
             last_intent=normalized.get("intent"),
@@ -157,6 +173,7 @@ def chatbot_message(
             state_payload=state_payload,
             context_payload=context_payload,
         )
+
         history.append(
             conversation=conversation,
             role="assistant",
