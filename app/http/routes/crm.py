@@ -941,7 +941,4 @@ def restore_appointment(appointment_id: str, _tenant=Depends(require_tenant_head
         return _to_appointment_out(appointment)
 
 
-# Assistant prebooking endpoint (server-to-server).
-from app.http.routes.assistant_prebook import router as assistant_prebook_router  # noqa: E402
-
-router.include_router(assistant_prebook_router)
+# Assistant surface is mounted explicitly in app bootstrap (see app/http/main.py).

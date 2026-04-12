@@ -12,8 +12,10 @@ from app.http.main import create_app
 @pytest.fixture(autouse=True)
 def reset_config_singleton(monkeypatch):
     import core.config.loader as loader
+    from core.observability.metrics import reset_metrics
 
     monkeypatch.setattr(loader, "_config", None)
+    reset_metrics()
     os.environ.setdefault("ENV", "test")
     os.environ.setdefault("APP_NAME", "beauty-crm")
     os.environ.setdefault("DATABASE_URL", "dev")
@@ -22,6 +24,7 @@ def reset_config_singleton(monkeypatch):
     os.environ.setdefault("ASSISTANT_CONNECTOR_TOKEN", "test-connector-token")
     yield
     monkeypatch.setattr(loader, "_config", None)
+    reset_metrics()
 
 
 def _register_and_login(client: TestClient, tenant_id: str) -> str:
@@ -187,6 +190,30 @@ def test_prebook_success():
     assert item["status"] == "pending"
     assert item["notes"] == "qualquer nota"
     assert item["needs_confirmation"] is True
+    metrics = client.get("/metrics")
+    assert metrics.status_code == 200
+    assert 'assistant_prebook_total{status="created"}' in metrics.text
+
+
+def test_prebook_generates_trace_id_when_missing():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    service_id = _create_service(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
+
+    future_date = _future_date()
+    headers = {"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token", "Idempotency-Key": "wf:test:trace-gen"}
+    payload = {
+        "customer": {"name": "Maria", "phone": "+351900000000"},
+        "booking": {"service_id": service_id, "requested_date": future_date, "requested_time": "12:00", "timezone": "Europe/Lisbon"},
+    }
+    resp = client.post("/crm/assistant/prebook", headers=headers, json=payload)
+    assert resp.status_code == 201
+    body = resp.json()
+    assert body["trace_id"]
 
 
 def test_prebook_idempotent():

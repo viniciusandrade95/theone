@@ -6,10 +6,13 @@ from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import func, select
 
-from app.http.deps import require_assistant_token, require_tenant_header
+from app.http.deps import require_tenant_header, require_user_or_assistant_connector
 from app.http.routes.assistant_prebook_schemas import PrebookIn
 from core.db.session import db_session
 from core.errors import ForbiddenError, ValidationError
+from core.observability.logging import log_event
+from core.observability.metrics import inc_counter, start_timer
+from core.observability.tracing import require_trace_id
 from core.tenancy import require_tenant_id
 
 from modules.assistant.repo.prebook_request_repo import AssistantPrebookRequestRepo
@@ -33,7 +36,7 @@ def _reference_for(appointment_id: uuid.UUID) -> str:
 
 
 def _bad_request(message: str) -> JSONResponse:
-    return JSONResponse(status_code=400, content={"error": "BAD_REQUEST", "message": message})
+    return JSONResponse(status_code=400, content={"error": "BAD_REQUEST", "message": message, "trace_id": require_trace_id()})
 
 
 def _ensure_tz(tz_name: str) -> ZoneInfo:
@@ -232,13 +235,14 @@ def prebook(
     request: Request,
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     _tenant=Depends(require_tenant_header),
-    _auth=Depends(require_assistant_token),
+    _auth=Depends(require_user_or_assistant_connector),
 ):
+    timer = start_timer()
     tenant_id = require_tenant_id()
     if payload.tenant_id is not None and str(payload.tenant_id) != tenant_id:
         raise ForbiddenError("tenant_mismatch", meta={"header": tenant_id, "body": str(payload.tenant_id)})
 
-    trace_id = (request.headers.get("X-Trace-Id") or payload.trace_id or "").strip()
+    trace_id = require_trace_id()
 
     effective_idem = (idempotency_key or payload.idempotency_key or "").strip() or None
 
@@ -264,6 +268,13 @@ def prebook(
                 if existing.appointment_id is not None:
                     appointment_id = str(existing.appointment_id)
                     ref = _reference_for(uuid.UUID(appointment_id))
+                    inc_counter("assistant_prebook_total", labels={"status": "existing"})
+                    log_event(
+                        "assistant_prebook_idempotent_hit",
+                        status="existing",
+                        appointment_id=appointment_id,
+                        duration_ms=int(timer.seconds() * 1000),
+                    )
                     return JSONResponse(
                         status_code=200,
                         content={
@@ -334,6 +345,13 @@ def prebook(
                         ends_at=ends_utc,
                     )
                 ref = _reference_for(reused_id)
+                inc_counter("assistant_prebook_total", labels={"status": "existing"})
+                log_event(
+                    "assistant_prebook_idempotent_hit",
+                    status="existing",
+                    appointment_id=appointment_id,
+                    duration_ms=int(timer.seconds() * 1000),
+                )
                 return JSONResponse(
                     status_code=200,
                     content={
@@ -385,6 +403,12 @@ def prebook(
 
             appointment_id = str(appointment.id)
             ref = _reference_for(appointment.id)
+            inc_counter("assistant_prebook_total", labels={"status": "created"})
+            log_event(
+                "assistant_prebook_created",
+                appointment_id=appointment_id,
+                duration_ms=int(timer.seconds() * 1000),
+            )
             return {
                 "ok": True,
                 "reference": ref,
@@ -406,6 +430,12 @@ def prebook(
             if started is not None:
                 prebook_repo.delete(row=started)
             conflict_ids = [str(item.get("id")) for item in (err.conflicts or []) if item.get("id")]
+            inc_counter("assistant_prebook_total", labels={"status": "conflict"})
+            log_event(
+                "assistant_prebook_conflict",
+                conflict_count=len(conflict_ids),
+                duration_ms=int(timer.seconds() * 1000),
+            )
             return JSONResponse(
                 status_code=409,
                 content={

@@ -28,6 +28,8 @@ from modules.messaging.service.outbound_renderer import (
 from modules.messaging.models.outbound_message_orm import OutboundMessageORM
 from sqlalchemy import select
 
+from core.observability.metrics import inc_counter
+
 
 router = APIRouter()
 
@@ -382,6 +384,10 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
                 sent_by_user_id=user_id,
                 sent_at=None,
             )
+            inc_counter(
+                "outbound_send_total",
+                labels={"status": "failed", "channel": channel, "type": t_type},
+            )
             return SendOut(ok=False, outbound_message=_to_message_out(failed), whatsapp_url=None, note="Customer has no valid phone for WhatsApp.")
 
         # prepare link
@@ -401,6 +407,10 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
         )
         existing = session.execute(stmt).scalars().first()
         if existing is not None:
+            inc_counter(
+                "outbound_send_total",
+                labels={"status": "sent", "channel": channel, "type": t_type},
+            )
             return SendOut(
                 ok=True,
                 outbound_message=_to_message_out(existing),
@@ -420,6 +430,10 @@ def send(payload: SendIn, request: Request, _tenant=Depends(require_tenant_heade
             error_message=None,
             sent_by_user_id=user_id,
             sent_at=sent_at,
+        )
+        inc_counter(
+            "outbound_send_total",
+            labels={"status": "sent", "channel": channel, "type": t_type},
         )
 
         # side effect: interaction only when status=sent
@@ -460,10 +474,18 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
         phone_digits = _normalize_phone_for_wa(customer.phone or "")
         if phone_digits is None:
             repo.mark_failed(tenant_id=tenant_id, message_id=message_id, error_message="customer_missing_valid_phone")
+            inc_counter(
+                "outbound_send_total",
+                labels={"status": "failed", "channel": msg.channel, "type": msg.type},
+            )
             return SendOut(ok=False, outbound_message=_to_message_out(msg), whatsapp_url=None, note="Customer has no valid phone for WhatsApp.")
 
         whatsapp_url = _whatsapp_deeplink(phone_digits=phone_digits, text=msg.rendered_body)
         repo.mark_sent(tenant_id=tenant_id, message_id=message_id)
+        inc_counter(
+            "outbound_send_total",
+            labels={"status": "sent", "channel": msg.channel, "type": msg.type},
+        )
 
         request.app.state.container.crm.add_interaction(
             customer_id=str(customer.id),

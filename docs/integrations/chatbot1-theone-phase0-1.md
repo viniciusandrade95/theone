@@ -137,8 +137,27 @@ Purpose:
 
 - Authenticated user + tenant context are required for assistant endpoints.
 - `X-Trace-Id` is accepted and forwarded upstream.
+- If `X-Trace-Id` is missing, `theone` generates a server-side `trace_id` and returns it (also as response header `X-Trace-Id`).
 - Upstream credentials/URL remain server-side only.
 - WhatsApp integration is intentionally not in scope for these routes.
+
+## Observability baseline (Week 1)
+
+This repo exposes a minimal production-readiness foundation for assistant traffic:
+
+- **Operational surface (official)**:
+  - `POST /api/chatbot/message`
+  - `POST /api/chatbot/reset`
+  - `POST /crm/assistant/prebook`
+- **Structured logs**:
+  - JSON logs with `event`, `trace_id`, `tenant_id`, `user_id`, `method`, `path`, `status_code`, `duration_ms`.
+  - Assistant-specific events include:
+    - `assistant_chatbot_request_started` / `assistant_chatbot_request_completed`
+    - `assistant_chatbot_upstream_started` / `assistant_chatbot_upstream_completed` / `assistant_chatbot_upstream_failed`
+    - `assistant_prebook_created` / `assistant_prebook_conflict` / `assistant_prebook_idempotent_hit`
+- **Metrics**:
+  - `GET /metrics` (Prometheus text format) does not require `X-Tenant-ID`.
+  - Key metrics include `http_requests_total`, `http_request_duration_seconds`, and assistant-specific counters/histograms.
 
 ## Release 1: operational prebooking endpoint
 

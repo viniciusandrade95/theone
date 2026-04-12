@@ -1,10 +1,11 @@
-import uuid
-
 from fastapi import APIRouter, Depends, Header
 from pydantic import BaseModel, Field
 from requests import HTTPError, RequestException
 
 from app.http.deps import require_tenant_header, require_user
+from core.observability.logging import log_event
+from core.observability.metrics import start_timer
+from core.observability.tracing import require_trace_id
 from core.db.session import db_session
 from core.errors import ValidationError
 from modules.chatbot.repo.session_repo import ChatbotSessionRepo
@@ -38,7 +39,9 @@ def chatbot_message(
     user_id = identity["user_id"]
     client_id = tenant_id
 
-    effective_trace_id = x_trace_id or str(uuid.uuid4())
+    effective_trace_id = require_trace_id()
+    timer = start_timer()
+    log_event("assistant_chatbot_request_started", surface="chatbot_message")
 
     with db_session() as session:
         repo = ChatbotSessionRepo(session)
@@ -69,9 +72,11 @@ def chatbot_message(
             status = err.response.status_code if err.response is not None else 502
             body = err.response.text if err.response is not None else str(err)
             repo.mark_message(entity=conversation, chatbot_session_id=payload.session_id, status="error", error=body)
+            log_event("assistant_chatbot_request_completed", level="error", surface="chatbot_message", status_code=status)
             raise ValidationError("Chatbot service request failed", meta={"status": status})
         except RequestException as err:
             repo.mark_message(entity=conversation, chatbot_session_id=payload.session_id, status="error", error=str(err))
+            log_event("assistant_chatbot_request_completed", level="error", surface="chatbot_message", status_code=502)
             raise ValidationError("Chatbot service unavailable")
 
         chatbot_session_id = raw.get("session_id") if isinstance(raw.get("session_id"), str) else (payload.session_id or conversation.chatbot_session_id)
@@ -84,6 +89,7 @@ def chatbot_message(
         )
         normalized["trace_id"] = effective_trace_id
         normalized["client_id"] = client_id
+        log_event("assistant_chatbot_request_completed", surface="chatbot_message", status_code=200, duration_ms=int(timer.seconds() * 1000))
         return normalized
 
 
@@ -98,7 +104,9 @@ def chatbot_reset(
     user_id = identity["user_id"]
     client_id = tenant_id
 
-    effective_trace_id = x_trace_id or str(uuid.uuid4())
+    effective_trace_id = require_trace_id()
+    timer = start_timer()
+    log_event("assistant_chatbot_request_started", surface="chatbot_reset")
 
     with db_session() as session:
         repo = ChatbotSessionRepo(session)
@@ -127,7 +135,7 @@ def chatbot_reset(
 
         repo.reset(entity=conversation)
 
-        return {
+        resp = {
             "ok": True,
             "conversation_id": str(conversation.conversation_id),
             "session_id": None,
@@ -135,3 +143,5 @@ def chatbot_reset(
             "trace_id": effective_trace_id,
             "meta": {"source": "chatbot1", "raw": raw},
         }
+        log_event("assistant_chatbot_request_completed", surface="chatbot_reset", status_code=200, duration_ms=int(timer.seconds() * 1000))
+        return resp
