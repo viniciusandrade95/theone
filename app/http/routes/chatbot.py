@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Header
@@ -15,6 +16,11 @@ from modules.chatbot.repo.message_history_repo import ChatbotMessageHistoryRepo
 from modules.chatbot.service.chatbot_client import ChatbotClient
 from modules.chatbot.service.normalizer import normalize_chatbot_response
 from modules.assistant.service.assistant_quickwins import apply_assistant_quickwins
+from modules.assistant.service.funnel_events import (
+    ASSISTANT_MESSAGE_RECEIVED,
+    ASSISTANT_MESSAGE_REPLIED,
+    AssistantFunnelEventsService,
+)
 
 router = APIRouter()
 
@@ -74,6 +80,19 @@ def chatbot_message(
             surface=payload.surface,
             conversation_id=payload.conversation_id,
             customer_id=payload.customer_id,
+        )
+
+        funnel = AssistantFunnelEventsService(session)
+        funnel.emit(
+            tenant_id=uuid.UUID(tenant_id),
+            event_name=ASSISTANT_MESSAGE_RECEIVED,
+            trace_id=effective_trace_id,
+            conversation_id=conversation.conversation_id,
+            assistant_session_id=conversation.chatbot_session_id,
+            customer_id=conversation.customer_id,
+            event_source="chatbot_proxy",
+            channel="chat",
+            metadata={"surface": payload.surface, "has_conversation_id": bool(payload.conversation_id)},
         )
 
         # Persist the incoming user turn (compact).
@@ -140,6 +159,8 @@ def chatbot_message(
         normalized["trace_id"] = effective_trace_id
         normalized["client_id"] = client_id
 
+        handoff_requested = bool(normalized.get("handoff", {}).get("requested"))
+
         # Persist assistant continuity state (best-effort).
         intent_conf = raw.get("intent_confidence")
         confidence = float(intent_conf) if isinstance(intent_conf, (int, float)) else None
@@ -183,6 +204,22 @@ def chatbot_message(
                 "status": normalized.get("status"),
                 "actions_count": len(normalized.get("reply", {}).get("actions") or []),
                 "handoff_requested": bool(normalized.get("handoff", {}).get("requested")),
+            },
+        )
+
+        funnel.emit(
+            tenant_id=uuid.UUID(tenant_id),
+            event_name=ASSISTANT_MESSAGE_REPLIED,
+            trace_id=effective_trace_id,
+            conversation_id=conversation.conversation_id,
+            assistant_session_id=chatbot_session_id,
+            customer_id=conversation.customer_id,
+            event_source="chatbot_proxy",
+            channel="chat",
+            metadata={
+                "surface": payload.surface,
+                "intent": normalized.get("intent"),
+                "handoff_requested": handoff_requested,
             },
         )
         log_event("assistant_chatbot_request_completed", surface="chatbot_message", status_code=200, duration_ms=int(timer.seconds() * 1000))

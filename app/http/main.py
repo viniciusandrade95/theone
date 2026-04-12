@@ -19,6 +19,7 @@ from core.observability.tracing import TRACE_HEADER_NAME, clear_trace_id, ensure
 from app.http.routes.auth import router as auth_router
 from app.http.routes.crm import router as crm_router
 from app.http.routes.analytics import router as analytics_router
+from app.http.routes.assistant_analytics import router as assistant_analytics_router
 from app.http.routes.billing import router as billing_router
 from app.http.routes.messaging import router as messaging_router
 from app.http.routes.tenants import router as tenants_router
@@ -234,6 +235,7 @@ def create_app() -> FastAPI:
     app.include_router(crm_router, prefix="/crm", tags=["crm"])
     app.include_router(assistant_router, prefix="/crm", tags=["assistant"])
     app.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
+    app.include_router(assistant_analytics_router, prefix="/analytics", tags=["analytics"])
     app.include_router(billing_router, prefix="/billing", tags=["billing"])
     app.include_router(messaging_router, prefix="/messaging", tags=["messaging"])
     app.include_router(tenants_router, prefix="/tenants", tags=["tenants"])

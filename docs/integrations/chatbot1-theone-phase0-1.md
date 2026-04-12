@@ -195,6 +195,18 @@ This repo exposes a minimal production-readiness foundation for assistant traffi
   - `GET /metrics` (Prometheus text format) does not require `X-Tenant-ID`.
   - Key metrics include `http_requests_total`, `http_request_duration_seconds`, and assistant-specific counters/histograms.
 
+## Assistant analytics (ROI)
+
+`theone` persists assistant funnel events (business-level, tenant-scoped) and exposes assistant-specific analytics:
+
+- `GET /analytics/assistant/overview`
+- `GET /analytics/assistant/funnel`
+- `GET /analytics/assistant/channels`
+- `GET /analytics/assistant/templates`
+- `GET /analytics/assistant/conversions`
+
+Taxonomy and semantics are documented in `docs/features/assistant-analytics-funnel.md`.
+
 ## Release 1: operational prebooking endpoint
 
 ### POST `/crm/assistant/prebook`

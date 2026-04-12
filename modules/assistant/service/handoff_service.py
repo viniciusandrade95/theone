@@ -8,6 +8,12 @@ from sqlalchemy.orm import Session
 from core.observability.logging import log_event
 from modules.assistant.repo.handoff_repo import AssistantHandoffRepo
 from modules.assistant.service.assistant_communication_service import AssistantCommunicationService
+from modules.assistant.service.funnel_events import (
+    ASSISTANT_FALLBACK,
+    ASSISTANT_HANDOFF_CREATED,
+    ASSISTANT_HANDOFF_REQUESTED,
+    AssistantFunnelEventsService,
+)
 from modules.crm.models.interaction_orm import InteractionORM
 
 
@@ -32,6 +38,38 @@ class AssistantHandoffService:
         reason: str | None = None,
         summary: str | None = None,
     ):
+        tenant_uuid = uuid.UUID(tenant_id)
+        conversation_uuid = uuid.UUID(conversation_id)
+
+        funnel = AssistantFunnelEventsService(self.session)
+        funnel.emit_once(
+            tenant_id=tenant_uuid,
+            dedupe_key=f"assistant_handoff_requested:{conversation_id}:{conversation_epoch}",
+            event_name=ASSISTANT_HANDOFF_REQUESTED,
+            trace_id=trace_id,
+            conversation_id=conversation_uuid,
+            assistant_session_id=session_id,
+            customer_id=uuid.UUID(customer_id) if customer_id else None,
+            event_source="assistant_handoff",
+            metadata={
+                "surface": surface,
+                "reason": reason,
+                "conversation_epoch": int(conversation_epoch),
+            },
+        )
+        if isinstance(reason, str) and reason and reason != "user_requested_human":
+            funnel.emit_once(
+                tenant_id=tenant_uuid,
+                dedupe_key=f"assistant_fallback:{conversation_id}:{conversation_epoch}",
+                event_name=ASSISTANT_FALLBACK,
+                trace_id=trace_id,
+                conversation_id=conversation_uuid,
+                assistant_session_id=session_id,
+                customer_id=uuid.UUID(customer_id) if customer_id else None,
+                event_source="assistant_handoff",
+                metadata={"reason": reason, "surface": surface, "conversation_epoch": int(conversation_epoch)},
+            )
+
         existing = self.repo.get_open_by_conversation(
             tenant_id=tenant_id, conversation_id=conversation_id, conversation_epoch=conversation_epoch
         )
@@ -62,6 +100,20 @@ class AssistantHandoffService:
             trace_id=trace_id,
             conversation_id=conversation_id,
             handoff_id=str(created.id),
+        )
+
+        funnel.emit_once(
+            tenant_id=tenant_uuid,
+            dedupe_key=f"assistant_handoff_created:{created.id}",
+            event_name=ASSISTANT_HANDOFF_CREATED,
+            trace_id=trace_id,
+            conversation_id=conversation_uuid,
+            assistant_session_id=session_id,
+            customer_id=uuid.UUID(customer_id) if customer_id else None,
+            event_source="assistant_handoff",
+            related_entity_type="assistant_handoff",
+            related_entity_id=created.id,
+            metadata={"surface": surface, "reason": reason, "conversation_epoch": int(conversation_epoch)},
         )
 
         # Operational visibility via CRM interaction when customer context exists.

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from core.observability.logging import log_event
+from core.observability.metrics import inc_counter, start_timer, observe_histogram
 from modules.messaging.repo.outbound_delivery_events_repo import OutboundDeliveryEventsRepo
 from modules.messaging.repo.outbound_sql import OutboundRepo
 
@@ -40,6 +41,7 @@ class OutboundDeliveryService:
         payload: dict | None,
         received_at: datetime | None = None,
     ) -> dict:
+        timer = start_timer()
         now = received_at or datetime.now(timezone.utc)
         recorded = self.events.record(
             tenant_id=tenant_id,
@@ -85,5 +87,14 @@ class OutboundDeliveryService:
             updated_message_id=updated_message_id,
             status=status,
         )
+        outcome = "updated" if updated_message_id else ("recorded" if recorded else "ignored")
+        inc_counter(
+            "outbound_delivery_events_total",
+            labels={"provider": (provider or "unknown"), "status": (status or "unknown"), "outcome": outcome},
+        )
+        observe_histogram(
+            "outbound_delivery_event_processing_seconds",
+            labels={"provider": (provider or "unknown")},
+            value=max(0.0, timer.seconds()),
+        )
         return {"recorded": recorded, "updated_message_id": updated_message_id, "delivery_status": updated_status}
-
