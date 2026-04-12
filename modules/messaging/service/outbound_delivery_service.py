@@ -66,8 +66,13 @@ class OutboundDeliveryService:
                 desired = (status or "").strip().lower()
                 if desired not in _STATUS_ORDER:
                     desired = current
-                # Only advance monotonically, except allowing failed.
-                if desired == "failed" or _STATUS_ORDER.get(desired, 0) >= _STATUS_ORDER.get(current, 0):
+                # Only advance monotonically.
+                #
+                # Hardening: do not allow downgrading a delivered/read message back to failed.
+                if desired == "failed" and current in {"delivered", "read"}:
+                    desired = current
+
+                if _STATUS_ORDER.get(desired, 0) >= _STATUS_ORDER.get(current, 0):
                     updated = self.outbound.update_delivery_status(
                         tenant_id=tenant_id,
                         message_id=msg.id,

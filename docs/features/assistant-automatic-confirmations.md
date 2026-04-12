@@ -53,6 +53,9 @@ Automatic confirmations use `outbound_messages.idempotency_key` with the shape:
 
 This prevents repeated sends for the same trigger+entity+channel in retries.
 
+Hardening note:
+- if a prior attempt exists with `status=failed`, the system may retry and/or fall back to the next channel using the same idempotency key, without creating a new row.
+
 ## Provider configuration
 
 WhatsApp (Cloud API):
@@ -68,4 +71,3 @@ Email (SMTP):
 Confirmations are **best-effort**:
 - business actions (prebook/handoff) never fail because messaging failed
 - failures are recorded in `outbound_messages` (`status="failed"`, `error_code`, `error_message`)
-

@@ -64,6 +64,12 @@ All assistant analytics endpoints are tenant-scoped and require staff auth:
 
 Date range is interpreted as UTC for storage and filtering.
 
+## Integration validation
+
+See `docs/testing/communication-measurement-integration.md` for end-to-end integration coverage that validates:
+- assistant events → confirmations → delivery callbacks
+- funnel event emission + analytics correctness
+
 ## Interpreting “conversion”
 
 For v1, conversion is defined as:
@@ -72,4 +78,3 @@ For v1, conversion is defined as:
 - later updated from `status="pending"` → `status="booked"` by staff, and `needs_confirmation=true`
 
 This makes conversion artifact-backed and auditable.
-

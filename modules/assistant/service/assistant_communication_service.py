@@ -134,8 +134,23 @@ class AssistantCommunicationService:
             idempotency_key = f"auto:{idempotency_scope}:{channel}"
             existing = self.outbound.get_by_idempotency_key(tenant_id=tenant_id, idempotency_key=idempotency_key)
             if existing is not None:
+                if (existing.status or "").strip().lower() != "failed":
+                    log_event(
+                        "assistant_confirmation_idempotent_hit",
+                        tenant_id=str(tenant_id),
+                        trace_id=trace_id,
+                        trigger_type=trigger_type,
+                        outbound_message_id=str(existing.id),
+                        channel=existing.channel,
+                        type=existing.type,
+                    )
+                    return existing
+
+                # Hardening: allow retry/fallback when a previous attempt was recorded as failed.
+                # This avoids a permanently stuck "failed" idempotency hit and enables later recovery.
                 log_event(
-                    "assistant_confirmation_idempotent_hit",
+                    "assistant_confirmation_retry_failed_idempotency",
+                    level="warning",
                     tenant_id=str(tenant_id),
                     trace_id=trace_id,
                     trigger_type=trigger_type,
@@ -143,21 +158,36 @@ class AssistantCommunicationService:
                     channel=existing.channel,
                     type=existing.type,
                 )
-                return existing
+                existing.template_id = template.id
+                existing.type = template.type
+                existing.channel = channel
+                existing.rendered_body = rendered
+                existing.trace_id = trace_id
+                existing.conversation_id = conversation_id
+                existing.assistant_session_id = assistant_session_id
+                existing.status = "pending"
+                existing.error_message = None
+                existing.error_code = None
+                existing.delivery_status = "queued"
+                existing.delivery_status_updated_at = datetime.now(timezone.utc)
+                self.session.add(existing)
+                self.session.flush()
 
-            msg = self._create_outbound_row(
-                tenant_id=tenant_id,
-                customer_id=customer_id,
-                appointment_id=appointment_id,
-                template=template,
-                channel=channel,
-                rendered_body=rendered,
-                idempotency_key=idempotency_key,
-                trigger_type=trigger_type,
-                trace_id=trace_id,
-                conversation_id=conversation_id,
-                assistant_session_id=assistant_session_id,
-            )
+                msg = existing
+            else:
+                msg = self._create_outbound_row(
+                    tenant_id=tenant_id,
+                    customer_id=customer_id,
+                    appointment_id=appointment_id,
+                    template=template,
+                    channel=channel,
+                    rendered_body=rendered,
+                    idempotency_key=idempotency_key,
+                    trigger_type=trigger_type,
+                    trace_id=trace_id,
+                    conversation_id=conversation_id,
+                    assistant_session_id=assistant_session_id,
+                )
 
             ok = False
             if channel == "whatsapp":
@@ -269,27 +299,29 @@ class AssistantCommunicationService:
     ) -> OutboundMessageORM:
         now = datetime.now(timezone.utc)
         try:
-            msg = self.outbound.create_message(
-                tenant_id=tenant_id,
-                customer_id=customer_id,
-                appointment_id=appointment_id,
-                template_id=template.id,
-                type=template.type,
-                channel=channel,
-                rendered_body=rendered_body,
-                status="pending",
-                error_message=None,
-                sent_by_user_id=None,
-                sent_at=None,
-                recipient=None,
-                delivery_status="queued",
-                delivery_status_updated_at=now,
-                idempotency_key=idempotency_key,
-                trigger_type=trigger_type,
-                trace_id=trace_id,
-                conversation_id=conversation_id,
-                assistant_session_id=assistant_session_id,
-            )
+            # Important: isolate uniqueness conflicts without rolling back the whole request transaction.
+            with self.session.begin_nested():
+                msg = self.outbound.create_message(
+                    tenant_id=tenant_id,
+                    customer_id=customer_id,
+                    appointment_id=appointment_id,
+                    template_id=template.id,
+                    type=template.type,
+                    channel=channel,
+                    rendered_body=rendered_body,
+                    status="pending",
+                    error_message=None,
+                    sent_by_user_id=None,
+                    sent_at=None,
+                    recipient=None,
+                    delivery_status="queued",
+                    delivery_status_updated_at=now,
+                    idempotency_key=idempotency_key,
+                    trigger_type=trigger_type,
+                    trace_id=trace_id,
+                    conversation_id=conversation_id,
+                    assistant_session_id=assistant_session_id,
+                )
             log_event(
                 "assistant_confirmation_requested",
                 tenant_id=str(tenant_id),
@@ -301,7 +333,6 @@ class AssistantCommunicationService:
             )
             return msg
         except IntegrityError:
-            self.session.rollback()
             existing = self.outbound.get_by_idempotency_key(tenant_id=tenant_id, idempotency_key=idempotency_key)
             if existing is None:
                 raise
@@ -459,4 +490,3 @@ class AssistantCommunicationService:
                 error=str(err),
             )
             return False
-

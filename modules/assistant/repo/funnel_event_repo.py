@@ -59,10 +59,11 @@ class AssistantFunnelEventRepo:
         **kwargs,
     ) -> tuple[AssistantFunnelEventORM, bool]:
         try:
-            row = self.create(tenant_id=tenant_id, dedupe_key=dedupe_key, **kwargs)
+            # Important: isolate the uniqueness conflict without rolling back the whole request transaction.
+            with self.session.begin_nested():
+                row = self.create(tenant_id=tenant_id, dedupe_key=dedupe_key, **kwargs)
             return row, True
         except IntegrityError:
-            self.session.rollback()
             stmt = (
                 select(AssistantFunnelEventORM)
                 .where(AssistantFunnelEventORM.tenant_id == tenant_id)
