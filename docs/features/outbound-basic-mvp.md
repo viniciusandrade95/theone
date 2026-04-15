@@ -56,12 +56,18 @@ Quando uma mensagem outbound fica com `status=sent`, é criada uma interaction n
 
 ## Callbacks de entrega (provider-backed)
 
-- Endpoint: `POST /messaging/delivery` (sem tenant header; tenant é resolvido por `phone_number_id`)
+- Endpoint principal (Meta Webhooks): `POST /messaging/webhook`
+  - mesmo webhook usado para inbound; o TheOne extrai `statuses[]` e processa o lifecycle de entrega.
+  - sem tenant header; tenant é resolvido via `whatsapp_accounts` (`provider + phone_number_id`).
+- Endpoint normalizado (útil para testes/relay): `POST /messaging/delivery`
+  - payload interno/normalizado (não é o payload original do Meta).
+  - sem tenant header; tenant é resolvido por `phone_number_id`.
 - Dedupe: por `(tenant_id, provider, external_event_id)` em `outbound_delivery_events`
 - Atualiza `outbound_messages.delivery_status` e timestamps (`delivered_at`, `failed_at`)
 
 Variáveis de ambiente relevantes:
-- `WHATSAPP_WEBHOOK_SECRET` (verificação de assinatura do callback)
+- `WHATSAPP_WEBHOOK_SECRET` (Meta App Secret; verificação de assinatura `X-Hub-Signature-256` nos callbacks)
+- `WHATSAPP_WEBHOOK_VERIFY_TOKEN` (handshake GET de verificação do webhook)
 - `WHATSAPP_CLOUD_ACCESS_TOKEN`, `WHATSAPP_CLOUD_API_VERSION`, `WHATSAPP_CLOUD_TIMEOUT_SECONDS` (envio via provider)
 
 ## Fora de scope neste PR

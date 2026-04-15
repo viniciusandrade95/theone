@@ -90,6 +90,12 @@ def _sign(secret: str, body: bytes) -> str:
     return f"sha256={digest}"
 
 
+def _json_bytes(payload: dict) -> bytes:
+    import json as _json
+
+    return _json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+
+
 def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
     os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
@@ -160,6 +166,79 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
 
         events = session.execute(select(OutboundDeliveryEventORM)).scalars().all()
         assert len(events) == 1
+
+
+def test_outbound_delivery_callback_via_meta_webhook_statuses(monkeypatch):
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
+    os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
+
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    token = _register(client, tenant_id, "provider-meta-webhook@example.com")
+
+    customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
+    template_id = _create_template(client, tenant_id, token)
+    _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
+
+    def fake_post(url, json, headers, timeout):
+        return DummyResponse({"messages": [{"id": "wamid.123"}]})
+
+    monkeypatch.setattr("modules.messaging.providers.meta_whatsapp_cloud.requests.post", fake_post)
+
+    send = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={
+            "customer_id": customer_id,
+            "template_id": template_id,
+            "final_body": "Hello Bob!",
+            "type": "simple_campaign",
+            "channel": "whatsapp",
+        },
+    )
+    assert send.status_code == 200
+    outbound_id = send.json()["outbound_message"]["id"]
+
+    meta_payload = {
+        "entry": [
+            {
+                "changes": [
+                    {
+                        "value": {
+                            "metadata": {"phone_number_id": "pn-123"},
+                            "statuses": [{"id": "wamid.123", "status": "delivered", "timestamp": "123"}],
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    raw = _json_bytes(meta_payload)
+    signature = _sign("wh-secret", raw)
+
+    cb = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert cb.status_code == 200
+    assert cb.json()["delivery_recorded"] == 1
+    assert cb.json()["delivery_updated"] == 1
+
+    cb2 = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert cb2.status_code == 200
+    assert cb2.json()["delivery_recorded"] == 0
+
+    with db_session() as session:
+        msg = session.execute(select(OutboundMessageORM).where(OutboundMessageORM.id == uuid.UUID(outbound_id))).scalar_one()
+        assert msg.delivery_status in {"delivered", "read"}
+        assert msg.delivered_at is not None
 
 
 def test_outbound_delivery_callback_is_tenant_safe(monkeypatch):

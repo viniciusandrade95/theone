@@ -31,6 +31,22 @@ class WhatsAppAccountIn(BaseModel):
     status: str = Field(default="active")
 
 
+async def _require_valid_whatsapp_signature(request: Request) -> bytes:
+    """Validate Meta webhook HMAC signature and return raw request body bytes.
+
+    `WHATSAPP_WEBHOOK_SECRET` is expected to be the Meta App Secret.
+    """
+    cfg = get_config()
+    secret = (cfg.WHATSAPP_WEBHOOK_SECRET or "").strip()
+    if not secret:
+        raise HTTPException(status_code=503, detail="whatsapp_webhook_secret_not_configured")
+    body = await request.body()
+    signature = request.headers.get("X-Hub-Signature-256")
+    if not verify_signature(secret=secret, payload=body, signature_header=signature):
+        raise HTTPException(status_code=401, detail="invalid_signature")
+    return body
+
+
 @router.get("/webhook")
 async def whatsapp_webhook_verify(request: Request):
     """WhatsApp Cloud webhook verification (Meta).
@@ -45,7 +61,7 @@ async def whatsapp_webhook_verify(request: Request):
     token = request.query_params.get("hub.verify_token")
     challenge = request.query_params.get("hub.challenge")
 
-    expected = cfg.WHATSAPP_WEBHOOK_VERIFY_TOKEN
+    expected = (cfg.WHATSAPP_WEBHOOK_VERIFY_TOKEN or "").strip()
     if not expected:
         raise HTTPException(status_code=503, detail="whatsapp_verify_token_not_configured")
     if mode != "subscribe" or not token or token != expected:
@@ -159,11 +175,7 @@ async def whatsapp_webhook(payload: dict, request: Request):
     - inbound messages -> enqueued for async processing (+ bot reply)
     - delivery statuses -> processed inline (delivery lifecycle)
     """
-    cfg = get_config()
-    body = await request.body()
-    signature = request.headers.get("X-Hub-Signature-256")
-    if not verify_signature(secret=cfg.WHATSAPP_WEBHOOK_SECRET or "", payload=body, signature_header=signature):
-        raise HTTPException(status_code=401, detail="invalid_signature")
+    await _require_valid_whatsapp_signature(request)
 
     inbound_events = _extract_meta_inbound_events(payload)
     delivery_events = _extract_meta_delivery_events(payload)
@@ -209,11 +221,7 @@ async def whatsapp_webhook(payload: dict, request: Request):
 
 @router.post("/inbound")
 async def inbound(payload: InboundIn, request: Request):
-    cfg = get_config()
-    body = await request.body()
-    signature = request.headers.get("X-Hub-Signature-256")
-    if not verify_signature(secret=cfg.WHATSAPP_WEBHOOK_SECRET or "", payload=body, signature_header=signature):
-        raise HTTPException(status_code=401, detail="invalid_signature")
+    await _require_valid_whatsapp_signature(request)
 
     container = request.app.state.container
     account = container.messaging_repo.get_whatsapp_account(
@@ -247,11 +255,7 @@ async def delivery_event(payload: OutboundDeliveryEventIn, request: Request):
     - No tenant header is expected (provider-driven).
     - Tenant is resolved via WhatsApp account routing (provider + phone_number_id).
     """
-    cfg = get_config()
-    body = await request.body()
-    signature = request.headers.get("X-Hub-Signature-256")
-    if not verify_signature(secret=cfg.WHATSAPP_WEBHOOK_SECRET or "", payload=body, signature_header=signature):
-        raise HTTPException(status_code=401, detail="invalid_signature")
+    await _require_valid_whatsapp_signature(request)
 
     container = request.app.state.container
     account = container.messaging_repo.get_whatsapp_account(provider=payload.provider, phone_number_id=payload.phone_number_id)

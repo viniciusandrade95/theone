@@ -28,11 +28,11 @@ class MetaWhatsAppCloudProvider:
         idempotency_key: str | None = None,
     ) -> OutboundSendResult:
         cfg = get_config()
-        token = getattr(cfg, "WHATSAPP_CLOUD_ACCESS_TOKEN", None)
+        token = (getattr(cfg, "WHATSAPP_CLOUD_ACCESS_TOKEN", None) or "").strip()
         if not token:
             raise ValidationError("whatsapp_cloud_not_configured")
 
-        api_version = getattr(cfg, "WHATSAPP_CLOUD_API_VERSION", None) or self.api_version
+        api_version = (getattr(cfg, "WHATSAPP_CLOUD_API_VERSION", None) or self.api_version).strip()
         url = f"https://graph.facebook.com/{api_version}/{phone_number_id}/messages"
         payload = {
             "messaging_product": "whatsapp",
@@ -44,7 +44,7 @@ class MetaWhatsAppCloudProvider:
         if idempotency_key:
             headers["Idempotency-Key"] = idempotency_key
 
-        timeout_s = int(getattr(cfg, "WHATSAPP_CLOUD_TIMEOUT_SECONDS", 10) or 10)
+        timeout_s = max(1, int(getattr(cfg, "WHATSAPP_CLOUD_TIMEOUT_SECONDS", 10) or 10))
         resp = requests.post(url, json=payload, headers=headers, timeout=timeout_s)
         resp.raise_for_status()
         data = resp.json() if resp.content else {}
