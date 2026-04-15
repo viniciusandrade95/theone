@@ -9,6 +9,16 @@ This repo already supports an end-to-end WhatsApp Cloud (Meta) integration:
 
 This guide consolidates the existing behavior and how to configure + validate it without introducing new architecture.
 
+## 0) Product framing (what “connect” means)
+
+In TheOne, “Connect WhatsApp number” means creating a mapping between:
+- `provider` (currently: `meta`)
+- Meta `phone_number_id` (an internal ID that identifies your WhatsApp Business number in Meta)
+
+This mapping is the routing key TheOne uses to safely resolve which tenant should receive:
+- inbound WhatsApp webhooks (messages)
+- delivery callbacks (statuses)
+
 ## 1) Environment variables (normalized)
 
 WhatsApp / Meta variables (see `.env.example`):
@@ -128,8 +138,20 @@ Both:
 3) Subscribe to WhatsApp fields that include inbound messages and message status updates.
 
 ### Step C — Create WhatsApp account mapping (tenant routing)
-Create a mapping for the tenant to route events by `phone_number_id`:
-- `POST /messaging/whatsapp-accounts` with `{ "provider": "meta", "phone_number_id": "<pn-id>", "status": "active" }`
+Create a mapping so TheOne can route events by `provider + phone_number_id`:
+
+Option A (recommended): Admin UI
+- Go to `Admin → Connect WhatsApp number`
+- Provider: `Meta (WhatsApp Cloud)`
+- Paste the Meta `phone_number_id`
+- Set status to `Active`
+
+Option B: API
+- `POST /messaging/whatsapp-accounts` with `{ "provider": "meta", "phone_number_id": "<phone_number_id>", "status": "active" }`
+
+What is `phone_number_id`?
+- It’s Meta’s internal identifier for your WhatsApp Business phone number (not the phone number like `+351...`).
+- You can copy it from Meta / WhatsApp Manager (phone number details).
 
 ### Step D — Validate GET verification handshake
 From Meta “Verify and save”, confirm:
@@ -168,4 +190,3 @@ Confirm status callbacks reach TheOne:
 - Delivery lifecycle:
   - Status callbacks are arriving (webhook subscribed to status fields)
   - Dedupe is working (replayed callbacks do not duplicate events)
-

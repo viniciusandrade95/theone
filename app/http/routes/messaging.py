@@ -248,6 +248,28 @@ class OutboundDeliveryEventIn(BaseModel):
     payload: dict | None = None
 
 
+class WhatsAppAccountOut(BaseModel):
+    id: str
+    tenant_id: str
+    provider: str
+    phone_number_id: str
+    status: str
+    created_at: str | None = None
+
+
+class WhatsAppConnectionStatusOut(BaseModel):
+    webhook_secret_configured: bool
+    webhook_verify_token_configured: bool
+    cloud_access_token_configured: bool
+    cloud_api_version: str
+    last_delivery_callback_received_at: str | None = None
+
+
+class WhatsAppAccountsListOut(BaseModel):
+    accounts: list[WhatsAppAccountOut]
+    connection: WhatsAppConnectionStatusOut
+
+
 @router.post("/delivery")
 async def delivery_event(payload: OutboundDeliveryEventIn, request: Request):
     """Provider callback ingestion for outbound delivery lifecycle.
@@ -281,6 +303,57 @@ async def delivery_event(payload: OutboundDeliveryEventIn, request: Request):
 
     clear_tenant_id()
     return {"status": "accepted", **res}
+
+
+@router.get("/whatsapp-accounts")
+def list_whatsapp_accounts(
+    request: Request,
+    _tenant=Depends(require_tenant_header),
+    _user=Depends(require_user),
+) -> WhatsAppAccountsListOut:
+    """List WhatsApp account mappings for the current tenant (admin UX helper).
+
+    TheOne routes provider callbacks by `provider + phone_number_id`. This endpoint helps the
+    admin UI show "connected numbers" and basic server readiness signals.
+    """
+    tenant_id = require_tenant_id()
+    cfg = get_config()
+
+    from core.db.session import db_session  # local import to avoid cycles
+    from sqlalchemy import select, func
+    from modules.messaging.models.whatsapp_account_orm import WhatsAppAccountORM
+    from modules.messaging.models.outbound_delivery_event_orm import OutboundDeliveryEventORM
+
+    with db_session() as session:
+        stmt = select(WhatsAppAccountORM).where(WhatsAppAccountORM.tenant_id == uuid.UUID(tenant_id)).order_by(
+            WhatsAppAccountORM.created_at.desc()
+        )
+        rows = session.execute(stmt).scalars().all()
+        last_delivery_at = session.execute(
+            select(func.max(OutboundDeliveryEventORM.received_at)).where(
+                OutboundDeliveryEventORM.tenant_id == uuid.UUID(tenant_id)
+            )
+        ).scalar_one()
+
+    accounts = [
+        WhatsAppAccountOut(
+            id=str(row.id),
+            tenant_id=str(row.tenant_id),
+            provider=row.provider,
+            phone_number_id=row.phone_number_id,
+            status=row.status,
+            created_at=row.created_at.isoformat() if row.created_at else None,
+        )
+        for row in rows
+    ]
+    connection = WhatsAppConnectionStatusOut(
+        webhook_secret_configured=bool((cfg.WHATSAPP_WEBHOOK_SECRET or "").strip()),
+        webhook_verify_token_configured=bool((cfg.WHATSAPP_WEBHOOK_VERIFY_TOKEN or "").strip()),
+        cloud_access_token_configured=bool((cfg.WHATSAPP_CLOUD_ACCESS_TOKEN or "").strip()),
+        cloud_api_version=cfg.WHATSAPP_CLOUD_API_VERSION,
+        last_delivery_callback_received_at=last_delivery_at.isoformat() if last_delivery_at else None,
+    )
+    return WhatsAppAccountsListOut(accounts=accounts, connection=connection)
 
 
 @router.post("/whatsapp-accounts")
