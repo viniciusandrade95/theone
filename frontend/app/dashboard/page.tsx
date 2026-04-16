@@ -5,9 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TrendMiniCard } from "@/components/dashboard/TrendMiniCard";
 import { api } from "@/lib/api";
 import { appPath } from "@/lib/paths";
 import type { DashboardAppointmentItem, DashboardOverview, InactiveCustomerItem } from "@/lib/contracts/dashboard";
+import type { OutboundMessage, Paginated } from "@/lib/contracts/outbound";
 
 function toErrorMessage(error: unknown): string {
   const response = (error as { response?: { data?: { details?: { message?: string }; message?: string; detail?: string; error?: string } } })
@@ -107,6 +109,7 @@ function InactiveCustomerRow({ item }: { item: InactiveCustomerItem }) {
 
 export default function DashboardPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
+  const [recentOutbound, setRecentOutbound] = useState<OutboundMessage[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -114,11 +117,16 @@ export default function DashboardPage() {
     let mounted = true;
     setIsLoading(true);
     setLoadError(null);
-    void api
-      .get<DashboardOverview>("/crm/dashboard/overview")
-      .then((response) => {
+    void Promise.all([
+      api.get<DashboardOverview>("/crm/dashboard/overview"),
+      api
+        .get<Paginated<OutboundMessage>>("/crm/outbound/messages", { params: { page: 1, page_size: 25 } })
+        .catch(() => ({ data: { items: [] } } as any)),
+    ])
+      .then(([overviewResponse, outboundResponse]) => {
         if (!mounted) return;
-        setOverview(response.data);
+        setOverview(overviewResponse.data);
+        setRecentOutbound(outboundResponse.data?.items ?? []);
       })
       .catch((err) => {
         if (!mounted) return;
@@ -135,6 +143,52 @@ export default function DashboardPage() {
 
   const tz = overview?.timezone ?? "UTC";
 
+  const opportunityCards = useMemo(() => {
+    const counts = overview?.counts;
+    return [
+      {
+        title: "Confirm bookings",
+        value: counts?.appointments_pending_confirmation_count ?? 0,
+        description: "Appointments awaiting confirmation.",
+        href: appPath("/dashboard/appointments"),
+        pill:
+          (counts?.appointments_pending_confirmation_count ?? 0) > 0
+            ? ({ label: "Action", tone: "warning" } as const)
+            : ({ label: "Clear", tone: "neutral" } as const),
+      },
+      {
+        title: "Win back customers",
+        value: counts?.inactive_customers_count ?? 0,
+        description: "No completed visit in 60 days.",
+        href: appPath("/dashboard/customers"),
+        pill:
+          (counts?.inactive_customers_count ?? 0) > 0
+            ? ({ label: "Opportunity", tone: "positive" } as const)
+            : ({ label: "Clear", tone: "neutral" } as const),
+      },
+      {
+        title: "No-show watch",
+        value: counts?.recent_no_shows_count ?? 0,
+        description: "No-shows in the last 14 days.",
+        href: appPath("/dashboard/appointments"),
+        pill:
+          (counts?.recent_no_shows_count ?? 0) > 0
+            ? ({ label: "Review", tone: "warning" } as const)
+            : ({ label: "Clear", tone: "neutral" } as const),
+      },
+      {
+        title: "Online bookings",
+        value: counts?.new_online_bookings_count ?? 0,
+        description: "Created online today (proxy).",
+        href: appPath("/dashboard/appointments"),
+        pill:
+          (counts?.new_online_bookings_count ?? 0) > 0
+            ? ({ label: "New", tone: "positive" } as const)
+            : ({ label: "None", tone: "neutral" } as const),
+      },
+    ];
+  }, [overview?.counts]);
+
   const quickActions = useMemo(
     () => [
       { label: "Create customer", href: "/dashboard/customers/new" },
@@ -146,12 +200,47 @@ export default function DashboardPage() {
     [],
   );
 
+  const deliverySnapshot = useMemo(() => {
+    const counts = { queued: 0, sent: 0, delivered: 0, read: 0, failed: 0, manual: 0 };
+    let latestUpdate: string | null = null;
+    let total = 0;
+
+    for (const message of recentOutbound) {
+      if ((message.channel || "").toLowerCase() !== "whatsapp") continue;
+      total += 1;
+
+      const rawState = ((message as any).delivery_state ?? message.delivery_status ?? "").toString().trim().toLowerCase();
+      const deliveryState =
+        rawState === "queued" || rawState === "accepted" || rawState === "sent" || rawState === "delivered" || rawState === "read" || rawState === "failed" || rawState === "unconfirmed"
+          ? rawState
+          : message.status === "failed"
+            ? "failed"
+            : message.status === "sent"
+              ? "unconfirmed"
+              : null;
+
+      if (deliveryState === "queued") counts.queued += 1;
+      else if (deliveryState === "accepted" || deliveryState === "sent") counts.sent += 1;
+      else if (deliveryState === "delivered") counts.delivered += 1;
+      else if (deliveryState === "read") counts.read += 1;
+      else if (deliveryState === "failed") counts.failed += 1;
+      else if (deliveryState === "unconfirmed") counts.manual += 1;
+
+      const candidate = message.delivery_status_updated_at || message.created_at;
+      if (!latestUpdate || new Date(candidate).getTime() > new Date(latestUpdate).getTime()) {
+        latestUpdate = candidate;
+      }
+    }
+
+    return { counts, latestUpdate, total };
+  }, [recentOutbound]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Overview</h1>
-          <p className="text-sm text-slate-500">Operational snapshot for today (timezone: {tz}).</p>
+          <p className="text-sm text-slate-500">Today’s operational snapshot. Times shown in {tz}.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button type="button" variant="secondary" onClick={() => window.location.reload()} disabled={isLoading}>
@@ -175,6 +264,62 @@ export default function DashboardPage() {
         <StatCard label="Recent no-shows" value={overview?.counts.recent_no_shows_count ?? 0} hint="Last 14 days" />
         <StatCard label="New online bookings today" value={overview?.counts.new_online_bookings_count ?? 0} hint="Proxy-based" />
       </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {opportunityCards.map((card) => (
+          <TrendMiniCard
+            key={card.title}
+            title={card.title}
+            value={card.value}
+            description={card.description}
+            href={card.href}
+            pill={card.pill}
+          />
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>WhatsApp delivery</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2 text-sm">
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              Sending {deliverySnapshot.counts.queued}
+            </span>
+            <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+              Sent {deliverySnapshot.counts.sent}
+            </span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Delivered {deliverySnapshot.counts.delivered}
+            </span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Read {deliverySnapshot.counts.read}
+            </span>
+            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+              Manual {deliverySnapshot.counts.manual}
+            </span>
+            <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+              Failed {deliverySnapshot.counts.failed}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500">
+            Provider sends are trackable. Manual sends can’t be confirmed (they show as Manual). Last update:{" "}
+            <span className="font-semibold text-slate-700">
+              {deliverySnapshot.latestUpdate ? new Date(deliverySnapshot.latestUpdate).toLocaleString() : "—"}
+            </span>
+            {deliverySnapshot.total > 0 ? <span className="text-slate-400"> • last {deliverySnapshot.total} messages</span> : null}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Link href={appPath("/dashboard/customers")} className={secondaryLinkClass}>
+              View customers
+            </Link>
+            <Link href={appPath("/dashboard/outbound/templates")} className={secondaryLinkClass}>
+              Manage templates
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

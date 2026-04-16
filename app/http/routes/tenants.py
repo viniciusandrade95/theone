@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
 from modules.tenants.service.tenant_service import TenantService
-from app.http.deps import require_tenant_header, require_user
+from app.http.deps import require_tenant_admin
 
 router = APIRouter()
 
@@ -16,8 +16,7 @@ class CreateTenantRequest(BaseModel):
 def create_tenant(
     req: CreateTenantRequest,
     request: Request,
-    _tenant=Depends(require_tenant_header),
-    _user=Depends(require_user),
+    _admin=Depends(require_tenant_admin),
 ):
     container = request.app.state.container
     service = container.tenant_service

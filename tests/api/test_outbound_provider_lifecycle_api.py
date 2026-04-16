@@ -48,13 +48,13 @@ def _create_customer(client: TestClient, tenant_id: str, token: str, *, name: st
     return r.json()["id"]
 
 
-def _create_template(client: TestClient, tenant_id: str, token: str) -> str:
+def _create_template(client: TestClient, tenant_id: str, token: str, *, type: str = "simple_campaign") -> str:
     tpl = client.post(
         "/crm/outbound/templates",
         headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
         json={
             "name": "Campaign",
-            "type": "simple_campaign",
+            "type": type,
             "channel": "whatsapp",
             "body": "Hello {{customer_name}}!",
             "is_active": True,
@@ -90,6 +90,12 @@ def _sign(secret: str, body: bytes) -> str:
     return f"sha256={digest}"
 
 
+def _json_bytes(payload: dict) -> bytes:
+    import json as _json
+
+    return _json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+
+
 def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
     os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
@@ -103,7 +109,7 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     token = _register(client, tenant_id, "provider-send@example.com")
 
     customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
-    template_id = _create_template(client, tenant_id, token)
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
     _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
 
     def fake_post(url, json, headers, timeout):
@@ -122,10 +128,14 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     body = send.json()
     assert body["ok"] is True
     assert body["whatsapp_url"] is None
+    assert body["mode"] == "provider"
+    assert body["requires_user_action"] is False
     outbound_id = body["outbound_message"]["id"]
     assert body["outbound_message"]["provider"] == "meta"
     assert body["outbound_message"]["provider_message_id"] == "wamid.123"
     assert body["outbound_message"]["delivery_status"] == "accepted"
+    assert body["outbound_message"]["delivery_state"] == "accepted"
+    assert body["outbound_message"]["delivery_label"] in {"Accepted", "Sent"}
 
     # Callback delivered
     payload = {
@@ -162,6 +172,126 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
         assert len(events) == 1
 
 
+def test_outbound_delivery_callback_via_meta_webhook_statuses(monkeypatch):
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
+    os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
+
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    token = _register(client, tenant_id, "provider-meta-webhook@example.com")
+
+    customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
+    _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
+
+    def fake_post(url, json, headers, timeout):
+        return DummyResponse({"messages": [{"id": "wamid.123"}]})
+
+    monkeypatch.setattr("modules.messaging.providers.meta_whatsapp_cloud.requests.post", fake_post)
+
+    send = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={
+            "customer_id": customer_id,
+            "template_id": template_id,
+            "final_body": "Hello Bob!",
+            "type": "simple_campaign",
+            "channel": "whatsapp",
+        },
+    )
+    assert send.status_code == 200
+    assert send.json()["mode"] == "provider"
+    outbound_id = send.json()["outbound_message"]["id"]
+    assert send.json()["outbound_message"]["delivery_state"] in {"accepted", "sent", "queued"}
+
+    meta_payload = {
+        "entry": [
+            {
+                "changes": [
+                    {
+                        "value": {
+                            "metadata": {"phone_number_id": "pn-123"},
+                            "statuses": [{"id": "wamid.123", "status": "delivered", "timestamp": "123"}],
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    raw = _json_bytes(meta_payload)
+    signature = _sign("wh-secret", raw)
+
+    cb = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert cb.status_code == 200
+    assert cb.json()["delivery_recorded"] == 1
+    assert cb.json()["delivery_updated"] == 1
+
+    cb2 = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert cb2.status_code == 200
+    assert cb2.json()["delivery_recorded"] == 0
+
+
+def test_admin_rbac_guards_billing_and_whatsapp_account_routes():
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    admin_token = _register(client, tenant_id, "admin@example.com")
+
+    # Starter tier allows only 1 user; upgrade first so we can create a second user for RBAC testing.
+    upgrade = client.post(
+        "/billing/plan",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {admin_token}"},
+        json={"tier": "pro"},
+    )
+    assert upgrade.status_code == 200
+
+    user_token = _register(client, tenant_id, "user@example.com")
+
+    # Non-admin cannot change plan.
+    r = client.post(
+        "/billing/plan",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {user_token}"},
+        json={"tier": "pro"},
+    )
+    assert r.status_code == 403
+
+    # Admin can change plan.
+    r2 = client.post(
+        "/billing/plan",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {admin_token}"},
+        json={"tier": "starter"},
+    )
+    assert r2.status_code == 200
+
+    # Non-admin cannot create WhatsApp routing mappings.
+    wa = client.post(
+        "/messaging/whatsapp-accounts",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {user_token}"},
+        json={"provider": "meta", "phone_number_id": "pn-rbac", "status": "active"},
+    )
+    assert wa.status_code == 403
+
+    # Admin can create WhatsApp routing mappings.
+    wa2 = client.post(
+        "/messaging/whatsapp-accounts",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {admin_token}"},
+        json={"provider": "meta", "phone_number_id": "pn-rbac", "status": "active"},
+    )
+    assert wa2.status_code == 200
+
+
 def test_outbound_delivery_callback_is_tenant_safe(monkeypatch):
     os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
     os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
@@ -172,7 +302,7 @@ def test_outbound_delivery_callback_is_tenant_safe(monkeypatch):
     tenant_a = str(uuid.uuid4())
     token_a = _register(client, tenant_a, "tenant-a@example.com")
     customer_a = _create_customer(client, tenant_a, token_a, name="Alice", phone="+351111111")
-    tpl_a = _create_template(client, tenant_a, token_a)
+    tpl_a = _create_template(client, tenant_a, token_a, type="simple_campaign")
     _create_whatsapp_account(client, tenant_a, token_a, phone_number_id="pn-a")
 
     tenant_b = str(uuid.uuid4())
@@ -224,7 +354,7 @@ def test_outbound_provider_send_failure_falls_back_to_deeplink(monkeypatch):
     tenant_id = str(uuid.uuid4())
     token = _register(client, tenant_id, "provider-fail@example.com")
     customer_id = _create_customer(client, tenant_id, token, name="Fail", phone="+351999999")
-    template_id = _create_template(client, tenant_id, token)
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
     _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-999")
 
     def fake_post(url, json, headers, timeout):
@@ -247,5 +377,88 @@ def test_outbound_provider_send_failure_falls_back_to_deeplink(monkeypatch):
     body = send.json()
     assert body["ok"] is False
     assert body["whatsapp_url"]  # fallback for manual send
+    assert body["mode"] == "deeplink"
+    assert body["requires_user_action"] is True
     assert body["outbound_message"]["status"] == "failed"
     assert body["outbound_message"]["error_code"] == "provider_send_failed"
+
+
+def test_outbound_send_idempotency_key_replay_does_not_duplicate_provider_send(monkeypatch):
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
+    os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
+    os.environ["WHATSAPP_CLOUD_API_VERSION"] = "v19.0"
+
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    token = _register(client, tenant_id, "provider-idempotency@example.com")
+
+    customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
+    _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
+
+    calls: list[str] = []
+
+    def fake_post(url, json, headers, timeout):
+        calls.append(url)
+        return DummyResponse({"messages": [{"id": "wamid.123"}]})
+
+    monkeypatch.setattr("modules.messaging.providers.meta_whatsapp_cloud.requests.post", fake_post)
+
+    payload = {"customer_id": customer_id, "template_id": template_id, "final_body": "Hello Bob!", "type": "simple_campaign", "channel": "whatsapp"}
+
+    send1 = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}", "Idempotency-Key": "send:replay:001"},
+        json=payload,
+    )
+    assert send1.status_code == 200
+    body1 = send1.json()
+    assert body1["ok"] is True
+    assert body1["mode"] == "provider"
+    assert body1["idempotency_replay"] is False
+
+    send2 = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}", "Idempotency-Key": "send:replay:001"},
+        json=payload,
+    )
+    assert send2.status_code == 200
+    body2 = send2.json()
+    assert body2["outbound_message"]["id"] == body1["outbound_message"]["id"]
+    assert body2["idempotency_replay"] is True
+    assert body2["mode"] == "provider"
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("tpl_type", ["booking_confirmation", "reminder_24h", "reminder_3h", "reactivation"])
+def test_outbound_provider_send_supports_default_use_case_template_types(monkeypatch, tpl_type: str):
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
+    os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
+
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    token = _register(client, tenant_id, f"use-case-{tpl_type}@example.com")
+
+    customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
+    template_id = _create_template(client, tenant_id, token, type=tpl_type)
+    _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
+
+    def fake_post(url, json, headers, timeout):
+        return DummyResponse({"messages": [{"id": f"wamid.{tpl_type}"}]})
+
+    monkeypatch.setattr("modules.messaging.providers.meta_whatsapp_cloud.requests.post", fake_post)
+
+    send = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={"customer_id": customer_id, "template_id": template_id, "final_body": "Hello!", "type": tpl_type, "channel": "whatsapp"},
+    )
+    assert send.status_code == 200
+    body = send.json()
+    assert body["ok"] is True
+    assert body["mode"] == "provider"
+    assert body["outbound_message"]["type"] == tpl_type

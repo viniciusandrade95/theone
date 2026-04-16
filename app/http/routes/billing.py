@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
-from app.http.deps import require_tenant_header, require_user
+from app.http.deps import require_tenant_admin, require_tenant_header, require_user
 from modules.billing.models import PlanTier
 
 router = APIRouter()
@@ -28,7 +28,7 @@ def status(request: Request, _tenant=Depends(require_tenant_header), _user=Depen
 
 
 @router.post("/plan")
-def set_plan(payload: SetPlanIn, request: Request, _tenant=Depends(require_tenant_header), _user=Depends(require_user)):
+def set_plan(payload: SetPlanIn, request: Request, _admin=Depends(require_tenant_admin)):
     c = request.app.state.container
     sub = c.billing.set_plan(tier=payload.tier)
     return {"tenant_id": sub.tenant_id, "tier": sub.tier.value, "active": sub.active}

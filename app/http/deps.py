@@ -1,11 +1,16 @@
 import hmac
+import uuid
 
 from fastapi import Depends, Header, Request
+from sqlalchemy import select
+
+from core.db.session import db_session
 from core.tenancy import set_tenant_id, clear_tenant_id, require_tenant_id
 from core.auth import set_current_user_id
 from core.config import get_config
-from core.errors import UnauthorizedError, ValidationError
+from core.errors import ForbiddenError, UnauthorizedError, ValidationError
 from app.auth_tokens import verify_token
+from modules.iam.models.user_orm import UserORM
 
 
 def tenant_dependency(x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID")):
@@ -108,3 +113,31 @@ def require_tenant_header(x_tenant_id: str = Header(..., alias="X-Tenant-ID")):
     if not x_tenant_id:
         raise ValidationError("Missing tenant header")
     return x_tenant_id
+
+
+def require_tenant_admin(request: Request, _tenant=Depends(require_tenant_header), identity=Depends(require_user)):
+    """Minimal RBAC: tenant admin is the first created user for the tenant.
+
+    This is a conservative guard for sensitive admin flows until roles/memberships exist.
+    """
+    tenant_id = require_tenant_id()
+    user_id = identity.get("user_id")
+
+    try:
+        tenant_uuid = uuid.UUID(tenant_id)
+    except Exception:
+        tenant_uuid = tenant_id
+
+    with db_session() as session:
+        stmt = (
+            select(UserORM.id)
+            .where(UserORM.tenant_id == tenant_uuid)
+            .order_by(UserORM.created_at.asc(), UserORM.id.asc())
+            .limit(1)
+        )
+        admin_id = session.execute(stmt).scalar_one_or_none()
+
+    if admin_id is None or str(admin_id) != str(user_id):
+        raise ForbiddenError("tenant_admin_required")
+
+    return identity

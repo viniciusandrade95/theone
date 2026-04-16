@@ -21,19 +21,27 @@ def reset_config_singleton(monkeypatch):
     os.environ["SECRET_KEY"] = "test-secret"
     os.environ["TENANT_HEADER"] = "X-Tenant-ID"
     os.environ["WHATSAPP_WEBHOOK_SECRET"] = "whsec-test"
+    os.environ["WHATSAPP_WEBHOOK_VERIFY_TOKEN"] = "verify-token"
     os.environ["CELERY_TASK_ALWAYS_EAGER"] = "true"
     yield
     monkeypatch.setattr(loader, "_config", None)
     clear_tenant_id()
 
 
-def _sign(payload: dict, secret: str) -> str:
-    body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+def _json_bytes(payload: dict) -> bytes:
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+
+def _sign_bytes(body: bytes, secret: str) -> str:
     import hmac
     import hashlib
 
     signature = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
     return f"sha256={signature}"
+
+
+def _sign_json(payload: dict, secret: str) -> str:
+    return _sign_bytes(_json_bytes(payload), secret)
 
 
 def _setup_app():
@@ -86,7 +94,7 @@ def test_inbound_webhook_deduplicates_events():
         "from_phone": "351111",
         "text": "Oi",
     }
-    signature = _sign(payload, "whsec-test")
+    signature = _sign_json(payload, "whsec-test")
 
     response = client.post("/messaging/inbound", json=payload, headers={"X-Hub-Signature-256": signature})
     assert response.status_code == 200
@@ -110,7 +118,7 @@ def test_inbound_webhook_ignores_tenant_header_spoofing():
         "from_phone": "351111",
         "text": "Oi",
     }
-    signature = _sign(payload, "whsec-test")
+    signature = _sign_json(payload, "whsec-test")
 
     other_tenant = str(uuid.uuid4())
     response = client.post(
@@ -123,3 +131,85 @@ def test_inbound_webhook_ignores_tenant_header_spoofing():
     repo = app.state.container.messaging_repo
     assert repo.count_messages(tenant_id=tenant_id) == 1
     assert repo.count_messages(tenant_id=other_tenant) == 0
+
+
+def test_meta_webhook_verification_get_returns_challenge():
+    app, client, tenant_id, customer = _setup_app()
+    r = client.get(
+        "/messaging/webhook",
+        params={"hub.mode": "subscribe", "hub.verify_token": "verify-token", "hub.challenge": "abc123"},
+    )
+    assert r.status_code == 200
+    assert r.text == "abc123"
+
+
+def test_meta_webhook_verification_get_rejects_invalid_token():
+    app, client, tenant_id, customer = _setup_app()
+    r = client.get(
+        "/messaging/webhook",
+        params={"hub.mode": "subscribe", "hub.verify_token": "wrong", "hub.challenge": "abc123"},
+    )
+    assert r.status_code == 403
+
+
+def _meta_inbound_payload(*, message_id: str) -> dict:
+    return {
+        "entry": [
+            {
+                "changes": [
+                    {
+                        "value": {
+                            "metadata": {"phone_number_id": "pn-123", "display_phone_number": "+351000000"},
+                            "messages": [{"id": message_id, "from": "351111", "text": {"body": "Oi"}}],
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+
+def test_meta_webhook_post_ingests_inbound_message_meta_format():
+    app, client, tenant_id, customer = _setup_app()
+
+    payload = _meta_inbound_payload(message_id="wamid.inbound.1")
+    raw = _json_bytes(payload)
+    signature = _sign_bytes(raw, "whsec-test")
+
+    r = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert r.status_code == 200
+    assert r.json()["inbound_enqueued"] == 1
+
+    repo = app.state.container.messaging_repo
+    assert repo.count_webhook_events(tenant_id=tenant_id) == 1
+    assert repo.count_messages(tenant_id=tenant_id) == 1
+
+
+def test_meta_webhook_post_deduplicates_inbound_events():
+    app, client, tenant_id, customer = _setup_app()
+
+    payload = _meta_inbound_payload(message_id="wamid.inbound.2")
+    raw = _json_bytes(payload)
+    signature = _sign_bytes(raw, "whsec-test")
+
+    r1 = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert r1.status_code == 200
+
+    r2 = client.post(
+        "/messaging/webhook",
+        data=raw,
+        headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+    )
+    assert r2.status_code == 200
+
+    repo = app.state.container.messaging_repo
+    assert repo.count_webhook_events(tenant_id=tenant_id) == 1
+    assert repo.count_messages(tenant_id=tenant_id) == 1

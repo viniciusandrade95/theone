@@ -16,6 +16,7 @@ import type {
 } from "@/lib/contracts/analytics";
 import { useDefaultLocation } from "@/lib/default-location";
 import { appPath } from "@/lib/paths";
+import { TrendMiniCard } from "@/components/dashboard/TrendMiniCard";
 
 const WEEKDAYS: Array<"mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun"> = [
   "mon",
@@ -196,6 +197,40 @@ export default function AnalyticsPage() {
     return Math.max(...services.top_services.map((item) => item.bookings), 0);
   }, [services]);
 
+  const bookingSignals = useMemo(() => {
+    const items = bookingsOverTime?.items ?? [];
+    if (items.length === 0) {
+      return {
+        avgPerDay: 0,
+        peakDay: null as { date: string; count: number } | null,
+        momentum: null as { label: string; tone: "neutral" | "positive" | "negative" } | null,
+      };
+    }
+
+    const total = items.reduce((sum, item) => sum + (item.count ?? 0), 0);
+    const avgPerDay = total / items.length;
+
+    let peakDay = items[0] ? { date: items[0].date, count: items[0].count } : null;
+    for (const item of items) {
+      if (!peakDay || item.count > peakDay.count) {
+        peakDay = { date: item.date, count: item.count };
+      }
+    }
+
+    let momentum: { label: string; tone: "neutral" | "positive" | "negative" } | null = null;
+    if (items.length >= 14) {
+      const last7 = items.slice(-7).reduce((sum, item) => sum + (item.count ?? 0), 0);
+      const prev7 = items.slice(-14, -7).reduce((sum, item) => sum + (item.count ?? 0), 0);
+      const delta = last7 - prev7;
+      momentum = {
+        label: `${delta >= 0 ? "+" : ""}${delta} vs prior 7d`,
+        tone: delta > 0 ? "positive" : delta < 0 ? "negative" : "neutral",
+      };
+    }
+
+    return { avgPerDay, peakDay, momentum };
+  }, [bookingsOverTime?.items]);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -229,6 +264,25 @@ export default function AnalyticsPage() {
 
       {error ? <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
       {isLoading ? <p className="text-sm text-slate-500">Loading analytics...</p> : null}
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <TrendMiniCard
+          title="Avg bookings/day"
+          value={bookingSignals.avgPerDay.toFixed(1)}
+          description="Across the selected range."
+          pill={bookingSignals.momentum ? { label: bookingSignals.momentum.label, tone: bookingSignals.momentum.tone } : undefined}
+        />
+        <TrendMiniCard
+          title="Busiest day"
+          value={bookingSignals.peakDay ? bookingSignals.peakDay.count : 0}
+          description={bookingSignals.peakDay ? bookingSignals.peakDay.date : "No bookings in this range."}
+        />
+        <TrendMiniCard
+          title="Repeat rate"
+          value={formatPercent(overview?.repeat_rate ?? 0)}
+          description={`${overview?.returning_customers ?? 0} returning customers.`}
+        />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <Card>
@@ -280,7 +334,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Bookings Over Time</CardTitle>
+            <CardTitle>Daily bookings</CardTitle>
             <CardDescription>Daily booking count for the selected period.</CardDescription>
           </CardHeader>
           <CardContent>

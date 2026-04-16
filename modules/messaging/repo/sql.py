@@ -158,10 +158,18 @@ class SqlMessagingRepo(MessagingRepo):
 
     def count_messages(self, *, tenant_id: str) -> int:
         with db_session() as session:
-            stmt = select(MessageORM).where(MessageORM.tenant_id == self._coerce_uuid(tenant_id))
-            return len(session.execute(stmt).scalars().all())
+            stmt = (
+                select(func.count())
+                .select_from(MessageORM)
+                .where(MessageORM.tenant_id == self._coerce_uuid(tenant_id))
+            )
+            return session.execute(stmt).scalar_one()
 
     def count_webhook_events(self, *, tenant_id: str) -> int:
         with db_session() as session:
-            stmt = select(WebhookEventORM).where(WebhookEventORM.tenant_id == self._coerce_uuid(tenant_id))
-            return len(session.execute(stmt).scalars().all())
+            stmt = (
+                select(func.count())
+                .select_from(WebhookEventORM)
+                .where(WebhookEventORM.tenant_id == self._coerce_uuid(tenant_id))
+            )
+            return session.execute(stmt).scalar_one()

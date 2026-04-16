@@ -34,6 +34,21 @@ Permitir comunicação outbound **simples e rastreável** (principalmente 1:1) c
   - cria interaction `outbound_whatsapp` quando o envio é iniciado com sucesso
 - Reenvio: `POST /crm/outbound/{id}/resend` (apenas para mensagens `failed`)
 
+## Use cases (substitui o modelo “send reminder/report” do applandlord)
+
+No TheOne, os casos de uso são modelados como **templates + envio**, em vez de endpoints isolados por ação.
+
+- Booking confirmation → template `booking_confirmation` + `POST /crm/outbound/send`
+- Reminder 24h → template `reminder_24h` + `POST /crm/outbound/send`
+- Reminder 3h → template `reminder_3h` + `POST /crm/outbound/send`
+- Reactivation → template `reactivation` + `POST /crm/outbound/send`
+
+### Sobre “summary/report”
+
+O outbound MVP envia para um **customer** (cliente) como destinatário. Para um report de negócio (para staff):
+- MVP (manual): criar um “customer interno” (ex: “Owner”) com o seu telefone e usar um template `internal_followup_support`.
+- Próximo passo (fora deste PR): gerar o corpo do relatório (stats) via serviço de reporting/scheduler e chamar `POST /crm/outbound/send` com `final_body`.
+
 ### Histórico
 - Listagem: `GET /crm/outbound/messages` com filtros por `customer_id`, `template_id`, `type`, `status`
 - UI: histórico aparece no customer profile no dashboard.
@@ -41,13 +56,56 @@ Permitir comunicação outbound **simples e rastreável** (principalmente 1:1) c
 ## Significado de status (importante)
 Estados mínimos (compat): `pending`, `sent`, `failed` (e `delivered` quando callbacks chegam).
 
-O campo `status` mantém compatibilidade com o histórico/UI atual. Para tracking real, usar `delivery_status`:
+O campo `status` mantém compatibilidade com o histórico/UI atual (MVP). Interpretação:
+
+- `status=pending`: histórico criado e envio a iniciar (curto; normalmente transita no mesmo request).
+- `status=sent`: envio **iniciado** com sucesso:
+  - pode ser via provider (WhatsApp Cloud) **ou**
+  - pode ser envio manual assistido (deeplink `wa.me`).
+- `status=failed`: falhou ao iniciar:
+  - pré-validação (ex: cliente sem telefone válido) **ou**
+  - tentativa provider-backed falhou (neste caso pode existir `whatsapp_url` para envio manual).
+
+Para tracking real, usar `delivery_status`:
 
 - `delivery_status=queued`: criado e aguardando envio provider-backed.
 - `delivery_status=accepted`: provider aceitou o envio e devolveu `provider_message_id`.
 - `delivery_status=delivered/read`: provider confirmou entrega/leitura via callback.
 - `delivery_status=failed`: falhou (preparação ou provider).
 - `delivery_status=unconfirmed`: fallback deeplink; não existe confirmação de entrega do provider.
+
+## Valor do lifecycle (produto)
+
+O valor do provider-backed WhatsApp nao e apenas “enviar”: e conseguir comunicar o que aconteceu depois.
+
+Recomendacao de UI:
+- Mostrar sempre um badge de **Delivery** baseado em `delivery_status` (na timeline/historico do customer).
+- Tratar `status` como legado (apenas “initiated vs failed”) e nao como entrega.
+
+Leituras praticas:
+- `Accepted`: o provider aceitou; se o cliente nao respondeu, ainda pode estar a caminho.
+- `Delivered`: chegou ao dispositivo; bom para confirmar que o numero esta ok.
+- `Read`: o cliente abriu; bom para timing (follow-up).
+- `Unconfirmed`: envio manual via deeplink; nao existe tracking (nao prometer entrega).
+- `Failed`: acao necessaria (corrigir numero/config ou reenviar).
+
+## Resposta do `POST /crm/outbound/send` (como ler)
+
+Campos úteis para UI/produto:
+- `mode`:
+  - `provider`: o provider aceitou o envio (aguarda callbacks).
+  - `deeplink`: envio manual assistido (usar `whatsapp_url`).
+  - `none`: não há envio possível (erro).
+- `requires_user_action`:
+  - `true` quando o usuário precisa abrir o link do WhatsApp para enviar.
+- `idempotency_replay`:
+  - `true` quando o servidor devolve o mesmo envio por replay de `Idempotency-Key`.
+- `duplicate_prevented`:
+  - `true` quando o servidor detecta clique duplo (mesmo corpo, janela curta) e devolve a mensagem existente.
+
+Notas:
+- `ok=true` significa “o fluxo gerou um resultado utilizável” (ex: provider aceitou ou deeplink foi gerado).
+- Em falha do provider, `ok` pode ser `false` mas `mode=deeplink` pode estar presente para permitir envio manual.
 
 ## Interactions
 Quando uma mensagem outbound fica com `status=sent`, é criada uma interaction no CRM:
@@ -56,12 +114,18 @@ Quando uma mensagem outbound fica com `status=sent`, é criada uma interaction n
 
 ## Callbacks de entrega (provider-backed)
 
-- Endpoint: `POST /messaging/delivery` (sem tenant header; tenant é resolvido por `phone_number_id`)
+- Endpoint principal (Meta Webhooks): `POST /messaging/webhook`
+  - mesmo webhook usado para inbound; o TheOne extrai `statuses[]` e processa o lifecycle de entrega.
+  - sem tenant header; tenant é resolvido via `whatsapp_accounts` (`provider + phone_number_id`).
+- Endpoint normalizado (útil para testes/relay): `POST /messaging/delivery`
+  - payload interno/normalizado (não é o payload original do Meta).
+  - sem tenant header; tenant é resolvido por `phone_number_id`.
 - Dedupe: por `(tenant_id, provider, external_event_id)` em `outbound_delivery_events`
 - Atualiza `outbound_messages.delivery_status` e timestamps (`delivered_at`, `failed_at`)
 
 Variáveis de ambiente relevantes:
-- `WHATSAPP_WEBHOOK_SECRET` (verificação de assinatura do callback)
+- `WHATSAPP_WEBHOOK_SECRET` (Meta App Secret; verificação de assinatura `X-Hub-Signature-256` nos callbacks)
+- `WHATSAPP_WEBHOOK_VERIFY_TOKEN` (handshake GET de verificação do webhook)
 - `WHATSAPP_CLOUD_ACCESS_TOKEN`, `WHATSAPP_CLOUD_API_VERSION`, `WHATSAPP_CLOUD_TIMEOUT_SECONDS` (envio via provider)
 
 ## Fora de scope neste PR

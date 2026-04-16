@@ -53,6 +53,32 @@ def _to_template_out(tpl) -> dict:
 
 
 def _to_message_out(msg) -> dict:
+    delivery_status = getattr(msg, "delivery_status", None)
+    ds = (delivery_status or "").strip().lower() if isinstance(delivery_status, str) else None
+    if ds in {"read", "delivered", "accepted", "sent", "failed", "unconfirmed", "queued"}:
+        delivery_state = ds
+    elif getattr(msg, "status", None) == "failed":
+        delivery_state = "failed"
+    elif getattr(msg, "provider_message_id", None):
+        # Provider message id implies the provider accepted the send.
+        delivery_state = "accepted"
+    elif getattr(msg, "status", None) == "sent":
+        # Legacy status: initiated. Real confirmation lives in delivery callbacks.
+        delivery_state = "queued" if ds == "queued" else "unconfirmed"
+    else:
+        delivery_state = None
+
+    delivery_label_map = {
+        "queued": "Initiated",
+        "accepted": "Accepted",
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "read": "Read",
+        "failed": "Failed",
+        "unconfirmed": "Manual send",
+    }
+    delivery_label = delivery_label_map.get(delivery_state) if delivery_state else None
+
     return {
         "id": str(msg.id),
         "tenant_id": str(msg.tenant_id),
@@ -71,6 +97,8 @@ def _to_message_out(msg) -> dict:
         "recipient": getattr(msg, "recipient", None),
         "delivery_status": getattr(msg, "delivery_status", None),
         "delivery_status_updated_at": getattr(msg, "delivery_status_updated_at", None),
+        "delivery_state": delivery_state,
+        "delivery_label": delivery_label,
         "error_code": getattr(msg, "error_code", None),
         "idempotency_key": getattr(msg, "idempotency_key", None),
         "trigger_type": getattr(msg, "trigger_type", None),
@@ -338,6 +366,44 @@ class SendOut(BaseModel):
     outbound_message: dict
     whatsapp_url: str | None = None
     note: str | None = None
+    # Helps UI present the result without inferring from internal fields.
+    mode: str = "none"  # provider | deeplink | none
+    requires_user_action: bool = False
+    idempotency_replay: bool = False
+    duplicate_prevented: bool = False
+
+
+def _deeplink_from_message(msg) -> str | None:
+    if (getattr(msg, "channel", None) or "").strip().lower() != "whatsapp":
+        return None
+    phone_digits = (getattr(msg, "recipient", None) or "").strip()
+    text = (getattr(msg, "rendered_body", None) or "").strip()
+    if not phone_digits or not text:
+        return None
+    return _whatsapp_deeplink(phone_digits=phone_digits, text=text)
+
+
+def _send_out(
+    *,
+    ok: bool,
+    msg,
+    whatsapp_url: str | None,
+    note: str,
+    mode: str,
+    requires_user_action: bool = False,
+    idempotency_replay: bool = False,
+    duplicate_prevented: bool = False,
+) -> SendOut:
+    return SendOut(
+        ok=ok,
+        outbound_message=_to_message_out(msg),
+        whatsapp_url=whatsapp_url,
+        note=note,
+        mode=mode,
+        requires_user_action=requires_user_action,
+        idempotency_replay=idempotency_replay,
+        duplicate_prevented=duplicate_prevented,
+    )
 
 
 @router.post("/outbound/send", response_model=SendOut)
@@ -397,11 +463,18 @@ def send(
         trace_id = require_trace_id()
         existing_by_key = repo.get_by_idempotency_key(tenant_id=tenant_id, idempotency_key=idempotency_key or "")
         if existing_by_key is not None:
-            return SendOut(
+            replay_url = None
+            if getattr(existing_by_key, "error_code", None) == "provider_send_failed" or getattr(existing_by_key, "delivery_status", None) == "unconfirmed":
+                replay_url = _deeplink_from_message(existing_by_key)
+            replay_mode = "provider" if getattr(existing_by_key, "provider_message_id", None) else ("deeplink" if replay_url else "none")
+            return _send_out(
                 ok=existing_by_key.status != "failed",
-                outbound_message=_to_message_out(existing_by_key),
-                whatsapp_url=None,
-                note="Idempotency-Key replay (returning existing outbound message).",
+                msg=existing_by_key,
+                whatsapp_url=replay_url,
+                note="Idempotency replay: returning the previously created outbound message.",
+                mode=replay_mode,
+                requires_user_action=replay_mode == "deeplink",
+                idempotency_replay=True,
             )
 
         # required contact for whatsapp deeplink
@@ -430,7 +503,14 @@ def send(
                 "outbound_send_total",
                 labels={"status": "failed", "channel": channel, "type": t_type},
             )
-            return SendOut(ok=False, outbound_message=_to_message_out(failed), whatsapp_url=None, note="Customer has no valid phone for WhatsApp.")
+            return _send_out(
+                ok=False,
+                msg=failed,
+                whatsapp_url=None,
+                note="Cannot send: customer has no valid WhatsApp phone number.",
+                mode="none",
+                requires_user_action=False,
+            )
 
         # Prefer provider-backed send when configured + tenant has an active WhatsApp account.
         account = session.execute(
@@ -441,7 +521,8 @@ def send(
             .order_by(WhatsAppAccountORM.created_at.asc())
         ).scalars().first()
         provider = MetaWhatsAppCloudProvider()
-        provider_enabled = bool(getattr(get_config(), "WHATSAPP_CLOUD_ACCESS_TOKEN", None)) and account is not None
+        cfg = get_config()
+        provider_enabled = bool((getattr(cfg, "WHATSAPP_CLOUD_ACCESS_TOKEN", None) or "").strip()) and account is not None
 
         # NOTE: status='sent' is maintained for backwards compatibility in UI/history.
         # Provider-backed delivery status is tracked in `delivery_status`.
@@ -465,11 +546,16 @@ def send(
                 "outbound_send_total",
                 labels={"status": "sent", "channel": channel, "type": t_type},
             )
-            return SendOut(
+            existing_mode = "provider" if getattr(existing, "provider_message_id", None) else ("deeplink" if getattr(existing, "delivery_status", None) == "unconfirmed" else "none")
+            existing_url = _deeplink_from_message(existing) if existing_mode == "deeplink" else None
+            return _send_out(
                 ok=True,
-                outbound_message=_to_message_out(existing),
-                whatsapp_url=whatsapp_url,
-                note="Duplicate send prevented (same body).",
+                msg=existing,
+                whatsapp_url=existing_url,
+                note="Duplicate prevented: a recent identical message already exists.",
+                mode=existing_mode,
+                requires_user_action=existing_mode == "deeplink",
+                duplicate_prevented=True,
             )
         # Create baseline history row before attempting provider send.
         msg = repo.create_message(
@@ -518,11 +604,13 @@ def send(
                     type="outbound_whatsapp",
                     content=rendered_body,
                 )
-                return SendOut(
+                return _send_out(
                     ok=True,
-                    outbound_message=_to_message_out(msg),
+                    msg=msg,
                     whatsapp_url=None,
-                    note="Sent via WhatsApp provider (delivery status will update via callbacks).",
+                    note="Provider send accepted. Delivery status updates arrive via callbacks.",
+                    mode="provider",
+                    requires_user_action=False,
                 )
             except Exception as err:
                 repo.mark_failed(tenant_id=tenant_id, message_id=str(msg.id), error_message=str(err))
@@ -533,11 +621,13 @@ def send(
                     "outbound_send_total",
                     labels={"status": "failed", "channel": channel, "type": t_type},
                 )
-                return SendOut(
+                return _send_out(
                     ok=False,
-                    outbound_message=_to_message_out(msg),
+                    msg=msg,
                     whatsapp_url=whatsapp_url,
-                    note="Provider send failed; falling back to WhatsApp deeplink.",
+                    note="Provider send failed. Use the WhatsApp link to send manually (delivery cannot be confirmed).",
+                    mode="deeplink",
+                    requires_user_action=True,
                 )
 
         # Fallback: user-assisted deeplink initiation.
@@ -550,11 +640,13 @@ def send(
         # side effect: interaction only when status=sent
         request.app.state.container.crm.add_interaction(customer_id=str(customer.id), type="outbound_whatsapp", content=rendered_body)
 
-        return SendOut(
+        return _send_out(
             ok=True,
-            outbound_message=_to_message_out(msg),
+            msg=msg,
             whatsapp_url=whatsapp_url,
-            note="MVP: 'sent' means user-assisted send initiated (not provider delivery confirmation).",
+            note="Manual send required: open the WhatsApp link to send. Delivery cannot be confirmed by the provider.",
+            mode="deeplink",
+            requires_user_action=True,
         )
 
 
@@ -587,7 +679,14 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
                 "outbound_send_total",
                 labels={"status": "failed", "channel": msg.channel, "type": msg.type},
             )
-            return SendOut(ok=False, outbound_message=_to_message_out(msg), whatsapp_url=None, note="Customer has no valid phone for WhatsApp.")
+            return _send_out(
+                ok=False,
+                msg=msg,
+                whatsapp_url=None,
+                note="Cannot resend: customer has no valid WhatsApp phone number.",
+                mode="none",
+                requires_user_action=False,
+            )
 
         whatsapp_url = _whatsapp_deeplink(phone_digits=phone_digits, text=msg.rendered_body)
 
@@ -601,7 +700,8 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
             .order_by(WhatsAppAccountORM.created_at.asc())
         ).scalars().first()
         provider = MetaWhatsAppCloudProvider()
-        provider_enabled = bool(getattr(get_config(), "WHATSAPP_CLOUD_ACCESS_TOKEN", None)) and account is not None
+        cfg = get_config()
+        provider_enabled = bool((getattr(cfg, "WHATSAPP_CLOUD_ACCESS_TOKEN", None) or "").strip()) and account is not None
 
         now_utc = datetime.now(timezone.utc)
         msg.status = "pending"
@@ -637,11 +737,13 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
                     type="outbound_whatsapp",
                     content=msg.rendered_body,
                 )
-                return SendOut(
+                return _send_out(
                     ok=True,
-                    outbound_message=_to_message_out(msg),
+                    msg=msg,
                     whatsapp_url=None,
-                    note="Resent via WhatsApp provider (delivery status will update via callbacks).",
+                    note="Provider resend accepted. Delivery status updates arrive via callbacks.",
+                    mode="provider",
+                    requires_user_action=False,
                 )
             except Exception as err:
                 repo.mark_failed(tenant_id=tenant_id, message_id=message_id, error_message=str(err))
@@ -666,11 +768,13 @@ def resend(message_id: str, request: Request, _tenant=Depends(require_tenant_hea
             content=msg.rendered_body,
         )
 
-        return SendOut(
+        return _send_out(
             ok=True,
-            outbound_message=_to_message_out(msg),
+            msg=msg,
             whatsapp_url=whatsapp_url,
-            note="MVP: 'sent' means user-assisted send initiated (not provider delivery confirmation).",
+            note="Manual resend required: open the WhatsApp link to send. Delivery cannot be confirmed by the provider.",
+            mode="deeplink",
+            requires_user_action=True,
         )
 
 

@@ -19,6 +19,7 @@ This is intentionally **operational**, not BI/analytics.
   - Scheduled reminders (**empty state**)
   - Recent no-shows (last **14 days**)
   - New online bookings today (**proxy-based**)
+- A small “next actions” row that translates key counts into intent (confirm bookings, win back customers, no-show watch).
 - Short lists (up to 5 items each) for the main sections.
 - Quick actions linking to existing dashboard pages.
 - Tenant timezone is the source of truth for “today”.
@@ -63,9 +64,18 @@ This is intentionally **operational**, not BI/analytics.
 - A placeholder route exists for the “Import customers” quick action:
   - `/dashboard/customers/import`
 
+### WhatsApp delivery visibility
+The dashboard surfaces recent outbound WhatsApp delivery states as a small breakdown:
+- `queued`: initiated / sending
+- `accepted` / `sent`: provider accepted (trackable)
+- `delivered` / `read`: confirmed delivery states (via callbacks)
+- `unconfirmed`: manual/deeplink sends (not trackable)
+- `failed`: provider failure or send failure
+
+This is intentionally conservative: it explains when delivery **cannot** be confirmed.
+
 ## Next steps (post-MVP)
 - Introduce a real appointment `source/origin` field for online bookings (remove proxy).
 - Implement Tasks + Reminders as real entities, then backfill dashboard sections.
 - Make the inactivity rule configurable per tenant (optional).
 - Add filtering by location (optional).
-

@@ -4,6 +4,18 @@ Data: **2026-04-09**
 Autor: Staff Engineer (auditoria técnica)  
 Escopo: **backend (FastAPI + SQLAlchemy + Alembic + Celery)** e **frontend (Next.js)** no repositório.
 
+## 0) Atualizações pós-auditoria (2026-04-16)
+
+Este documento foi escrito em **2026-04-09**. Em **2026-04-16**, um PR de hardening foi aplicado para reduzir os principais riscos de operação do WhatsApp em produção, mantendo mudanças **incrementais**:
+
+- **C1 (segredos versionados):** `.env` foi removido do repositório e `.gitignore` passou a ignorar `.env` (e variações), reduzindo o risco de novo vazamento. **Atenção:** as credenciais previamente expostas **devem ser rotacionadas** imediatamente.
+- **C2 (billing in-memory):** billing passou a ser persistido via tabela `billing_subscriptions` + `SqlBillingRepo`, eliminando inconsistência entre processos (API vs Celery worker) para gates de WhatsApp.
+- **C3 (RLS em whatsapp_accounts):** RLS foi **desabilitado** em `whatsapp_accounts` (tabela de roteamento `provider + phone_number_id -> tenant_id`) para permitir resolução de tenant em callbacks provider-driven antes de existir contexto de tenant.
+- **A1 (RBAC):** foi adicionado um RBAC mínimo e conservador para rotas sensíveis (billing/tenants/whatsapp-accounts): **admin = primeiro usuário criado do tenant**. Isto é um guardrail temporário até existir modelo de roles/memberships.
+- **A2 (observabilidade):** a auditoria indicava arquivos vazios; atualmente existe baseline funcional de **logs estruturados**, **métricas em memória** e **trace id**. Foram adicionados contadores específicos para rejeições/aceites do webhook (assinatura, verify token, unknown routing).
+
+O restante do documento permanece válido como diagnóstico e backlog; os itens acima foram os focos de mitigação imediata.
+
 ## 1) Contexto e metodologia
 
 Esta auditoria foi baseada em leitura estática do código e artefatos do repositório (estrutura, rotas, serviços, repos, migrations, testes e frontend).  
@@ -126,9 +138,11 @@ Os itens **C1/C2/C3** devem ser tratados como **bloqueadores de deploy/escala**,
 
 #### A2) Observabilidade inexistente
 
-- **Evidência:**
-  - `core/observability/logging.py`, `core/observability/metrics.py`, `core/observability/tracing.py` (0 bytes).
-  - Config expõe `LOG_LEVEL`, mas não há wiring efetivo: `core/config/env.py:49`.
+- **Evidência (2026-04-09):**
+  - Em 2026-04-09, a observabilidade estava ausente/insuficiente.
+- **Status (2026-04-16):**
+  - Existe baseline funcional em `core/observability/*` e middleware HTTP instrumenta requests.
+  - Fluxos de WhatsApp ganharam contadores/logs mínimos (aceite/rejeição/unknown routing) para operação inicial.
 - **Impacto:**
   - Operação arriscada: sem rastreabilidade de requests/tasks, difícil identificar falhas e investigar incidentes.
 - **Recomendação:**
@@ -324,4 +338,3 @@ Os itens **C1/C2/C3** devem ser tratados como **bloqueadores de deploy/escala**,
   - Não há diretório `.github/workflows` nem outros manifests de CI no repo.
 - **Recomendação:**
   - Introduzir CI mínimo (lint + unit + API tests) e um job “integration” com Postgres para validar RLS e fluxo de signup.
-
