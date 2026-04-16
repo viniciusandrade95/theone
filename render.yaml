@@ -13,6 +13,11 @@ services:
         value: beauty-crm
       - key: TENANT_HEADER
         value: X-Tenant-ID
+      # Existing demo client fixture in chatbot1. Override in Render if you add a tenant-specific chatbot profile.
+      - key: CHATBOT_CLIENT_ID
+        value: demo_unhas
+      - key: CHATBOT_SERVICE_BASE_URL
+        value: https://chatbot-oh87.onrender.com
       # Set these in Render dashboard (do not commit real secrets):
       - key: DATABASE_URL
         sync: false

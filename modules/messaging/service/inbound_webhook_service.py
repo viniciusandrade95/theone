@@ -155,9 +155,10 @@ class InboundWebhookService:
             return None
 
         trace_id = str(uuid.uuid4())
+        chatbot_client_id = (getattr(cfg, "CHATBOT_CLIENT_ID", None) or "").strip() or tenant_id
 
         upstream_payload = {
-            "client_id": tenant_id,
+            "client_id": chatbot_client_id,
             "conversation_id": conversation.id,
             "session_id": conversation.assistant_session_id,
             "message": inbound_text,
