@@ -134,6 +134,8 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     assert body["outbound_message"]["provider"] == "meta"
     assert body["outbound_message"]["provider_message_id"] == "wamid.123"
     assert body["outbound_message"]["delivery_status"] == "accepted"
+    assert body["outbound_message"]["delivery_state"] == "accepted"
+    assert body["outbound_message"]["delivery_label"] in {"Accepted", "Sent"}
 
     # Callback delivered
     payload = {
@@ -203,6 +205,7 @@ def test_outbound_delivery_callback_via_meta_webhook_statuses(monkeypatch):
     assert send.status_code == 200
     assert send.json()["mode"] == "provider"
     outbound_id = send.json()["outbound_message"]["id"]
+    assert send.json()["outbound_message"]["delivery_state"] in {"accepted", "sent", "queued"}
 
     meta_payload = {
         "entry": [

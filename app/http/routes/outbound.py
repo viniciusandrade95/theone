@@ -55,7 +55,7 @@ def _to_template_out(tpl) -> dict:
 def _to_message_out(msg) -> dict:
     delivery_status = getattr(msg, "delivery_status", None)
     ds = (delivery_status or "").strip().lower() if isinstance(delivery_status, str) else None
-    if ds in {"read", "delivered", "accepted", "failed", "unconfirmed", "queued"}:
+    if ds in {"read", "delivered", "accepted", "sent", "failed", "unconfirmed", "queued"}:
         delivery_state = ds
     elif getattr(msg, "status", None) == "failed":
         delivery_state = "failed"
@@ -71,10 +71,11 @@ def _to_message_out(msg) -> dict:
     delivery_label_map = {
         "queued": "Initiated",
         "accepted": "Accepted",
+        "sent": "Sent",
         "delivered": "Delivered",
         "read": "Read",
         "failed": "Failed",
-        "unconfirmed": "Unconfirmed",
+        "unconfirmed": "Manual send",
     }
     delivery_label = delivery_label_map.get(delivery_state) if delivery_state else None
 
