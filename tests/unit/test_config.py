@@ -49,6 +49,7 @@ def test_load_config_applies_defaults_for_optional_env():
             "SMTP_HOST",
             "SMTP_FROM",
             "CHATBOT_SERVICE_BASE_URL",
+            "CHATBOT_CLIENT_ID",
             "ASSISTANT_CONNECTOR_TOKEN",
             "ASSISTANT_CONNECTOR_HEADER",
         ]
@@ -68,6 +69,7 @@ def test_load_config_applies_defaults_for_optional_env():
     assert cfg.LOG_LEVEL == "INFO"
     assert cfg.TENANT_HEADER == "X-Tenant-ID"
     assert cfg.WHATSAPP_WEBHOOK_SECRET is None
+    assert cfg.CHATBOT_CLIENT_ID is None
 
 
 def test_load_config_then_get_config_returns_same_instance():

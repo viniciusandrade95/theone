@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from requests import HTTPError, RequestException
 
 from app.http.deps import require_tenant_header, require_user
+from core.config import get_config
 from core.observability.logging import log_event
 from core.observability.metrics import start_timer
 from core.observability.tracing import require_trace_id
@@ -25,6 +26,11 @@ from modules.assistant.service.funnel_events import (
 router = APIRouter()
 
 _MAX_CONTEXT_BYTES = 8_000
+
+
+def _chatbot_client_id(tenant_id: str) -> str:
+    configured = (get_config().CHATBOT_CLIENT_ID or "").strip()
+    return configured or tenant_id
 
 
 def _clamp_json(value: object, *, max_bytes: int = _MAX_CONTEXT_BYTES) -> dict | None:
@@ -64,7 +70,7 @@ def chatbot_message(
 ):
     tenant_id = identity["tenant_id"]
     user_id = identity["user_id"]
-    client_id = tenant_id
+    client_id = _chatbot_client_id(tenant_id)
 
     effective_trace_id = require_trace_id()
     timer = start_timer()
@@ -235,7 +241,7 @@ def chatbot_reset(
 ):
     tenant_id = identity["tenant_id"]
     user_id = identity["user_id"]
-    client_id = tenant_id
+    client_id = _chatbot_client_id(tenant_id)
 
     effective_trace_id = require_trace_id()
     timer = start_timer()
