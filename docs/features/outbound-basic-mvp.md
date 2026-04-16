@@ -74,6 +74,21 @@ Para tracking real, usar `delivery_status`:
 - `delivery_status=failed`: falhou (preparação ou provider).
 - `delivery_status=unconfirmed`: fallback deeplink; não existe confirmação de entrega do provider.
 
+## Valor do lifecycle (produto)
+
+O valor do provider-backed WhatsApp nao e apenas “enviar”: e conseguir comunicar o que aconteceu depois.
+
+Recomendacao de UI:
+- Mostrar sempre um badge de **Delivery** baseado em `delivery_status` (na timeline/historico do customer).
+- Tratar `status` como legado (apenas “initiated vs failed”) e nao como entrega.
+
+Leituras praticas:
+- `Accepted`: o provider aceitou; se o cliente nao respondeu, ainda pode estar a caminho.
+- `Delivered`: chegou ao dispositivo; bom para confirmar que o numero esta ok.
+- `Read`: o cliente abriu; bom para timing (follow-up).
+- `Unconfirmed`: envio manual via deeplink; nao existe tracking (nao prometer entrega).
+- `Failed`: acao necessaria (corrigir numero/config ou reenviar).
+
 ## Resposta do `POST /crm/outbound/send` (como ler)
 
 Campos úteis para UI/produto:

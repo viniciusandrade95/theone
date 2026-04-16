@@ -53,6 +53,31 @@ def _to_template_out(tpl) -> dict:
 
 
 def _to_message_out(msg) -> dict:
+    delivery_status = getattr(msg, "delivery_status", None)
+    ds = (delivery_status or "").strip().lower() if isinstance(delivery_status, str) else None
+    if ds in {"read", "delivered", "accepted", "failed", "unconfirmed", "queued"}:
+        delivery_state = ds
+    elif getattr(msg, "status", None) == "failed":
+        delivery_state = "failed"
+    elif getattr(msg, "provider_message_id", None):
+        # Provider message id implies the provider accepted the send.
+        delivery_state = "accepted"
+    elif getattr(msg, "status", None) == "sent":
+        # Legacy status: initiated. Real confirmation lives in delivery callbacks.
+        delivery_state = "queued" if ds == "queued" else "unconfirmed"
+    else:
+        delivery_state = None
+
+    delivery_label_map = {
+        "queued": "Initiated",
+        "accepted": "Accepted",
+        "delivered": "Delivered",
+        "read": "Read",
+        "failed": "Failed",
+        "unconfirmed": "Unconfirmed",
+    }
+    delivery_label = delivery_label_map.get(delivery_state) if delivery_state else None
+
     return {
         "id": str(msg.id),
         "tenant_id": str(msg.tenant_id),
@@ -71,6 +96,8 @@ def _to_message_out(msg) -> dict:
         "recipient": getattr(msg, "recipient", None),
         "delivery_status": getattr(msg, "delivery_status", None),
         "delivery_status_updated_at": getattr(msg, "delivery_status_updated_at", None),
+        "delivery_state": delivery_state,
+        "delivery_label": delivery_label,
         "error_code": getattr(msg, "error_code", None),
         "idempotency_key": getattr(msg, "idempotency_key", None),
         "trigger_type": getattr(msg, "trigger_type", None),

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { appPath } from "@/lib/paths";
 import type { DashboardAppointmentItem, DashboardOverview, InactiveCustomerItem } from "@/lib/contracts/dashboard";
+import type { OutboundMessage, Paginated } from "@/lib/contracts/outbound";
 
 function toErrorMessage(error: unknown): string {
   const response = (error as { response?: { data?: { details?: { message?: string }; message?: string; detail?: string; error?: string } } })
@@ -107,6 +108,7 @@ function InactiveCustomerRow({ item }: { item: InactiveCustomerItem }) {
 
 export default function DashboardPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
+  const [recentOutbound, setRecentOutbound] = useState<OutboundMessage[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -114,11 +116,16 @@ export default function DashboardPage() {
     let mounted = true;
     setIsLoading(true);
     setLoadError(null);
-    void api
-      .get<DashboardOverview>("/crm/dashboard/overview")
-      .then((response) => {
+    void Promise.all([
+      api.get<DashboardOverview>("/crm/dashboard/overview"),
+      api
+        .get<Paginated<OutboundMessage>>("/crm/outbound/messages", { params: { page: 1, page_size: 25 } })
+        .catch(() => ({ data: { items: [] } } as any)),
+    ])
+      .then(([overviewResponse, outboundResponse]) => {
         if (!mounted) return;
-        setOverview(response.data);
+        setOverview(overviewResponse.data);
+        setRecentOutbound(outboundResponse.data?.items ?? []);
       })
       .catch((err) => {
         if (!mounted) return;
@@ -145,6 +152,44 @@ export default function DashboardPage() {
     ],
     [],
   );
+
+  const deliverySnapshot = useMemo(() => {
+    const counts = { initiated: 0, accepted: 0, delivered: 0, read: 0, failed: 0, unconfirmed: 0 };
+    let latestUpdate: string | null = null;
+
+    for (const message of recentOutbound) {
+      if ((message.channel || "").toLowerCase() !== "whatsapp") continue;
+
+      const state = ((message as any).delivery_state ?? message.delivery_status ?? "").toString().trim().toLowerCase();
+      const mapped =
+        state === "queued"
+          ? "initiated"
+          : state === "accepted"
+            ? "accepted"
+            : state === "delivered"
+              ? "delivered"
+              : state === "read"
+                ? "read"
+                : state === "unconfirmed"
+                  ? "unconfirmed"
+                  : state === "failed" || message.status === "failed"
+                    ? "failed"
+                    : message.status === "sent"
+                      ? "initiated"
+                      : null;
+
+      if (mapped && mapped in counts) {
+        counts[mapped as keyof typeof counts] += 1;
+      }
+
+      const candidate = message.delivery_status_updated_at || message.created_at;
+      if (!latestUpdate || new Date(candidate).getTime() > new Date(latestUpdate).getTime()) {
+        latestUpdate = candidate;
+      }
+    }
+
+    return { counts, latestUpdate };
+  }, [recentOutbound]);
 
   return (
     <div className="space-y-6">
@@ -175,6 +220,48 @@ export default function DashboardPage() {
         <StatCard label="Recent no-shows" value={overview?.counts.recent_no_shows_count ?? 0} hint="Last 14 days" />
         <StatCard label="New online bookings today" value={overview?.counts.new_online_bookings_count ?? 0} hint="Proxy-based" />
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>WhatsApp delivery (recent)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2 text-sm">
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              Initiated {deliverySnapshot.counts.initiated}
+            </span>
+            <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+              Accepted {deliverySnapshot.counts.accepted}
+            </span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Delivered {deliverySnapshot.counts.delivered}
+            </span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Read {deliverySnapshot.counts.read}
+            </span>
+            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+              Unconfirmed {deliverySnapshot.counts.unconfirmed}
+            </span>
+            <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+              Failed {deliverySnapshot.counts.failed}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500">
+            Based on the latest outbound history. Last update:{" "}
+            <span className="font-semibold text-slate-700">
+              {deliverySnapshot.latestUpdate ? new Date(deliverySnapshot.latestUpdate).toLocaleString() : "—"}
+            </span>
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Link href={appPath("/dashboard/customers")} className={secondaryLinkClass}>
+              View customers
+            </Link>
+            <Link href={appPath("/dashboard/outbound/templates")} className={secondaryLinkClass}>
+              Manage templates
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

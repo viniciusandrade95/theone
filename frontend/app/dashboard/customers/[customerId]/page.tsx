@@ -82,6 +82,32 @@ function toLocalDateTime(value: string): string {
   return date.toLocaleString();
 }
 
+type DeliveryTone = "neutral" | "info" | "success" | "warning" | "danger";
+
+function deliveryView(message: OutboundMessage): { label: string; tone: DeliveryTone; hint: string } {
+  const state = ((message as any).delivery_state ?? message.delivery_status ?? "").toString().trim().toLowerCase();
+  if (state === "read") return { label: "Read", tone: "success", hint: "Customer opened the message (provider callback)." };
+  if (state === "delivered") return { label: "Delivered", tone: "success", hint: "Message reached the device (provider callback)." };
+  if (state === "accepted") return { label: "Accepted", tone: "info", hint: "Provider accepted the send; waiting for delivery updates." };
+  if (state === "queued") return { label: "Initiated", tone: "neutral", hint: "Send started; waiting for provider acceptance/delivery." };
+  if (state === "unconfirmed") return { label: "Unconfirmed", tone: "warning", hint: "Manual send via WhatsApp link; delivery cannot be tracked." };
+  if (state === "failed") return { label: "Failed", tone: "danger", hint: "Send failed (validation or provider)." };
+
+  // Fallback for older history rows.
+  if (message.status === "failed") return { label: "Failed", tone: "danger", hint: "Send failed (legacy status)." };
+  if (message.provider_message_id) return { label: "Accepted", tone: "info", hint: "Provider message id exists; delivery updates may arrive later." };
+  if (message.status === "sent") return { label: "Initiated", tone: "neutral", hint: "Send initiated; delivery confirmation comes from callbacks." };
+  return { label: "Initiated", tone: "neutral", hint: "Send initiated." };
+}
+
+function deliveryBadgeClass(tone: DeliveryTone): string {
+  if (tone === "success") return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (tone === "info") return "bg-sky-50 text-sky-700 border-sky-200";
+  if (tone === "warning") return "bg-amber-50 text-amber-700 border-amber-200";
+  if (tone === "danger") return "bg-rose-50 text-rose-700 border-rose-200";
+  return "bg-slate-50 text-slate-700 border-slate-200";
+}
+
 export default function CustomerDetailPage() {
   const params = useParams();
   const customerId = params.customerId as string;
@@ -569,7 +595,8 @@ export default function CustomerDetailPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-xs text-slate-500">
-                MVP note: status <span className="font-mono">sent</span> means user-assisted send was initiated (not provider delivery confirmation).
+                Delivery tracking uses <span className="font-mono">delivery_status</span> (Accepted/Delivered/Read). The legacy{" "}
+                <span className="font-mono">status</span> field only means “initiated” vs “failed”.
               </p>
 
               <div className="grid gap-3 md:grid-cols-2">
@@ -643,11 +670,39 @@ export default function CustomerDetailPage() {
                   <ul className="space-y-3">
                     {outboundMessages.map((m) => (
                       <li key={m.id} className="rounded-lg border border-slate-200 p-3 text-sm">
+                        {(() => {
+                          const view = deliveryView(m);
+                          return (
+                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-xs font-semibold uppercase text-slate-500">{m.type}</span>
+                                <span
+                                  title={view.hint}
+                                  className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${deliveryBadgeClass(view.tone)}`}
+                                >
+                                  Delivery: {view.label}
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  status: <span className="font-mono">{m.status}</span>
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 text-xs text-slate-500">
+                                <span>Created: {toLocalDateTime(m.created_at)}</span>
+                                {m.delivery_status_updated_at ? <span>Updated: {toLocalDateTime(m.delivery_status_updated_at)}</span> : null}
+                              </div>
+                            </div>
+                          );
+                        })()}
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-xs font-semibold uppercase text-slate-500">
-                            {m.type} · {m.status}
+                          <span className="text-xs text-slate-500">
+                            {m.provider_message_id ? (
+                              <>
+                                Provider message id: <span className="font-mono">{m.provider_message_id}</span>
+                              </>
+                            ) : m.delivery_status === "unconfirmed" ? (
+                              <>Manual send (unconfirmed)</>
+                            ) : null}
                           </span>
-                          <span className="text-xs text-slate-500">{toLocalDateTime(m.created_at)}</span>
                         </div>
                         <p className="mt-2 whitespace-pre-wrap text-slate-700">{m.rendered_body}</p>
                         {m.error_message ? <p className="mt-2 text-xs text-red-700">Error: {m.error_message}</p> : null}
