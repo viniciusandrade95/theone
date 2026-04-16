@@ -128,6 +128,8 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     body = send.json()
     assert body["ok"] is True
     assert body["whatsapp_url"] is None
+    assert body["mode"] == "provider"
+    assert body["requires_user_action"] is False
     outbound_id = body["outbound_message"]["id"]
     assert body["outbound_message"]["provider"] == "meta"
     assert body["outbound_message"]["provider_message_id"] == "wamid.123"
@@ -199,6 +201,7 @@ def test_outbound_delivery_callback_via_meta_webhook_statuses(monkeypatch):
         },
     )
     assert send.status_code == 200
+    assert send.json()["mode"] == "provider"
     outbound_id = send.json()["outbound_message"]["id"]
 
     meta_payload = {
@@ -326,5 +329,56 @@ def test_outbound_provider_send_failure_falls_back_to_deeplink(monkeypatch):
     body = send.json()
     assert body["ok"] is False
     assert body["whatsapp_url"]  # fallback for manual send
+    assert body["mode"] == "deeplink"
+    assert body["requires_user_action"] is True
     assert body["outbound_message"]["status"] == "failed"
     assert body["outbound_message"]["error_code"] == "provider_send_failed"
+
+
+def test_outbound_send_idempotency_key_replay_does_not_duplicate_provider_send(monkeypatch):
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
+    os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
+    os.environ["WHATSAPP_CLOUD_API_VERSION"] = "v19.0"
+
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    token = _register(client, tenant_id, "provider-idempotency@example.com")
+
+    customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
+    template_id = _create_template(client, tenant_id, token)
+    _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
+
+    calls: list[str] = []
+
+    def fake_post(url, json, headers, timeout):
+        calls.append(url)
+        return DummyResponse({"messages": [{"id": "wamid.123"}]})
+
+    monkeypatch.setattr("modules.messaging.providers.meta_whatsapp_cloud.requests.post", fake_post)
+
+    payload = {"customer_id": customer_id, "template_id": template_id, "final_body": "Hello Bob!", "type": "simple_campaign", "channel": "whatsapp"}
+
+    send1 = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}", "Idempotency-Key": "send:replay:001"},
+        json=payload,
+    )
+    assert send1.status_code == 200
+    body1 = send1.json()
+    assert body1["ok"] is True
+    assert body1["mode"] == "provider"
+    assert body1["idempotency_replay"] is False
+
+    send2 = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}", "Idempotency-Key": "send:replay:001"},
+        json=payload,
+    )
+    assert send2.status_code == 200
+    body2 = send2.json()
+    assert body2["outbound_message"]["id"] == body1["outbound_message"]["id"]
+    assert body2["idempotency_replay"] is True
+    assert body2["mode"] == "provider"
+    assert len(calls) == 1

@@ -41,13 +41,41 @@ Permitir comunicação outbound **simples e rastreável** (principalmente 1:1) c
 ## Significado de status (importante)
 Estados mínimos (compat): `pending`, `sent`, `failed` (e `delivered` quando callbacks chegam).
 
-O campo `status` mantém compatibilidade com o histórico/UI atual. Para tracking real, usar `delivery_status`:
+O campo `status` mantém compatibilidade com o histórico/UI atual (MVP). Interpretação:
+
+- `status=pending`: histórico criado e envio a iniciar (curto; normalmente transita no mesmo request).
+- `status=sent`: envio **iniciado** com sucesso:
+  - pode ser via provider (WhatsApp Cloud) **ou**
+  - pode ser envio manual assistido (deeplink `wa.me`).
+- `status=failed`: falhou ao iniciar:
+  - pré-validação (ex: cliente sem telefone válido) **ou**
+  - tentativa provider-backed falhou (neste caso pode existir `whatsapp_url` para envio manual).
+
+Para tracking real, usar `delivery_status`:
 
 - `delivery_status=queued`: criado e aguardando envio provider-backed.
 - `delivery_status=accepted`: provider aceitou o envio e devolveu `provider_message_id`.
 - `delivery_status=delivered/read`: provider confirmou entrega/leitura via callback.
 - `delivery_status=failed`: falhou (preparação ou provider).
 - `delivery_status=unconfirmed`: fallback deeplink; não existe confirmação de entrega do provider.
+
+## Resposta do `POST /crm/outbound/send` (como ler)
+
+Campos úteis para UI/produto:
+- `mode`:
+  - `provider`: o provider aceitou o envio (aguarda callbacks).
+  - `deeplink`: envio manual assistido (usar `whatsapp_url`).
+  - `none`: não há envio possível (erro).
+- `requires_user_action`:
+  - `true` quando o usuário precisa abrir o link do WhatsApp para enviar.
+- `idempotency_replay`:
+  - `true` quando o servidor devolve o mesmo envio por replay de `Idempotency-Key`.
+- `duplicate_prevented`:
+  - `true` quando o servidor detecta clique duplo (mesmo corpo, janela curta) e devolve a mensagem existente.
+
+Notas:
+- `ok=true` significa “o fluxo gerou um resultado utilizável” (ex: provider aceitou ou deeplink foi gerado).
+- Em falha do provider, `ok` pode ser `false` mas `mode=deeplink` pode estar presente para permitir envio manual.
 
 ## Interactions
 Quando uma mensagem outbound fica com `status=sent`, é criada uma interaction no CRM:

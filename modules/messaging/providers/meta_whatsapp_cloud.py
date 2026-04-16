@@ -14,6 +14,7 @@ class MetaWhatsAppCloudProvider:
     """Thin WhatsApp Cloud API sender (Meta).
 
     This is intentionally minimal and only supports text messages for now.
+    If provided, `idempotency_key` is forwarded as `Idempotency-Key` to help avoid duplicate sends.
     """
 
     api_version: str = "v19.0"
