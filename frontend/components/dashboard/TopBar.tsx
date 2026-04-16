@@ -12,6 +12,12 @@ type Me = {
   email: string;
 };
 
+type BillingStatus = {
+  tier: string;
+  active: boolean;
+  whatsapp_enabled: boolean;
+};
+
 const pageTitleByPath: Array<{ path: string; title: string }> = [
   { path: "/dashboard", title: "Overview" },
   { path: "/dashboard/calendar", title: "Calendar" },
@@ -38,6 +44,7 @@ export function TopBar() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState<string | null>(null);
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
   const pageTitle = useMemo(() => resolveTitle(pathname), [pathname]);
 
   useEffect(() => {
@@ -51,14 +58,14 @@ export function TopBar() {
     }
 
     let isMounted = true;
-    void api
-      .get<Me>("/auth/me")
-      .then((response) => {
-        if (isMounted) {
-          setEmail(response.data.email ?? null);
-        }
-      })
-      .catch(() => {});
+    void Promise.all([
+      api.get<Me>("/auth/me").catch(() => null),
+      api.get<BillingStatus>("/billing/status").catch(() => null),
+    ]).then(([meResponse, billingResponse]) => {
+      if (!isMounted) return;
+      setEmail(meResponse?.data?.email ?? null);
+      setBillingStatus(billingResponse?.data ?? null);
+    });
 
     return () => {
       isMounted = false;
@@ -87,8 +94,8 @@ export function TopBar() {
           </button>
 
           <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Beauty CRM</p>
-          <h2 className="text-xl font-semibold text-slate-900">{pageTitle}</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Beauty CRM</p>
+            <h2 className="text-xl font-semibold text-slate-900">{pageTitle}</h2>
           </div>
         </div>
 
@@ -99,11 +106,23 @@ export function TopBar() {
             className="rounded-xl border border-slate-200 px-3 py-2 text-left text-sm transition-colors duration-200 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
           >
             <p className="font-semibold text-slate-900">{email ?? "User"}</p>
-            <p className="text-xs text-slate-500">Tenant {tenantId ?? "-"}</p>
+            <p className="text-xs text-slate-500">
+              {billingStatus?.tier ? `${billingStatus.tier.toUpperCase()} plan` : `Tenant ${tenantId ?? "-"}`}
+            </p>
           </button>
 
           {menuOpen ? (
             <div className="absolute right-0 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+              <div className="space-y-1 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                <p className="font-semibold text-slate-900">
+                  Plan:{" "}
+                  <span className="font-semibold text-slate-900">
+                    {billingStatus?.tier ? billingStatus.tier.toUpperCase() : "—"}
+                  </span>
+                </p>
+                <p>WhatsApp: {billingStatus ? (billingStatus.whatsapp_enabled ? "Enabled" : "Disabled") : "—"}</p>
+                <p className="text-slate-500">Tenant: {tenantId ?? "—"}</p>
+              </div>
               <button
                 type="button"
                 onClick={handleLogout}
