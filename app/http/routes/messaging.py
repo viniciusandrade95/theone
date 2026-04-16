@@ -4,9 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 from core.config import get_config
+from core.observability.logging import log_event
+from core.observability.metrics import inc_counter
 from core.errors import ConflictError
 from core.tenancy import clear_tenant_id, require_tenant_id, set_tenant_id
-from app.http.deps import require_tenant_header, require_user
+from app.http.deps import require_tenant_admin
 from modules.messaging.models import WhatsAppAccount
 from modules.messaging.providers import verify_signature
 from modules.messaging.service.outbound_delivery_service import OutboundDeliveryService
@@ -39,10 +41,15 @@ async def _require_valid_whatsapp_signature(request: Request) -> bytes:
     cfg = get_config()
     secret = (cfg.WHATSAPP_WEBHOOK_SECRET or "").strip()
     if not secret:
+        inc_counter("messaging_whatsapp_webhook_rejected_total", labels={"reason": "missing_secret"})
+        log_event("messaging_whatsapp_webhook_rejected", level="error", reason="missing_secret", path=request.url.path)
         raise HTTPException(status_code=503, detail="whatsapp_webhook_secret_not_configured")
     body = await request.body()
     signature = request.headers.get("X-Hub-Signature-256")
     if not verify_signature(secret=secret, payload=body, signature_header=signature):
+        reason = "missing_signature" if not signature else "invalid_signature"
+        inc_counter("messaging_whatsapp_webhook_rejected_total", labels={"reason": reason})
+        log_event("messaging_whatsapp_webhook_rejected", level="warning", reason=reason, path=request.url.path)
         raise HTTPException(status_code=401, detail="invalid_signature")
     return body
 
@@ -63,9 +70,14 @@ async def whatsapp_webhook_verify(request: Request):
 
     expected = (cfg.WHATSAPP_WEBHOOK_VERIFY_TOKEN or "").strip()
     if not expected:
+        inc_counter("messaging_whatsapp_webhook_verify_total", labels={"outcome": "error", "reason": "missing_verify_token"})
+        log_event("messaging_whatsapp_webhook_verify_error", level="error", reason="missing_verify_token")
         raise HTTPException(status_code=503, detail="whatsapp_verify_token_not_configured")
     if mode != "subscribe" or not token or token != expected:
+        inc_counter("messaging_whatsapp_webhook_verify_total", labels={"outcome": "rejected", "reason": "invalid_verify_token"})
+        log_event("messaging_whatsapp_webhook_verify_rejected", level="warning", reason="invalid_verify_token")
         raise HTTPException(status_code=403, detail="whatsapp_verify_token_invalid")
+    inc_counter("messaging_whatsapp_webhook_verify_total", labels={"outcome": "ok"})
     return PlainTextResponse(content=(challenge or ""))
 
 
@@ -180,6 +192,15 @@ async def whatsapp_webhook(payload: dict, request: Request):
     inbound_events = _extract_meta_inbound_events(payload)
     delivery_events = _extract_meta_delivery_events(payload)
 
+    inc_counter("messaging_whatsapp_webhook_accepted_total", labels={"type": "meta"})
+    inc_counter("messaging_whatsapp_inbound_events_total", value=len(inbound_events))
+    inc_counter("messaging_whatsapp_delivery_events_total", value=len(delivery_events))
+    log_event(
+        "messaging_whatsapp_webhook_parsed",
+        inbound_events=len(inbound_events),
+        delivery_events=len(delivery_events),
+    )
+
     for event in inbound_events:
         enqueue_inbound_webhook(payload=event, signature_valid=True)
 
@@ -188,9 +209,11 @@ async def whatsapp_webhook(payload: dict, request: Request):
     container = request.app.state.container
     recorded = 0
     updated = 0
+    unknown_accounts = 0
     for event in delivery_events:
         account = container.messaging_repo.get_whatsapp_account(provider=event["provider"], phone_number_id=event["phone_number_id"])
         if account is None:
+            unknown_accounts += 1
             continue
         clear_tenant_id()
         set_tenant_id(account.tenant_id)
@@ -216,6 +239,7 @@ async def whatsapp_webhook(payload: dict, request: Request):
         "inbound_enqueued": len(inbound_events),
         "delivery_recorded": recorded,
         "delivery_updated": updated,
+        "delivery_unknown_accounts": unknown_accounts,
     }
 
 
@@ -228,12 +252,16 @@ async def inbound(payload: InboundIn, request: Request):
         provider=payload.provider, phone_number_id=payload.phone_number_id
     )
     if account is None:
+        inc_counter("messaging_whatsapp_inbound_rejected_total", labels={"reason": "unknown_account"})
+        log_event("messaging_whatsapp_inbound_rejected", level="warning", reason="unknown_account")
         raise HTTPException(status_code=404, detail="whatsapp_account_not_found")
 
     try:
         enqueue_inbound_webhook(payload=payload.model_dump(), signature_valid=True)
     except Exception:
+        inc_counter("messaging_whatsapp_inbound_rejected_total", labels={"reason": "queue_unavailable"})
         raise HTTPException(status_code=503, detail="queue_unavailable")
+    inc_counter("messaging_whatsapp_inbound_accepted_total")
     return {"status": "accepted"}
 
 
@@ -282,6 +310,8 @@ async def delivery_event(payload: OutboundDeliveryEventIn, request: Request):
     container = request.app.state.container
     account = container.messaging_repo.get_whatsapp_account(provider=payload.provider, phone_number_id=payload.phone_number_id)
     if account is None:
+        inc_counter("messaging_whatsapp_delivery_rejected_total", labels={"reason": "unknown_account"})
+        log_event("messaging_whatsapp_delivery_rejected", level="warning", reason="unknown_account")
         raise HTTPException(status_code=404, detail="whatsapp_account_not_found")
 
     clear_tenant_id()
@@ -302,14 +332,14 @@ async def delivery_event(payload: OutboundDeliveryEventIn, request: Request):
         )
 
     clear_tenant_id()
+    inc_counter("messaging_whatsapp_delivery_accepted_total", labels={"status": (payload.status or "unknown").lower()})
     return {"status": "accepted", **res}
 
 
 @router.get("/whatsapp-accounts")
 def list_whatsapp_accounts(
     request: Request,
-    _tenant=Depends(require_tenant_header),
-    _user=Depends(require_user),
+    _admin=Depends(require_tenant_admin),
 ) -> WhatsAppAccountsListOut:
     """List WhatsApp account mappings for the current tenant (admin UX helper).
 
@@ -360,8 +390,7 @@ def list_whatsapp_accounts(
 def create_whatsapp_account(
     payload: WhatsAppAccountIn,
     request: Request,
-    _tenant=Depends(require_tenant_header),
-    _user=Depends(require_user),
+    _admin=Depends(require_tenant_admin),
 ):
     tenant_id = require_tenant_id()
     account = WhatsAppAccount.create(

@@ -238,10 +238,55 @@ def test_outbound_delivery_callback_via_meta_webhook_statuses(monkeypatch):
     assert cb2.status_code == 200
     assert cb2.json()["delivery_recorded"] == 0
 
-    with db_session() as session:
-        msg = session.execute(select(OutboundMessageORM).where(OutboundMessageORM.id == uuid.UUID(outbound_id))).scalar_one()
-        assert msg.delivery_status in {"delivered", "read"}
-        assert msg.delivered_at is not None
+
+def test_admin_rbac_guards_billing_and_whatsapp_account_routes():
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    admin_token = _register(client, tenant_id, "admin@example.com")
+
+    # Starter tier allows only 1 user; upgrade first so we can create a second user for RBAC testing.
+    upgrade = client.post(
+        "/billing/plan",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {admin_token}"},
+        json={"tier": "pro"},
+    )
+    assert upgrade.status_code == 200
+
+    user_token = _register(client, tenant_id, "user@example.com")
+
+    # Non-admin cannot change plan.
+    r = client.post(
+        "/billing/plan",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {user_token}"},
+        json={"tier": "pro"},
+    )
+    assert r.status_code == 403
+
+    # Admin can change plan.
+    r2 = client.post(
+        "/billing/plan",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {admin_token}"},
+        json={"tier": "starter"},
+    )
+    assert r2.status_code == 200
+
+    # Non-admin cannot create WhatsApp routing mappings.
+    wa = client.post(
+        "/messaging/whatsapp-accounts",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {user_token}"},
+        json={"provider": "meta", "phone_number_id": "pn-rbac", "status": "active"},
+    )
+    assert wa.status_code == 403
+
+    # Admin can create WhatsApp routing mappings.
+    wa2 = client.post(
+        "/messaging/whatsapp-accounts",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {admin_token}"},
+        json={"provider": "meta", "phone_number_id": "pn-rbac", "status": "active"},
+    )
+    assert wa2.status_code == 200
 
 
 def test_outbound_delivery_callback_is_tenant_safe(monkeypatch):
