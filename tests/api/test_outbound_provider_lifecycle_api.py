@@ -48,13 +48,13 @@ def _create_customer(client: TestClient, tenant_id: str, token: str, *, name: st
     return r.json()["id"]
 
 
-def _create_template(client: TestClient, tenant_id: str, token: str) -> str:
+def _create_template(client: TestClient, tenant_id: str, token: str, *, type: str = "simple_campaign") -> str:
     tpl = client.post(
         "/crm/outbound/templates",
         headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
         json={
             "name": "Campaign",
-            "type": "simple_campaign",
+            "type": type,
             "channel": "whatsapp",
             "body": "Hello {{customer_name}}!",
             "is_active": True,
@@ -109,7 +109,7 @@ def test_outbound_provider_send_and_delivery_callback(monkeypatch):
     token = _register(client, tenant_id, "provider-send@example.com")
 
     customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
-    template_id = _create_template(client, tenant_id, token)
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
     _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
 
     def fake_post(url, json, headers, timeout):
@@ -181,7 +181,7 @@ def test_outbound_delivery_callback_via_meta_webhook_statuses(monkeypatch):
     token = _register(client, tenant_id, "provider-meta-webhook@example.com")
 
     customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
-    template_id = _create_template(client, tenant_id, token)
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
     _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
 
     def fake_post(url, json, headers, timeout):
@@ -254,7 +254,7 @@ def test_outbound_delivery_callback_is_tenant_safe(monkeypatch):
     tenant_a = str(uuid.uuid4())
     token_a = _register(client, tenant_a, "tenant-a@example.com")
     customer_a = _create_customer(client, tenant_a, token_a, name="Alice", phone="+351111111")
-    tpl_a = _create_template(client, tenant_a, token_a)
+    tpl_a = _create_template(client, tenant_a, token_a, type="simple_campaign")
     _create_whatsapp_account(client, tenant_a, token_a, phone_number_id="pn-a")
 
     tenant_b = str(uuid.uuid4())
@@ -306,7 +306,7 @@ def test_outbound_provider_send_failure_falls_back_to_deeplink(monkeypatch):
     tenant_id = str(uuid.uuid4())
     token = _register(client, tenant_id, "provider-fail@example.com")
     customer_id = _create_customer(client, tenant_id, token, name="Fail", phone="+351999999")
-    template_id = _create_template(client, tenant_id, token)
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
     _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-999")
 
     def fake_post(url, json, headers, timeout):
@@ -347,7 +347,7 @@ def test_outbound_send_idempotency_key_replay_does_not_duplicate_provider_send(m
     token = _register(client, tenant_id, "provider-idempotency@example.com")
 
     customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
-    template_id = _create_template(client, tenant_id, token)
+    template_id = _create_template(client, tenant_id, token, type="simple_campaign")
     _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
 
     calls: list[str] = []
@@ -382,3 +382,35 @@ def test_outbound_send_idempotency_key_replay_does_not_duplicate_provider_send(m
     assert body2["idempotency_replay"] is True
     assert body2["mode"] == "provider"
     assert len(calls) == 1
+
+
+@pytest.mark.parametrize("tpl_type", ["booking_confirmation", "reminder_24h", "reminder_3h", "reactivation"])
+def test_outbound_provider_send_supports_default_use_case_template_types(monkeypatch, tpl_type: str):
+    os.environ["WHATSAPP_WEBHOOK_SECRET"] = "wh-secret"
+    os.environ["WHATSAPP_CLOUD_ACCESS_TOKEN"] = "token"
+
+    app = create_app()
+    client = TestClient(app)
+
+    tenant_id = str(uuid.uuid4())
+    token = _register(client, tenant_id, f"use-case-{tpl_type}@example.com")
+
+    customer_id = _create_customer(client, tenant_id, token, name="Bob", phone="+351222222")
+    template_id = _create_template(client, tenant_id, token, type=tpl_type)
+    _create_whatsapp_account(client, tenant_id, token, phone_number_id="pn-123")
+
+    def fake_post(url, json, headers, timeout):
+        return DummyResponse({"messages": [{"id": f"wamid.{tpl_type}"}]})
+
+    monkeypatch.setattr("modules.messaging.providers.meta_whatsapp_cloud.requests.post", fake_post)
+
+    send = client.post(
+        "/crm/outbound/send",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={"customer_id": customer_id, "template_id": template_id, "final_body": "Hello!", "type": tpl_type, "channel": "whatsapp"},
+    )
+    assert send.status_code == 200
+    body = send.json()
+    assert body["ok"] is True
+    assert body["mode"] == "provider"
+    assert body["outbound_message"]["type"] == tpl_type

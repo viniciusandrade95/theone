@@ -34,6 +34,21 @@ Permitir comunicação outbound **simples e rastreável** (principalmente 1:1) c
   - cria interaction `outbound_whatsapp` quando o envio é iniciado com sucesso
 - Reenvio: `POST /crm/outbound/{id}/resend` (apenas para mensagens `failed`)
 
+## Use cases (substitui o modelo “send reminder/report” do applandlord)
+
+No TheOne, os casos de uso são modelados como **templates + envio**, em vez de endpoints isolados por ação.
+
+- Booking confirmation → template `booking_confirmation` + `POST /crm/outbound/send`
+- Reminder 24h → template `reminder_24h` + `POST /crm/outbound/send`
+- Reminder 3h → template `reminder_3h` + `POST /crm/outbound/send`
+- Reactivation → template `reactivation` + `POST /crm/outbound/send`
+
+### Sobre “summary/report”
+
+O outbound MVP envia para um **customer** (cliente) como destinatário. Para um report de negócio (para staff):
+- MVP (manual): criar um “customer interno” (ex: “Owner”) com o seu telefone e usar um template `internal_followup_support`.
+- Próximo passo (fora deste PR): gerar o corpo do relatório (stats) via serviço de reporting/scheduler e chamar `POST /crm/outbound/send` com `final_body`.
+
 ### Histórico
 - Listagem: `GET /crm/outbound/messages` com filtros por `customer_id`, `template_id`, `type`, `status`
 - UI: histórico aparece no customer profile no dashboard.

@@ -92,6 +92,21 @@ Behavior (high level):
 
 See `docs/features/outbound-basic-mvp.md` for the product-level MVP behavior and status fields.
 
+#### Mapping applandlord-style actions to TheOne
+
+Instead of one-off “send reminder” / “send report” endpoints, TheOne models these as:
+**template type (use case) + `/crm/outbound/send`**.
+
+Common business use cases:
+- Booking confirmation → template `booking_confirmation`
+- Reminder (24h) → template `reminder_24h`
+- Reminder (3h) → template `reminder_3h`
+- Reactivation → template `reactivation`
+
+About “summary/report”:
+- MVP: treat it as an internal WhatsApp template (ex: `internal_followup_support`) and send it to an internal recipient (often modeled as an internal “customer” record).
+- Future: reporting should generate a `final_body` and call `/crm/outbound/send` (scheduled/automated).
+
 ### 2.5 Fallback `wa.me` flow (manual assisted send)
 
 If provider-backed send is not configured or fails, TheOne returns a `whatsapp_url` (`wa.me` deeplink).
