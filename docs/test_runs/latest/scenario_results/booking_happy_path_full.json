@@ -1,27 +1,7 @@
 {
   "conversation_id": null,
   "crm_verification": {
-    "matched": [
-      {
-        "cancelled_reason": null,
-        "created_at": "2026-04-17T21:19:54.267902Z",
-        "created_by_user_id": null,
-        "customer_id": "f8e19270-884d-431a-9347-ae5cd1e9cc20",
-        "customer_name": "Audit User",
-        "ends_at": "2026-04-18T15:45:00Z",
-        "id": "d2bcf69a-b277-4158-8b6f-4452452f8b1e",
-        "location_id": "6318247d-2b95-4cd2-8e3a-c5fe546957bc",
-        "needs_confirmation": true,
-        "notes": "audit prebook",
-        "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
-        "service_name": "Corte (audit)",
-        "starts_at": "2026-04-18T15:00:00Z",
-        "status": "pending",
-        "status_updated_at": "2026-04-17T21:19:55.706687Z",
-        "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
-        "updated_by_user_id": null
-      }
-    ],
+    "matched": [],
     "parsed_body": {
       "items": [
         {
@@ -49,28 +29,118 @@
       "total": 1
     },
     "raw_body": "{\"items\":[{\"id\":\"d2bcf69a-b277-4158-8b6f-4452452f8b1e\",\"tenant_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\",\"customer_id\":\"f8e19270-884d-431a-9347-ae5cd1e9cc20\",\"customer_name\":\"Audit User\",\"location_id\":\"6318247d-2b95-4cd2-8e3a-c5fe546957bc\",\"service_id\":\"944cc6ff-4283-444f-bcc9-8281c5a5a9f6\",\"service_name\":\"Corte (audit)\",\"starts_at\":\"2026-04-18T15:00:00Z\",\"ends_at\":\"2026-04-18T15:45:00Z\",\"status\":\"pending\",\"needs_confirmation\":true,\"cancelled_reason\":null,\"status_updated_at\":\"2026-04-17T21:19:55.706687Z\",\"notes\":\"audit prebook\",\"created_by_user_id\":null,\"updated_by_user_id\":null,\"created_at\":\"2026-04-17T21:19:54.267902Z\"}],\"total\":1,\"page\":1,\"page_size\":100}",
-    "reasons": [],
-    "status": "PASS",
+    "reasons": [
+      "expected matching appointment to exist"
+    ],
+    "status": "FAIL",
     "status_code": 200,
     "total_items": 1
   },
   "description": "User provides service, date, time, customer name, phone, and confirms a real prebook.",
+  "failure_records": [
+    {
+      "category": "upstream_runtime_failure",
+      "message": "HTTP request failed with status 0: ",
+      "step_index": 1
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "message": "response body is not a JSON object",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected status awaiting_confirmation, got response=None workflow=None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing expected text: confirmar",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected slot service to be present",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected slot date to be present",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected slot time to be present",
+      "step_index": 1
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "message": "HTTP request failed with status 0: ",
+      "step_index": 2
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "message": "response body is not a JSON object",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected status completed, got response=None workflow=None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing expected text: registr",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected action_result.ok=True, got None",
+      "step_index": 2
+    },
+    {
+      "category": "crm_verification_failure",
+      "message": "expected matching appointment to exist"
+    }
+  ],
   "failures": [
-    "step 1: HTTP request failed with status 0: ",
-    "step 1: response body is not a JSON object",
-    "step 1: expected status awaiting_confirmation, got response=None workflow=None",
-    "step 1: expected route workflow, got None",
-    "step 1: expected workflow book_appointment, got None",
-    "step 1: reply missing expected text: confirmar",
-    "step 1: expected slot service to be present",
-    "step 1: expected slot date to be present",
-    "step 1: expected slot time to be present",
-    "step 2: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2\"}",
-    "step 2: expected status completed, got response=None workflow=None",
-    "step 2: expected route workflow, got None",
-    "step 2: expected workflow book_appointment, got None",
-    "step 2: reply missing expected text: registr",
-    "step 2: expected action_result.ok=True, got None"
+    "step 1: upstream_runtime_failure: HTTP request failed with status 0: ",
+    "step 1: upstream_runtime_failure: response body is not a JSON object",
+    "step 1: assertion_failure: expected status awaiting_confirmation, got response=None workflow=None",
+    "step 1: assertion_failure: expected route workflow, got None",
+    "step 1: assertion_failure: expected workflow book_appointment, got None",
+    "step 1: assertion_failure: reply missing expected text: confirmar",
+    "step 1: assertion_failure: expected slot service to be present",
+    "step 1: assertion_failure: expected slot date to be present",
+    "step 1: assertion_failure: expected slot time to be present",
+    "step 2: upstream_runtime_failure: HTTP request failed with status 0: ",
+    "step 2: upstream_runtime_failure: response body is not a JSON object",
+    "step 2: assertion_failure: expected status completed, got response=None workflow=None",
+    "step 2: assertion_failure: expected route workflow, got None",
+    "step 2: assertion_failure: expected workflow book_appointment, got None",
+    "step 2: assertion_failure: reply missing expected text: registr",
+    "step 2: assertion_failure: expected action_result.ok=True, got None",
+    "crm_verification_failure: expected matching appointment to exist"
   ],
   "final_verdict": "FAIL",
   "guardrails_observed": [],
@@ -78,9 +148,9 @@
     "status": "DISABLED"
   },
   "scenario_name": "booking_happy_path_full",
-  "scenario_run_id": "20260418T143935Z-a6fbf12b-booking_happy_path_full",
+  "scenario_run_id": "20260418T152209Z-5b04bff0-booking_happy_path_full",
   "session_id": null,
-  "started_at": "2026-04-18T14:40:12.567666+00:00",
+  "started_at": "2026-04-18T15:23:13.524026+00:00",
   "steps": [
     {
       "assertions": {
@@ -98,6 +168,15 @@
         "status": "FAIL"
       },
       "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "",
+            "error": "The read operation timed out",
+            "status_code": 0,
+            "transient_upstream_failure": false
+          }
+        ],
         "body_text": "",
         "error": "The read operation timed out",
         "headers": {},
@@ -124,12 +203,13 @@
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-1"
+      "trace_id": "audit-eval-20260418T152209Z-5b04bff0-booking_happy_path_full-1"
     },
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2\"}",
+          "HTTP request failed with status 0: ",
+          "response body is not a JSON object",
           "expected status completed, got response=None workflow=None",
           "expected route workflow, got None",
           "expected workflow book_appointment, got None",
@@ -139,32 +219,21 @@
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2\"}",
-        "error": "HTTP 400",
-        "headers": {
-          "CF-RAY": "9ee46c3478fed7f6-GIG",
-          "Connection": "close",
-          "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:40:12 GMT",
-          "Server": "cloudflare",
-          "Transfer-Encoding": "chunked",
-          "alt-svc": "h3=\":443\"; ma=86400",
-          "cf-cache-status": "DYNAMIC",
-          "rndr-id": "9424cfc1-dc42-41e4",
-          "vary": "Accept-Encoding",
-          "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2"
-        },
-        "status_code": 400
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "",
+            "error": "The read operation timed out",
+            "status_code": 0,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "",
+        "error": "The read operation timed out",
+        "headers": {},
+        "status_code": 0
       },
-      "raw_response": {
-        "details": {
-          "message": "Chatbot service request failed",
-          "status": 502
-        },
-        "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2"
-      },
+      "raw_response": null,
       "request": {
         "conversation_id": null,
         "message": "sim, pode confirmar",
@@ -181,11 +250,11 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2",
+        "trace_id": null,
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_happy_path_full-2"
+      "trace_id": "audit-eval-20260418T152209Z-5b04bff0-booking_happy_path_full-2"
     }
   ],
   "tags": [

@@ -1,35 +1,24 @@
 # booking_interrupted_then_resume
 
 - Verdict: FAIL
-- Conversation ID: None
-- Session ID: None
+- Conversation ID: b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35
+- Session ID: s-8236b18a261a4ead
 - Judge: DISABLED
 
 ## Transcript
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 18h
-Turn 1 assistant: 
+Turn 1 assistant: Já troquei para Corte: pré-agendamento de Corte no dia 19 de abr às 18:00 – tudo certo? Posso encaminhar para confirmação humana?
 Turn 2 user: Qual o endereço mesmo?
-Turn 2 assistant: 
+Turn 2 assistant: Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.
 Turn 3 user: Beleza, pode continuar
-Turn 3 assistant: 
+Turn 3 assistant: Antes de confirmar, qual é o nome do cliente para este agendamento?
 ```
 
 ## Failures
 
-- step 1: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service request failed","status":502},"trace_id":"audit-eval-20260418T143935Z-a6fbf12b-booking_interrupted_then_resume-1"}
-- step 1: expected route workflow, got None
-- step 1: expected workflow book_appointment, got None
-- step 1: expected slot service to be present
-- step 1: expected slot date to be present
-- step 1: expected slot time to be present
-- step 2: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service request failed","status":502},"trace_id":"audit-eval-20260418T143935Z-a6fbf12b-booking_interrupted_then_resume-2"}
-- step 3: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service request failed","status":502},"trace_id":"audit-eval-20260418T143935Z-a6fbf12b-booking_interrupted_then_resume-3"}
-- step 3: expected workflow book_appointment, got None
-- step 3: expected slot service to be present
-- step 3: expected slot date to be present
-- step 3: expected slot time to be present
+- step 2: assertion_failure: unexpected RAG route
 
 ## CRM Verification
 

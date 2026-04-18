@@ -1,39 +1,24 @@
 # booking_user_changes_time_mid_flow
 
-- Verdict: FAIL
-- Conversation ID: None
-- Session ID: None
+- Verdict: PASS
+- Conversation ID: b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35
+- Session ID: s-8236b18a261a4ead
 - Judge: DISABLED
 
 ## Transcript
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 15h para Audit User, telefone 11999998888
-Turn 1 assistant: 
+Turn 1 assistant: Mudei para Corte. Confirma pré-agendamento de Corte no dia 19 de abr às 15:00? Posso enviar para confirmação humana?
 Turn 2 user: Na verdade muda para 16h17
-Turn 2 assistant: 
+Turn 2 assistant: Ajustei o horário: Corte no dia 19 de abr às 16:17, tudo certo? Posso encaminhar para confirmação humana?
 Turn 3 user: sim
-Turn 3 assistant: 
+Turn 3 assistant: Antes de confirmar, você poderia me dizer o nome do cliente?
 ```
 
 ## Failures
 
-- step 1: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service request failed","status":502},"trace_id":"audit-eval-20260418T143935Z-a6fbf12b-booking_user_changes_time_mid_flow-1"}
-- step 1: expected route workflow, got None
-- step 1: expected workflow book_appointment, got None
-- step 1: expected slot service to be present
-- step 1: expected slot date to be present
-- step 1: expected slot time to be present
-- step 2: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service request failed","status":502},"trace_id":"audit-eval-20260418T143935Z-a6fbf12b-booking_user_changes_time_mid_flow-2"}
-- step 2: expected route workflow, got None
-- step 2: expected workflow book_appointment, got None
-- step 2: reply missing expected text: 16
-- step 2: expected slot service to be present
-- step 2: expected slot date to be present
-- step 2: expected slot time to be present
-- step 3: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service request failed","status":502},"trace_id":"audit-eval-20260418T143935Z-a6fbf12b-booking_user_changes_time_mid_flow-3"}
-- step 3: expected route workflow, got None
-- step 3: expected workflow book_appointment, got None
+- None
 
 ## CRM Verification
 
