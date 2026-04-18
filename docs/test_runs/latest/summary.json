@@ -1,0 +1,56 @@
+{
+  "base_url": "https://theone-1-05gx.onrender.com",
+  "common_failure_patterns": [
+    {
+      "count": 29,
+      "pattern": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-2026"
+    },
+    {
+      "count": 27,
+      "pattern": "expected workflow book_appointment, got None"
+    },
+    {
+      "count": 14,
+      "pattern": "expected route workflow, got None"
+    },
+    {
+      "count": 14,
+      "pattern": "expected slot service to be present"
+    },
+    {
+      "count": 12,
+      "pattern": "expected slot date to be present"
+    },
+    {
+      "count": 11,
+      "pattern": "expected slot time to be present"
+    },
+    {
+      "count": 4,
+      "pattern": "reply missing expected text: confirmar"
+    },
+    {
+      "count": 3,
+      "pattern": "expected status awaiting_confirmation, got response=None workflow=None"
+    },
+    {
+      "count": 2,
+      "pattern": "reply missing expected text: telefone"
+    },
+    {
+      "count": 1,
+      "pattern": "expected status completed, got response=None workflow=None"
+    }
+  ],
+  "completed_at": "2026-04-18T14:12:36.253577+00:00",
+  "fail_count": 10,
+  "judge_enabled": false,
+  "partial_count": 0,
+  "pass_count": 0,
+  "run_id": "20260418T141140Z-0799804c",
+  "started_at": "2026-04-18T14:11:40.124646+00:00",
+  "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+  "top_judge_issues": [],
+  "total_scenarios": 10,
+  "worst_conversational_scores": []
+}

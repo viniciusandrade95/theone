@@ -1,0 +1,215 @@
+{
+  "conversation_id": null,
+  "crm_verification": {
+    "matched": [
+      {
+        "cancelled_reason": null,
+        "created_at": "2026-04-17T21:19:54.267902Z",
+        "created_by_user_id": null,
+        "customer_id": "f8e19270-884d-431a-9347-ae5cd1e9cc20",
+        "customer_name": "Audit User",
+        "ends_at": "2026-04-18T15:45:00Z",
+        "id": "d2bcf69a-b277-4158-8b6f-4452452f8b1e",
+        "location_id": "6318247d-2b95-4cd2-8e3a-c5fe546957bc",
+        "needs_confirmation": true,
+        "notes": "audit prebook",
+        "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
+        "service_name": "Corte (audit)",
+        "starts_at": "2026-04-18T15:00:00Z",
+        "status": "pending",
+        "status_updated_at": "2026-04-17T21:19:55.706687Z",
+        "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "updated_by_user_id": null
+      }
+    ],
+    "parsed_body": {
+      "items": [
+        {
+          "cancelled_reason": null,
+          "created_at": "2026-04-17T21:19:54.267902Z",
+          "created_by_user_id": null,
+          "customer_id": "f8e19270-884d-431a-9347-ae5cd1e9cc20",
+          "customer_name": "Audit User",
+          "ends_at": "2026-04-18T15:45:00Z",
+          "id": "d2bcf69a-b277-4158-8b6f-4452452f8b1e",
+          "location_id": "6318247d-2b95-4cd2-8e3a-c5fe546957bc",
+          "needs_confirmation": true,
+          "notes": "audit prebook",
+          "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
+          "service_name": "Corte (audit)",
+          "starts_at": "2026-04-18T15:00:00Z",
+          "status": "pending",
+          "status_updated_at": "2026-04-17T21:19:55.706687Z",
+          "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+          "updated_by_user_id": null
+        }
+      ],
+      "page": 1,
+      "page_size": 100,
+      "total": 1
+    },
+    "raw_body": "{\"items\":[{\"id\":\"d2bcf69a-b277-4158-8b6f-4452452f8b1e\",\"tenant_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\",\"customer_id\":\"f8e19270-884d-431a-9347-ae5cd1e9cc20\",\"customer_name\":\"Audit User\",\"location_id\":\"6318247d-2b95-4cd2-8e3a-c5fe546957bc\",\"service_id\":\"944cc6ff-4283-444f-bcc9-8281c5a5a9f6\",\"service_name\":\"Corte (audit)\",\"starts_at\":\"2026-04-18T15:00:00Z\",\"ends_at\":\"2026-04-18T15:45:00Z\",\"status\":\"pending\",\"needs_confirmation\":true,\"cancelled_reason\":null,\"status_updated_at\":\"2026-04-17T21:19:55.706687Z\",\"notes\":\"audit prebook\",\"created_by_user_id\":null,\"updated_by_user_id\":null,\"created_at\":\"2026-04-17T21:19:54.267902Z\"}],\"total\":1,\"page\":1,\"page_size\":100}",
+    "reasons": [],
+    "status": "PASS",
+    "status_code": 200,
+    "total_items": 1
+  },
+  "description": "User provides service, date, time, customer name, phone, and confirms a real prebook.",
+  "failures": [
+    "step 1: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1\"}",
+    "step 1: expected status awaiting_confirmation, got response=None workflow=None",
+    "step 1: expected route workflow, got None",
+    "step 1: expected workflow book_appointment, got None",
+    "step 1: reply missing expected text: confirmar",
+    "step 1: expected slot service to be present",
+    "step 1: expected slot date to be present",
+    "step 1: expected slot time to be present",
+    "step 2: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2\"}",
+    "step 2: expected status completed, got response=None workflow=None",
+    "step 2: expected route workflow, got None",
+    "step 2: expected workflow book_appointment, got None",
+    "step 2: reply missing expected text: registr",
+    "step 2: expected action_result.ok=True, got None"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "booking_happy_path_full",
+  "scenario_run_id": "20260418T141140Z-0799804c-booking_happy_path_full",
+  "session_id": null,
+  "started_at": "2026-04-18T14:11:44.735208+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1\"}",
+          "expected status awaiting_confirmation, got response=None workflow=None",
+          "expected route workflow, got None",
+          "expected workflow book_appointment, got None",
+          "reply missing expected text: confirmar",
+          "expected slot service to be present",
+          "expected slot date to be present",
+          "expected slot time to be present"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "CF-RAY": "9ee442912a46d7f2-GIG",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sat, 18 Apr 2026 14:11:42 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "45459e72-e7ca-453c",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 502
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888",
+        "session_id": null,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2\"}",
+          "expected status completed, got response=None workflow=None",
+          "expected route workflow, got None",
+          "expected workflow book_appointment, got None",
+          "reply missing expected text: registr",
+          "expected action_result.ok=True, got None"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "CF-RAY": "9ee4429e48f8d7f2-GIG",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sat, 18 Apr 2026 14:11:44 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "cf2ef84e-7fcc-454b",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 502
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "sim, pode confirmar",
+        "session_id": null,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_happy_path_full-2"
+    }
+  ],
+  "tags": [
+    "booking",
+    "happy_path",
+    "crm_side_effect"
+  ],
+  "transcript": "Turn 1 user: Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888\nTurn 1 assistant: \nTurn 2 user: sim, pode confirmar\nTurn 2 assistant: "
+}
