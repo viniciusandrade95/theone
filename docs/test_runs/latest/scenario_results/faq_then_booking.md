@@ -11,9 +11,9 @@
 Turn 1 user: Tem vaga amanhã?
 Turn 1 assistant: A integração está temporariamente indisponível. Vou encaminhar você para atendimento humano.
 Turn 2 user: Quero corte às 16h17 para Audit User, telefone 11999998888
-Turn 2 assistant: Troquei para Corte: pré-agendamento de Corte em 19 de abr às 16:17, tudo certo? Posso encaminhar para confirmação humana?
+Turn 2 assistant: Ótimo, mudei para Corte: pré‑agendamento em 19/04 às 16:17. Tudo certo, posso enviar para confirmação humana?
 Turn 3 user: sim pode confirmar
-Turn 3 assistant: Para confirmar, qual é o nome do cliente para este agendamento?
+Turn 3 assistant: Antes de confirmar, poderia me dizer o nome do cliente para este agendamento?
 ```
 
 ## Failures

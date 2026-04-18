@@ -9,7 +9,7 @@
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 15h para Audit User, telefone 11999998888
-Turn 1 assistant: Ok, troquei para Corte. Confirma o pré‑agendamento de Corte no dia 19 de abr às 15:00 e posso encaminhar para confirmação humana?
+Turn 1 assistant: Corte confirmado, pre‑agendamento de Corte no dia 19 de abr às 15:00 – tudo certo? Posso encaminhar para confirmação humana?
 Turn 2 user: sim
 Turn 2 assistant: Tudo certo! Sua pré-reserva foi criada com sucesso.
 ```

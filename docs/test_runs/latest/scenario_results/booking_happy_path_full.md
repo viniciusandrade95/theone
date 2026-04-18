@@ -25,8 +25,7 @@ Turn 2 assistant:
 - step 1: assertion_failure: expected slot service to be present
 - step 1: assertion_failure: expected slot date to be present
 - step 1: assertion_failure: expected slot time to be present
-- step 2: upstream_runtime_failure: HTTP request failed with status 0: 
-- step 2: upstream_runtime_failure: response body is not a JSON object
+- step 2: upstream_runtime_failure: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service unavailable"},"trace_id":"audit-eval-20260418T155718Z-d11131a8-booking_happy_path_full-2"}
 - step 2: assertion_failure: expected status completed, got response=None workflow=None
 - step 2: assertion_failure: expected route workflow, got None
 - step 2: assertion_failure: expected workflow book_appointment, got None

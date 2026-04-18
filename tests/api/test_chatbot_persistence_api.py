@@ -198,6 +198,50 @@ def test_chatbot_customer_id_persists_across_turns(monkeypatch):
     assert calls[1]["customer_id"] == customer_id
 
 
+def test_chatbot_start_new_resets_existing_scope_before_upstream_call(monkeypatch):
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    calls = []
+    responses = [
+        {"status": "ok", "reply": "old session", "session_id": "s-old", "intent": "book_appointment"},
+        {"status": "ok", "reply": "fresh session", "session_id": "s-new", "intent": "book_appointment"},
+    ]
+
+    def fake_post(url, json, headers, timeout):
+        calls.append(json)
+        return DummyResponse(responses.pop(0))
+
+    monkeypatch.setattr("modules.chatbot.service.chatbot_client.requests.post", fake_post)
+
+    first = client.post(
+        "/api/chatbot/message",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={"message": "old booking state", "surface": "dashboard"},
+    )
+    conversation_id = first.json()["conversation_id"]
+
+    second = client.post(
+        "/api/chatbot/message",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={"message": "Quero marcar", "surface": "dashboard", "start_new": True},
+    )
+
+    assert second.status_code == 200
+    assert second.json()["conversation_id"] == conversation_id
+    assert calls[0]["session_id"] is None
+    assert calls[1]["session_id"] is None
+
+    with db_session() as session:
+        conv = session.execute(
+            select(ChatbotConversationSessionORM).where(ChatbotConversationSessionORM.conversation_id == uuid.UUID(conversation_id))
+        ).scalar_one()
+        assert conv.conversation_epoch == 1
+        assert conv.chatbot_session_id == "s-new"
+
+
 def test_chatbot_conversation_id_cannot_be_reused_cross_tenant(monkeypatch):
     app = create_app()
     client = TestClient(app)
@@ -232,4 +276,3 @@ def test_chatbot_conversation_id_cannot_be_reused_cross_tenant(monkeypatch):
     )
     assert resp.status_code == 403
     assert len(calls) == 1  # no upstream call on rejected scope mismatch
-

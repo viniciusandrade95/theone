@@ -580,6 +580,7 @@ def run_scenario(
             "surface": surface,
             "conversation_id": conversation_id,
             "session_id": session_id,
+            "start_new": index == 1,
         }
         http = post_json_with_retries(
             url,

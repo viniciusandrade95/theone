@@ -29,6 +29,7 @@ Follow-up hardening added:
 - failure categories for upstream runtime, product assertion, and CRM verification failures
 - stricter CRM verification matching to avoid stale appointment false positives
 - summary sections that separate infrastructure instability from product logic failures
+- `start_new` support for first-turn scenario execution so eval scenarios do not inherit stale dashboard/chatbot session state
 
 ## Files Changed
 - `scripts/__init__.py`
@@ -51,6 +52,7 @@ Follow-up hardening added:
 - A theone `VALIDATION_ERROR` with `details.message="Chatbot service request failed"` and `details.status=502` is treated as transient infrastructure and retried.
 - CRM appointment verification now requires date/time, service evidence, and a recent-created window. Weak verification is marked `PARTIAL` instead of being treated as product proof.
 - Scenarios with only upstream runtime failures or CRM verification uncertainty are classified as `PARTIAL`; deterministic assertion failures remain `FAIL`.
+- Hybrid eval sends `start_new=true` on the first step of every scenario. The theone proxy resets the scoped dashboard conversation before forwarding that turn upstream, while later turns keep reusing `conversation_id` and `session_id`.
 
 ## Behavior Before
 Validation depended on one-off curl commands and manual interpretation. Conversation IDs, session IDs, trace IDs, CRM verification, and transcripts were not captured in a durable repeatable format.
@@ -67,6 +69,8 @@ The runner also records retry attempts inside each step's `http.attempts` block 
 - upstream/runtime
 - product logic
 - CRM verification
+
+Each scenario starts from a fresh chatbot session even when the same deployed user/tenant/surface has previous dashboard conversation history.
 
 ## Risks / Follow-ups
 - Scenario expectations may need tuning as assistant wording evolves.

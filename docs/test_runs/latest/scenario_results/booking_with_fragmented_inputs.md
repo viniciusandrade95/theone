@@ -9,13 +9,13 @@
 
 ```text
 Turn 1 user: Quero marcar
-Turn 1 assistant: Resumo para confirmação: pré‑agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?
+Turn 1 assistant: Resumo da confirmação: corte no dia 19 de abr às 16:17, tudo certo? Posso encaminhar para confirmação humana?
 Turn 2 user: Corte
-Turn 2 assistant: Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?
+Turn 2 assistant: Perfeito, troquei para Corte. Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17 – tudo certo? Posso encaminhar para confirmação humana?
 Turn 3 user: amanhã
-Turn 3 assistant: Tudo certo, ajustei a data: pré-agendamento de Corte em 19 de abr às 16:17. Posso enviar para confirmação humana?
+Turn 3 assistant: Perfeito, já ajustei a data! O pré‑agendamento de Corte está marcado para 19 de abr às 16:17, tudo certo? Posso encaminhar para confirmação humana?
 Turn 4 user: 16h17
-Turn 4 assistant: Perfeito, ajustei o horário. Confirma: pré‑agendamento de Corte no dia 19 de abr às 16:17? Posso encaminhar para confirmação humana?
+Turn 4 assistant: Tudo certo, ajustei o horário: pré-agendamento de Corte no dia 19 de abr às 16:17 está pronto para confirmação. Posso encaminhar para confirmação humana?
 Turn 5 user: Audit User, 11999998888
 Turn 5 assistant: Entendido — já pedi um atendente humano. A nossa equipa vai entrar em contacto em breve.
 ```

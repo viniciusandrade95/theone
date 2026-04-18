@@ -17,6 +17,7 @@ The tests validate the harness itself without calling live theone, chatbot1, CRM
 - stale CRM appointment non-match behavior
 - weak CRM matching classified as partial
 - summary markdown separated by failure category
+- theone proxy `start_new` behavior resets stale scoped session before the first eval turn
 
 ## Scenario Coverage
 The seeded scenario file covers:
@@ -70,6 +71,7 @@ Expected result: all harness tests pass.
 - one transient upstream 502 can recover on retry
 - old appointments are not accepted as proof of a new scenario run
 - infra/runtime, product assertion, and CRM verification failures are reported separately
+- first-turn scenario requests can force a fresh chatbot session, preventing stale state from causing premature summaries
 
 ## Remaining Gaps
 - Live API execution is not covered by unit tests.

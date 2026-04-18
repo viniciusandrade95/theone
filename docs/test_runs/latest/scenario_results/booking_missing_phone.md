@@ -9,18 +9,15 @@
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 15h para Audit User
-Turn 1 assistant: Perfeito, troquei para Corte: resumo do pré‑agendamento – Corte no dia 19 de abr às 15:00, tudo certo? Posso encaminhar para confirmação humana?
+Turn 1 assistant: Perfeito, troquei para Corte: resumo de pré‑agendamento de Corte no dia 19 de abr às 15:00, tudo certo? Posso encaminhar para confirmação humana?
 Turn 2 user: pode confirmar
-Turn 2 assistant: Para confirmar, você poderia me informar o telefone do cliente?
+Turn 2 assistant: Para confirmar o agendamento, você pode me dizer o telefone do cliente? Assim evitamos qualquer erro.
 Turn 3 user: 11999998888
-Turn 3 assistant: 
+Turn 3 assistant: Resumo: pré‑agendamento de Corte no dia 19 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?
 ```
 
 ## Failures
 
-- step 3: upstream_runtime_failure: HTTP request failed with status 400: {"error":"VALIDATION_ERROR","details":{"message":"Chatbot service unavailable"},"trace_id":"audit-eval-20260418T152209Z-5b04bff0-booking_missing_phone-3"}
-- step 3: assertion_failure: expected route workflow, got None
-- step 3: assertion_failure: expected workflow book_appointment, got None
 - step 3: assertion_failure: reply missing expected text: confirmar
 
 ## CRM Verification

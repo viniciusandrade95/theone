@@ -433,7 +433,9 @@ def test_run_scenario_no_judge_writes_outputs(monkeypatch, tmp_path):
     )
 
     assert result["final_verdict"] == "PASS"
+    assert result["steps"][0]["request"]["start_new"] is True
     assert result["steps"][1]["request"]["conversation_id"] == "c-1"
+    assert result["steps"][1]["request"]["start_new"] is False
     assert (tmp_path / "scenario_results" / "mock_booking.json").exists()
 
 

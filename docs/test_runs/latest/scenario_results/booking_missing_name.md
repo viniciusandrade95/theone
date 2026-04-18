@@ -9,23 +9,15 @@
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 15h
-Turn 1 assistant: 
+Turn 1 assistant: Tudo certo, já troquei para Corte! Posso enviar o pré‑agendamento de Corte no dia 19 de abr às 15:00 para a equipe humana?
 Turn 2 user: sim
-Turn 2 assistant: Para confirmar, qual é o nome do cliente?
+Turn 2 assistant: Antes de confirmar, me diga o nome do cliente para este agendamento?
 Turn 3 user: Audit User
-Turn 3 assistant: Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 15:00. Está tudo certo? Posso enviar para confirmação humana?
+Turn 3 assistant: Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 15:00. Tudo certo, posso encaminhar para confirmação humana?
 ```
 
 ## Failures
 
-- step 1: upstream_runtime_failure: HTTP request failed with status 0: 
-- step 1: upstream_runtime_failure: response body is not a JSON object
-- step 1: assertion_failure: expected status awaiting_confirmation, got response=None workflow=None
-- step 1: assertion_failure: expected route workflow, got None
-- step 1: assertion_failure: expected workflow book_appointment, got None
-- step 1: assertion_failure: expected slot service to be present
-- step 1: assertion_failure: expected slot date to be present
-- step 1: assertion_failure: expected slot time to be present
 - step 3: assertion_failure: reply missing expected text: telefone
 
 ## CRM Verification

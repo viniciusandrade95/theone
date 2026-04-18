@@ -9,11 +9,11 @@
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 18h
-Turn 1 assistant: Já troquei para Corte: pré-agendamento de Corte no dia 19 de abr às 18:00 – tudo certo? Posso encaminhar para confirmação humana?
+Turn 1 assistant: Ótimo, alterei para Corte: resumo de pré-agendamento de Corte em 19 de abr às 18:00, tudo certo? Posso enviar para confirmação humana?
 Turn 2 user: Qual o endereço mesmo?
 Turn 2 assistant: Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.
 Turn 3 user: Beleza, pode continuar
-Turn 3 assistant: Antes de confirmar, qual é o nome do cliente para este agendamento?
+Turn 3 assistant: Antes de confirmar, poderia me informar o nome do cliente para este agendamento?
 ```
 
 ## Failures

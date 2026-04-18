@@ -56,6 +56,7 @@ class ChatbotMessageIn(BaseModel):
     session_id: str | None = None
     surface: str = Field(default="dashboard", max_length=64)
     customer_id: str | None = None
+    start_new: bool = False
 
 
 class ChatbotResetIn(BaseModel):
@@ -88,6 +89,7 @@ def chatbot_message(
             surface=payload.surface,
             conversation_id=payload.conversation_id,
             customer_id=payload.customer_id,
+            start_new=payload.start_new,
         )
 
         funnel = AssistantFunnelEventsService(session)
