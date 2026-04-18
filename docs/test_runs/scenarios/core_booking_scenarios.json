@@ -34,7 +34,9 @@
           "expect_created": true,
           "from_dt": "2026-04-18T00:00:00Z",
           "to_dt": "2026-04-19T00:00:00Z",
+          "recent_created_within_seconds": 900,
           "match": {
+            "starts_at": "2026-04-18T16:17:00Z",
             "service_name_contains": "Corte"
           }
         }
@@ -78,6 +80,7 @@
           "expect_created": false,
           "from_dt": "2026-04-18T00:00:00Z",
           "to_dt": "2026-04-19T00:00:00Z",
+          "recent_created_within_seconds": 900,
           "match": {
             "service_name_contains": "Corte",
             "starts_at": "2026-04-18T15:00:00Z"

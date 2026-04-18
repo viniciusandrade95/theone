@@ -188,7 +188,13 @@ def test_summary_generation_counts_failures_and_judge_issues():
             {
                 "scenario_name": "fail",
                 "final_verdict": "FAIL",
-                "failures": ["step 1: expected workflow book_appointment, got rag"],
+                "failure_records": [
+                    {
+                        "category": "assertion_failure",
+                        "message": "expected workflow book_appointment, got rag",
+                    }
+                ],
+                "failures": ["step 1: assertion_failure: expected workflow book_appointment, got rag"],
                 "judge": {"status": "DISABLED"},
             },
         ],
@@ -196,8 +202,150 @@ def test_summary_generation_counts_failures_and_judge_issues():
 
     assert summary["pass_count"] == 1
     assert summary["fail_count"] == 1
-    assert summary["common_failure_patterns"][0]["pattern"] == "expected workflow book_appointment, got rag"
+    assert summary["common_failure_patterns"]["assertion_failure"][0]["pattern"] == "expected workflow book_appointment, got rag"
     assert summary["top_judge_issues"][0]["issue"] == "wordy"
+
+
+def test_transient_upstream_502_retries_and_records_attempts(monkeypatch):
+    transient_body = {
+        "error": "VALIDATION_ERROR",
+        "details": {"message": "Chatbot service request failed", "status": 502},
+    }
+    ok_body = {"status": "ok", "reply": {"text": "ok"}}
+    responses = [
+        eval_runner.HttpResult(status_code=400, body_text=json.dumps(transient_body), json_body=transient_body, headers={}),
+        eval_runner.HttpResult(status_code=200, body_text=json.dumps(ok_body), json_body=ok_body, headers={}),
+    ]
+    sleeps = []
+
+    def fake_post_json(*args, **kwargs):
+        return responses.pop(0)
+
+    monkeypatch.setattr(eval_runner, "post_json", fake_post_json)
+
+    result = eval_runner.post_json_with_retries(
+        "https://example.test",
+        {"message": "hi"},
+        {},
+        retry_backoffs=(0.1, 0.2),
+        sleeper=sleeps.append,
+    )
+
+    assert result.status_code == 200
+    assert sleeps == [0.1]
+    assert len(result.attempts) == 2
+    assert result.attempts[0]["transient_upstream_failure"] is True
+
+
+def test_crm_verification_does_not_match_stale_appointments(monkeypatch):
+    body = {
+        "items": [
+            {
+                "id": "old",
+                "service_name": "Corte",
+                "starts_at": "2026-04-18T16:17:00Z",
+                "created_at": "2026-04-17T00:00:00Z",
+            }
+        ]
+    }
+
+    monkeypatch.setattr(
+        eval_runner,
+        "get_json",
+        lambda *args, **kwargs: eval_runner.HttpResult(
+            status_code=200,
+            body_text=json.dumps(body),
+            json_body=body,
+            headers={},
+        ),
+    )
+
+    result = eval_runner.verify_crm(
+        "https://example.test",
+        "tenant",
+        "token",
+        {
+            "appointments": {
+                "expect_created": True,
+                "from_dt": "2026-04-18T00:00:00Z",
+                "to_dt": "2026-04-19T00:00:00Z",
+                "created_after": "2026-04-18T00:00:00Z",
+                "match": {
+                    "starts_at": "2026-04-18T16:17:00Z",
+                    "service_name_contains": "Corte",
+                },
+            }
+        },
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["matched"] == []
+
+
+def test_crm_verification_marks_weak_match_partial(monkeypatch):
+    body = {"items": [{"id": "old", "service_name": "Corte"}]}
+    monkeypatch.setattr(
+        eval_runner,
+        "get_json",
+        lambda *args, **kwargs: eval_runner.HttpResult(
+            status_code=200,
+            body_text=json.dumps(body),
+            json_body=body,
+            headers={},
+        ),
+    )
+
+    result = eval_runner.verify_crm(
+        "https://example.test",
+        "tenant",
+        "token",
+        {
+            "appointments": {
+                "expect_created": True,
+                "from_dt": "2026-04-18T00:00:00Z",
+                "to_dt": "2026-04-19T00:00:00Z",
+                "match": {"service_name_contains": "Corte"},
+            }
+        },
+    )
+
+    assert result["status"] == "PARTIAL"
+    assert any("expected date/time" in reason for reason in result["reasons"])
+
+
+def test_summary_markdown_separates_failure_categories():
+    summary = eval_runner.summarize_run(
+        run_id="r2",
+        started_at="2026-04-18T00:00:00+00:00",
+        base_url="https://example.test",
+        tenant_id="tenant",
+        judge_enabled=False,
+        scenario_results=[
+            {
+                "scenario_name": "infra",
+                "final_verdict": "PARTIAL",
+                "failure_records": [
+                    {"category": "upstream_runtime_failure", "message": "Chatbot service request failed"}
+                ],
+                "judge": {"status": "DISABLED"},
+            },
+            {
+                "scenario_name": "crm",
+                "final_verdict": "PARTIAL",
+                "failure_records": [
+                    {"category": "crm_verification_failure", "message": "match is ambiguous"}
+                ],
+                "judge": {"status": "DISABLED"},
+            },
+        ],
+    )
+
+    markdown = eval_runner.render_summary_markdown(summary)
+
+    assert "## Upstream / Runtime Failures" in markdown
+    assert "Chatbot service request failed" in markdown
+    assert "## CRM Verification Failures" in markdown
+    assert "match is ambiguous" in markdown
 
 
 def test_run_scenario_no_judge_writes_outputs(monkeypatch, tmp_path):
@@ -281,6 +429,7 @@ def test_run_scenario_no_judge_writes_outputs(monkeypatch, tmp_path):
         judge_timeout=1,
         fail_fast=False,
         prompt_path=eval_runner.DEFAULT_JUDGE_PROMPT,
+        step_delay_seconds=0,
     )
 
     assert result["final_verdict"] == "PASS"
@@ -315,6 +464,8 @@ def test_run_once_no_judge_generates_summary(monkeypatch, tmp_path):
         judge_model=None,
         judge_timeout=1,
         judge_prompt=str(eval_runner.DEFAULT_JUDGE_PROMPT),
+        step_delay=0,
+        scenario_delay=0,
         fail_fast=False,
     )
 

@@ -22,6 +22,14 @@ Implemented a reusable Python runner that:
 - writes all run artifacts under `docs/test_runs/`
 - supports no-judge, judge, fail-fast, and loop modes
 
+Follow-up hardening added:
+- retry handling for transient theone-wrapped chatbot 502 responses
+- per-step retry attempt recording
+- configurable `--step-delay` and `--scenario-delay`
+- failure categories for upstream runtime, product assertion, and CRM verification failures
+- stricter CRM verification matching to avoid stale appointment false positives
+- summary sections that separate infrastructure instability from product logic failures
+
 ## Files Changed
 - `scripts/__init__.py`
 - `scripts/chatbot_hybrid_eval.py`
@@ -40,6 +48,9 @@ Implemented a reusable Python runner that:
 - Scenario outputs are written per scenario to make failures easy to inspect later.
 - CRM verification is optional per scenario because not every scenario should create a record.
 - Malformed API responses, HTTP errors, CRM errors, and malformed judge output are saved instead of crashing the full run.
+- A theone `VALIDATION_ERROR` with `details.message="Chatbot service request failed"` and `details.status=502` is treated as transient infrastructure and retried.
+- CRM appointment verification now requires date/time, service evidence, and a recent-created window. Weak verification is marked `PARTIAL` instead of being treated as product proof.
+- Scenarios with only upstream runtime failures or CRM verification uncertainty are classified as `PARTIAL`; deterministic assertion failures remain `FAIL`.
 
 ## Behavior Before
 Validation depended on one-off curl commands and manual interpretation. Conversation IDs, session IDs, trace IDs, CRM verification, and transcripts were not captured in a durable repeatable format.
@@ -52,8 +63,14 @@ An engineer can run deterministic-only or judge-enhanced evaluation against any 
 - `scenario_results/<scenario>.json`
 - `scenario_results/<scenario>.md`
 
+The runner also records retry attempts inside each step's `http.attempts` block and groups summary failures under:
+- upstream/runtime
+- product logic
+- CRM verification
+
 ## Risks / Follow-ups
 - Scenario expectations may need tuning as assistant wording evolves.
 - CRM verification currently supports appointment listing checks; additional CRM side-effect types can be added later.
 - Judge mode depends on the sibling `chatbot1` repo or `CHATBOT1_REPO`.
 - Live scenarios can create real appointments if pointed at production data, so use a known audit tenant.
+- Render instability can still produce repeated upstream failures after retries; those are now visible as runtime failures instead of being mixed into product logic failures.

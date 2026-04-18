@@ -2,7 +2,7 @@
   "base_url": "https://theone-1-05gx.onrender.com",
   "common_failure_patterns": [
     {
-      "count": 29,
+      "count": 28,
       "pattern": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-2026"
     },
     {
@@ -39,16 +39,16 @@
     },
     {
       "count": 1,
-      "pattern": "expected status completed, got response=None workflow=None"
+      "pattern": "HTTP request failed with status 0:"
     }
   ],
-  "completed_at": "2026-04-18T14:12:36.253577+00:00",
+  "completed_at": "2026-04-18T14:40:59.036709+00:00",
   "fail_count": 10,
   "judge_enabled": false,
   "partial_count": 0,
   "pass_count": 0,
-  "run_id": "20260418T141140Z-0799804c",
-  "started_at": "2026-04-18T14:11:40.124646+00:00",
+  "run_id": "20260418T143935Z-a6fbf12b",
+  "started_at": "2026-04-18T14:39:35.196175+00:00",
   "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
   "top_judge_issues": [],
   "total_scenarios": 10,

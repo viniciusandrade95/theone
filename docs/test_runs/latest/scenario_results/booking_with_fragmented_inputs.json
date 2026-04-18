@@ -8,22 +8,22 @@
   },
   "description": "User gives required booking information across several short turns.",
   "failures": [
-    "step 1: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1\"}",
+    "step 1: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1\"}",
     "step 1: expected workflow book_appointment, got None",
     "step 1: reply missing expected text: serviço",
-    "step 2: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2\"}",
+    "step 2: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2\"}",
     "step 2: expected workflow book_appointment, got None",
     "step 2: expected slot service to be present",
-    "step 3: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3\"}",
+    "step 3: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3\"}",
     "step 3: expected workflow book_appointment, got None",
     "step 3: expected slot service to be present",
     "step 3: expected slot date to be present",
-    "step 4: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4\"}",
+    "step 4: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4\"}",
     "step 4: expected workflow book_appointment, got None",
     "step 4: expected slot service to be present",
     "step 4: expected slot date to be present",
     "step 4: expected slot time to be present",
-    "step 5: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5\"}",
+    "step 5: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5\"}",
     "step 5: expected workflow book_appointment, got None",
     "step 5: reply missing expected text: confirmar"
   ],
@@ -33,35 +33,35 @@
     "status": "DISABLED"
   },
   "scenario_name": "booking_with_fragmented_inputs",
-  "scenario_run_id": "20260418T141140Z-0799804c-booking_with_fragmented_inputs",
+  "scenario_run_id": "20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs",
   "session_id": null,
-  "started_at": "2026-04-18T14:12:30.641483+00:00",
+  "started_at": "2026-04-18T14:40:54.154112+00:00",
   "steps": [
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1\"}",
           "expected workflow book_appointment, got None",
           "reply missing expected text: serviço"
         ],
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee44393ea69d7e2-GIG",
+          "CF-RAY": "9ee46d313acad7e6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:23 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:47 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "3a3f4a2a-b522-410b",
+          "rndr-id": "d8e25820-420b-441c",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1"
         },
         "status_code": 400
       },
@@ -71,7 +71,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1"
       },
       "request": {
         "conversation_id": null,
@@ -89,37 +89,37 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-1"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-1"
     },
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2\"}",
           "expected workflow book_appointment, got None",
           "expected slot service to be present"
         ],
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee443a058f1d7f2-GIG",
+          "CF-RAY": "9ee46d3bdd14d7f6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:25 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:49 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "a9452bbd-f097-428d",
+          "rndr-id": "7d762481-c2ea-4eea",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2"
         },
         "status_code": 400
       },
@@ -129,7 +129,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2"
       },
       "request": {
         "conversation_id": null,
@@ -147,16 +147,16 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-2"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-2"
     },
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3\"}",
           "expected workflow book_appointment, got None",
           "expected slot service to be present",
           "expected slot date to be present"
@@ -164,21 +164,21 @@
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee443abab8fd7f2-GIG",
+          "CF-RAY": "9ee46d45b8c7d7e6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:27 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:51 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "6604fcc8-7d85-4c7e",
+          "rndr-id": "63699f96-cf92-4ed9",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3"
         },
         "status_code": 400
       },
@@ -188,7 +188,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3"
       },
       "request": {
         "conversation_id": null,
@@ -206,16 +206,16 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-3"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-3"
     },
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4\"}",
           "expected workflow book_appointment, got None",
           "expected slot service to be present",
           "expected slot date to be present",
@@ -224,21 +224,21 @@
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee443b768c5d7f6-GIG",
+          "CF-RAY": "9ee46d4fbea4d7f2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:29 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:52 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "33cdb76e-7677-463d",
+          "rndr-id": "4e019042-0f06-47fe",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4"
         },
         "status_code": 400
       },
@@ -248,7 +248,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4"
       },
       "request": {
         "conversation_id": null,
@@ -266,37 +266,37 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-4"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-4"
     },
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5\"}",
           "expected workflow book_appointment, got None",
           "reply missing expected text: confirmar"
         ],
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee443c2ca00d7f6-GIG",
+          "CF-RAY": "9ee46d5a1f6ed7e2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:31 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:54 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "c8f4675d-b359-488e",
+          "rndr-id": "8f5c8049-c0cc-4d38",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5"
         },
         "status_code": 400
       },
@@ -306,7 +306,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5"
       },
       "request": {
         "conversation_id": null,
@@ -324,11 +324,11 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_fragmented_inputs-5"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_fragmented_inputs-5"
     }
   ],
   "tags": [

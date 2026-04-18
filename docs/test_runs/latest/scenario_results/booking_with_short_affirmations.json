@@ -8,12 +8,12 @@
   },
   "description": "Assistant handles short confirmations like sim/ok/pode.",
   "failures": [
-    "step 1: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1\"}",
+    "step 1: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1\"}",
     "step 1: expected workflow book_appointment, got None",
     "step 1: expected slot service to be present",
     "step 1: expected slot date to be present",
     "step 1: expected slot time to be present",
-    "step 2: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2\"}",
+    "step 2: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2\"}",
     "step 2: expected workflow book_appointment, got None"
   ],
   "final_verdict": "FAIL",
@@ -22,14 +22,14 @@
     "status": "DISABLED"
   },
   "scenario_name": "booking_with_short_affirmations",
-  "scenario_run_id": "20260418T141140Z-0799804c-booking_with_short_affirmations",
+  "scenario_run_id": "20260418T143935Z-a6fbf12b-booking_with_short_affirmations",
   "session_id": null,
-  "started_at": "2026-04-18T14:12:21.431129+00:00",
+  "started_at": "2026-04-18T14:40:46.055235+00:00",
   "steps": [
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1\"}",
           "expected workflow book_appointment, got None",
           "expected slot service to be present",
           "expected slot date to be present",
@@ -38,21 +38,21 @@
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee4437bfe7ad7e6-GIG",
+          "CF-RAY": "9ee46d1bdd38d7f2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:19 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:44 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "92b6da0a-9c84-487f",
+          "rndr-id": "18f5b86c-392b-4416",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1"
         },
         "status_code": 400
       },
@@ -62,7 +62,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1"
       },
       "request": {
         "conversation_id": null,
@@ -80,36 +80,36 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-1"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-1"
     },
     {
       "assertions": {
         "reasons": [
-          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2\"}",
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2\"}",
           "expected workflow book_appointment, got None"
         ],
         "status": "FAIL"
       },
       "http": {
-        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2\"}",
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":502},\"trace_id\":\"audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2\"}",
         "error": "HTTP 400",
         "headers": {
-          "CF-RAY": "9ee44387c9dfd7f6-GIG",
+          "CF-RAY": "9ee46d264ae1d7f6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 14:12:21 GMT",
+          "Date": "Sat, 18 Apr 2026 14:40:46 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "f7a77011-bf29-459c",
+          "rndr-id": "248d13b8-ef64-43c3",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2"
+          "x-trace-id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2"
         },
         "status_code": 400
       },
@@ -119,7 +119,7 @@
           "status": 502
         },
         "error": "VALIDATION_ERROR",
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2"
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2"
       },
       "request": {
         "conversation_id": null,
@@ -137,11 +137,11 @@
         "slots": {},
         "source": null,
         "status": null,
-        "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2",
+        "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "audit-eval-20260418T141140Z-0799804c-booking_with_short_affirmations-2"
+      "trace_id": "audit-eval-20260418T143935Z-a6fbf12b-booking_with_short_affirmations-2"
     }
   ],
   "tags": [

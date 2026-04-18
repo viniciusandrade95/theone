@@ -11,7 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +19,7 @@ from typing import Any
 DEFAULT_OUTPUT_DIR = Path("docs/test_runs/latest")
 DEFAULT_SCENARIO_FILE = Path("docs/test_runs/scenarios/core_booking_scenarios.json")
 DEFAULT_JUDGE_PROMPT = Path("docs/test_runs/judge_prompt.md")
+DEFAULT_RETRY_BACKOFF_SECONDS = (2.0, 4.0)
 
 
 @dataclass
@@ -28,6 +29,7 @@ class HttpResult:
     json_body: dict[str, Any] | None
     headers: dict[str, str]
     error: str | None = None
+    attempts: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -121,6 +123,49 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeou
         return HttpResult(status_code=0, body_text="", json_body=None, headers={}, error=str(exc))
 
 
+def is_transient_upstream_failure(http: HttpResult) -> bool:
+    body = http.json_body
+    if not isinstance(body, dict):
+        return False
+    details = body.get("details")
+    if not isinstance(details, dict):
+        return False
+    return (
+        body.get("error") == "VALIDATION_ERROR"
+        and details.get("message") == "Chatbot service request failed"
+        and int(details.get("status") or 0) == 502
+    )
+
+
+def post_json_with_retries(
+    url: str,
+    payload: dict[str, Any],
+    headers: dict[str, str],
+    *,
+    timeout: float = 30,
+    retry_backoffs: tuple[float, ...] = DEFAULT_RETRY_BACKOFF_SECONDS,
+    sleeper: Any = time.sleep,
+) -> HttpResult:
+    attempts: list[dict[str, Any]] = []
+    for attempt_index in range(len(retry_backoffs) + 1):
+        http = post_json(url, payload, headers, timeout=timeout)
+        transient = is_transient_upstream_failure(http)
+        attempts.append(
+            {
+                "attempt": attempt_index + 1,
+                "status_code": http.status_code,
+                "transient_upstream_failure": transient,
+                "error": http.error,
+                "body_excerpt": http.body_text[:500],
+            }
+        )
+        if not transient or attempt_index >= len(retry_backoffs):
+            http.attempts = attempts
+            return http
+        sleeper(retry_backoffs[attempt_index])
+    raise RuntimeError("unreachable retry loop")
+
+
 def get_json(url: str, headers: dict[str, str], timeout: float = 30) -> HttpResult:
     request = urllib.request.Request(url, headers=headers, method="GET")
     try:
@@ -184,6 +229,40 @@ def extract_step_summary(body: dict[str, Any] | None) -> StepSummary:
 
 def contains_casefold(text: str, needle: str) -> bool:
     return needle.casefold() in text.casefold()
+
+
+def make_failure(category: str, message: str, *, step_index: int | None = None) -> dict[str, Any]:
+    record: dict[str, Any] = {"category": category, "message": message}
+    if step_index is not None:
+        record["step_index"] = step_index
+    return record
+
+
+def failure_message(record: dict[str, Any]) -> str:
+    prefix = record.get("category", "failure")
+    step = record.get("step_index")
+    if step is None:
+        return f"{prefix}: {record.get('message')}"
+    return f"step {step}: {prefix}: {record.get('message')}"
+
+
+def categorize_assertion_reason(reason: str, http: HttpResult) -> str:
+    if is_transient_upstream_failure(http):
+        return "upstream_runtime_failure"
+    if reason.startswith("HTTP request failed") or reason == "response body is not a JSON object":
+        return "upstream_runtime_failure"
+    return "assertion_failure"
+
+
+def final_verdict_from_failures(failure_records: list[dict[str, Any]]) -> str:
+    if not failure_records:
+        return "PASS"
+    categories = {record.get("category") for record in failure_records}
+    if categories and categories <= {"upstream_runtime_failure"}:
+        return "PARTIAL"
+    if categories and categories <= {"crm_verification_failure"}:
+        return "PARTIAL"
+    return "FAIL"
 
 
 def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, allow_prebooking_stub: bool) -> AssertionResult:
@@ -278,7 +357,20 @@ def verify_crm(base_url: str, tenant_id: str, token: str, expectation: dict[str,
         return result
 
     match = appointments.get("match") if isinstance(appointments.get("match"), dict) else {}
-    matched = [item for item in items if appointment_matches(item, match)]
+    specificity_reasons = crm_match_specificity_reasons(match, appointments)
+    if specificity_reasons:
+        result["status"] = "PARTIAL"
+        result["reasons"].extend(specificity_reasons)
+        result["matched"] = []
+        result["total_items"] = len(items)
+        return result
+
+    recent_after = appointments.get("created_after") or appointments.get("recent_created_after")
+    recent_within_seconds = appointments.get("recent_created_within_seconds")
+    if recent_within_seconds and not recent_after:
+        recent_after = (datetime.now(timezone.utc) - timedelta(seconds=float(recent_within_seconds))).isoformat()
+
+    matched = [item for item in items if appointment_matches(item, match, recent_after=recent_after)]
     expect_created = bool(appointments.get("expect_created"))
     if expect_created and not matched:
         result["status"] = "FAIL"
@@ -286,6 +378,9 @@ def verify_crm(base_url: str, tenant_id: str, token: str, expectation: dict[str,
     elif not expect_created and matched:
         result["status"] = "FAIL"
         result["reasons"].append("expected no matching appointment, but found one")
+    elif expect_created and len(matched) > 1 and not appointments.get("allow_ambiguous_match"):
+        result["status"] = "PARTIAL"
+        result["reasons"].append(f"CRM verification matched {len(matched)} appointments; match is ambiguous")
     else:
         result["status"] = "PASS"
     result["matched"] = matched
@@ -293,8 +388,24 @@ def verify_crm(base_url: str, tenant_id: str, token: str, expectation: dict[str,
     return result
 
 
-def appointment_matches(item: Any, match: dict[str, Any]) -> bool:
+def crm_match_specificity_reasons(match: dict[str, Any], appointments: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    has_time = any(key in match for key in ("starts_at", "start_time", "starts_at_contains"))
+    has_service = any(key in match for key in ("service_id", "service_name", "service_name_contains"))
+    has_recent = any(key in appointments for key in ("created_after", "recent_created_after", "recent_created_within_seconds"))
+    if not has_time:
+        reasons.append("CRM verification requires expected date/time, e.g. match.starts_at")
+    if not has_service:
+        reasons.append("CRM verification requires expected service_id or service_name")
+    if not has_recent:
+        reasons.append("CRM verification should include created_after/recent_created_within_seconds to avoid stale matches")
+    return reasons
+
+
+def appointment_matches(item: Any, match: dict[str, Any], *, recent_after: str | None = None) -> bool:
     if not isinstance(item, dict):
+        return False
+    if recent_after and not iso_at_or_after(item.get("created_at"), recent_after):
         return False
     for key, expected in match.items():
         if key.endswith("_contains"):
@@ -304,6 +415,27 @@ def appointment_matches(item: Any, match: dict[str, Any]) -> bool:
         elif item.get(key) != expected:
             return False
     return True
+
+
+def iso_at_or_after(value: Any, minimum: str) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
+    parsed_value = parse_iso_datetime(value)
+    parsed_minimum = parse_iso_datetime(minimum)
+    if parsed_value is None or parsed_minimum is None:
+        return False
+    return parsed_value >= parsed_minimum
+
+
+def parse_iso_datetime(value: str) -> datetime | None:
+    try:
+        normalized = value.replace("Z", "+00:00")
+        parsed = datetime.fromisoformat(normalized)
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except ValueError:
+        return None
 
 
 def build_transcript(step_results: list[dict[str, Any]]) -> str:
@@ -430,13 +562,14 @@ def run_scenario(
     judge_timeout: float,
     fail_fast: bool,
     prompt_path: Path,
+    step_delay_seconds: float,
 ) -> dict[str, Any]:
     scenario_name = scenario["name"]
     scenario_run_id = f"{run_id}-{slugify(scenario_name)}"
     conversation_id = None
     session_id = None
     step_results: list[dict[str, Any]] = []
-    failures: list[str] = []
+    failure_records: list[dict[str, Any]] = []
     allow_prebooking_stub = bool(scenario.get("allow_prebooking_stub"))
     url = f"{base_url.rstrip('/')}/api/chatbot/message"
 
@@ -448,7 +581,7 @@ def run_scenario(
             "conversation_id": conversation_id,
             "session_id": session_id,
         }
-        http = post_json(
+        http = post_json_with_retries(
             url,
             payload,
             headers={
@@ -465,7 +598,12 @@ def run_scenario(
             session_id = summary.session_id
         assertion = evaluate_step(step, http, summary, allow_prebooking_stub=allow_prebooking_stub)
         if assertion.status == "FAIL":
-            failures.extend([f"step {index}: {reason}" for reason in assertion.reasons])
+            failure_records.extend(
+                [
+                    make_failure(categorize_assertion_reason(reason, http), reason, step_index=index)
+                    for reason in assertion.reasons
+                ]
+            )
 
         step_results.append(
             {
@@ -477,18 +615,26 @@ def run_scenario(
                     "headers": http.headers,
                     "body_text": http.body_text,
                     "error": http.error,
+                    "attempts": http.attempts,
                 },
                 "raw_response": http.json_body,
                 "summary": summary.__dict__,
                 "assertions": assertion.__dict__,
             }
         )
-        if fail_fast and failures:
+        if fail_fast and failure_records:
             break
+        if step_delay_seconds > 0 and index < len(scenario["steps"]):
+            time.sleep(step_delay_seconds)
 
     crm_verification = verify_crm(base_url, tenant_id, token, scenario.get("crm_verification"))
-    if crm_verification.get("status") == "FAIL":
-        failures.extend([f"crm: {reason}" for reason in crm_verification.get("reasons", [])])
+    if crm_verification.get("status") in {"FAIL", "PARTIAL"}:
+        failure_records.extend(
+            [
+                make_failure("crm_verification_failure", reason)
+                for reason in crm_verification.get("reasons", [])
+            ]
+        )
 
     transcript = build_transcript(step_results)
     guardrails_observed = detect_guardrails(step_results)
@@ -504,8 +650,9 @@ def run_scenario(
         "steps": step_results,
         "crm_verification": crm_verification,
         "guardrails_observed": guardrails_observed,
-        "failures": failures,
-        "final_verdict": "FAIL" if failures else "PASS",
+        "failure_records": failure_records,
+        "failures": [failure_message(record) for record in failure_records],
+        "final_verdict": final_verdict_from_failures(failure_records),
     }
     if judge:
         result["judge"] = run_judge(
@@ -591,15 +738,22 @@ def summarize_run(
     scenario_results: list[dict[str, Any]],
 ) -> dict[str, Any]:
     verdict_counts = {"PASS": 0, "FAIL": 0, "PARTIAL": 0}
-    failure_patterns: dict[str, int] = {}
+    failure_patterns: dict[str, dict[str, int]] = {
+        "upstream_runtime_failure": {},
+        "assertion_failure": {},
+        "crm_verification_failure": {},
+    }
     judge_issues: dict[str, int] = {}
     worst_scores: list[dict[str, Any]] = []
     for result in scenario_results:
         verdict = result.get("final_verdict", "PARTIAL")
         verdict_counts[verdict] = verdict_counts.get(verdict, 0) + 1
-        for failure in result.get("failures") or []:
-            key = failure.split(":", 1)[-1].strip()[:160]
-            failure_patterns[key] = failure_patterns.get(key, 0) + 1
+        for record in result.get("failure_records") or []:
+            category = str(record.get("category") or "assertion_failure")
+            if category not in failure_patterns:
+                failure_patterns[category] = {}
+            key = str(record.get("message") or "")[:160]
+            failure_patterns[category][key] = failure_patterns[category].get(key, 0) + 1
         judge_result = nested_get(result, "judge.result")
         if isinstance(judge_result, dict):
             scores = [
@@ -625,11 +779,14 @@ def summarize_run(
         "pass_count": verdict_counts.get("PASS", 0),
         "fail_count": verdict_counts.get("FAIL", 0),
         "partial_count": verdict_counts.get("PARTIAL", 0),
-        "common_failure_patterns": sorted(
-            [{"pattern": key, "count": count} for key, count in failure_patterns.items()],
-            key=lambda item: item["count"],
-            reverse=True,
-        )[:10],
+        "common_failure_patterns": {
+            category: sorted(
+                [{"pattern": key, "count": count} for key, count in patterns.items()],
+                key=lambda item: item["count"],
+                reverse=True,
+            )[:10]
+            for category, patterns in failure_patterns.items()
+        },
         "worst_conversational_scores": sorted(worst_scores, key=lambda item: item["min_score"])[:10],
         "top_judge_issues": sorted(
             [{"issue": key, "count": count} for key, count in judge_issues.items()],
@@ -652,11 +809,18 @@ def render_summary_markdown(summary: dict[str, Any]) -> str:
         f"- Fail: {summary['fail_count']}",
         f"- Partial: {summary['partial_count']}",
         "",
-        "## Common Failure Patterns",
+        "## Upstream / Runtime Failures",
         "",
     ]
-    patterns = summary.get("common_failure_patterns") or []
-    lines.extend([f"- {item['count']}x {item['pattern']}" for item in patterns] or ["- None"])
+    patterns_by_category = summary.get("common_failure_patterns") or {}
+    upstream = patterns_by_category.get("upstream_runtime_failure") or []
+    product = patterns_by_category.get("assertion_failure") or []
+    crm = patterns_by_category.get("crm_verification_failure") or []
+    lines.extend([f"- {item['count']}x {item['pattern']}" for item in upstream] or ["- None"])
+    lines.extend(["", "## Product Logic Failures", ""])
+    lines.extend([f"- {item['count']}x {item['pattern']}" for item in product] or ["- None"])
+    lines.extend(["", "## CRM Verification Failures", ""])
+    lines.extend([f"- {item['count']}x {item['pattern']}" for item in crm] or ["- None"])
     lines.extend(["", "## Worst Conversational Scores", ""])
     scores = summary.get("worst_conversational_scores") or []
     lines.extend([f"- {item['scenario']}: min score {item['min_score']}" for item in scores] or ["- Judge disabled or no scores"])
@@ -687,10 +851,13 @@ def run_once(args: argparse.Namespace, output_dir: Path) -> dict[str, Any]:
             judge_timeout=args.judge_timeout,
             fail_fast=args.fail_fast,
             prompt_path=Path(args.judge_prompt),
+            step_delay_seconds=args.step_delay,
         )
         results.append(result)
         if args.fail_fast and result["final_verdict"] in {"FAIL", "PARTIAL"}:
             break
+        if args.scenario_delay > 0 and scenario is not scenarios[-1]:
+            time.sleep(args.scenario_delay)
 
     summary = summarize_run(
         run_id=run_id,
@@ -721,6 +888,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--judge-model", default=None)
     parser.add_argument("--judge-timeout", type=float, default=30)
     parser.add_argument("--judge-prompt", default=str(DEFAULT_JUDGE_PROMPT))
+    parser.add_argument("--step-delay", type=float, default=0)
+    parser.add_argument("--scenario-delay", type=float, default=1)
     parser.add_argument("--fail-fast", action="store_true")
     return parser.parse_args(argv)
 

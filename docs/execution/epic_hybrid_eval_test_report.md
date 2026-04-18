@@ -13,6 +13,10 @@ The tests validate the harness itself without calling live theone, chatbot1, CRM
 - summary generation with failure patterns and judge issues
 - no-judge scenario execution with conversation/session reuse
 - run summary output generation
+- transient chatbot 502 retry behavior
+- stale CRM appointment non-match behavior
+- weak CRM matching classified as partial
+- summary markdown separated by failure category
 
 ## Scenario Coverage
 The seeded scenario file covers:
@@ -40,6 +44,8 @@ The runner checks:
 - unexpected RAG reset
 - `prebooking_stub` leakage in real-tenant scenarios
 - optional CRM appointment side effects
+- retry attempts for theone-wrapped upstream 502 responses
+- failure category classification
 
 ## Judge Coverage
 Judge tests cover:
@@ -61,6 +67,9 @@ Expected result: all harness tests pass.
 - judge mode uses mocked existing LLM client shape
 - conversation ID and session ID are reused on later turns
 - summary files are generated
+- one transient upstream 502 can recover on retry
+- old appointments are not accepted as proof of a new scenario run
+- infra/runtime, product assertion, and CRM verification failures are reported separately
 
 ## Remaining Gaps
 - Live API execution is not covered by unit tests.
