@@ -30,6 +30,7 @@ Follow-up hardening added:
 - stricter CRM verification matching to avoid stale appointment false positives
 - summary sections that separate infrastructure instability from product logic failures
 - `start_new` support for first-turn scenario execution so eval scenarios do not inherit stale dashboard/chatbot session state
+- semantic reply substring alternatives through `expected_reply_contains_any`, used where several valid confirmation-summary phrasings are acceptable
 
 ## Files Changed
 - `scripts/__init__.py`
@@ -53,6 +54,10 @@ Follow-up hardening added:
 - CRM appointment verification now requires date/time, service evidence, and a recent-created window. Weak verification is marked `PARTIAL` instead of being treated as product proof.
 - Scenarios with only upstream runtime failures or CRM verification uncertainty are classified as `PARTIAL`; deterministic assertion failures remain `FAIL`.
 - Hybrid eval sends `start_new=true` on the first step of every scenario. The theone proxy resets the scoped dashboard conversation before forwarding that turn upstream, while later turns keep reusing `conversation_id` and `session_id`.
+- Scenario expectations stay strict on route, workflow, slot preservation, missing-data guardrails, and no RAG/handoff fallback, but avoid brittle checks for one exact confirmation word when the assistant clearly returns a confirmation summary.
+- Empty-slot `collecting` is allowed only when a scenario explicitly expects collection, so vague first turns such as `Quero marcar` are not misclassified as resets.
+- `booking_missing_phone` now reflects the intended missing-data order: collect customer name first when no customer identity exists, then collect phone before any prebook execution.
+- `booking_with_fragmented_inputs` now treats progressive service/date/time collection as valid and accepts confirmation-summary wording that may use `confirmação`, `tudo certo`, `posso encaminhar`, or `pré-agendamento`.
 
 ## Behavior Before
 Validation depended on one-off curl commands and manual interpretation. Conversation IDs, session IDs, trace IDs, CRM verification, and transcripts were not captured in a durable repeatable format.

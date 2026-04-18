@@ -31,9 +31,36 @@ Assistant: Posso confirmar, mas antes preciso do nome do cliente.
 
 User: Audit User
 
+Assistant: Resumo para confirmação do pré-agendamento de Corte amanhã às 15:00. Tudo certo?
+
+User: pode confirmar
+
 Assistant: Antes de confirmar, qual é o telefone do cliente para este agendamento?
 
 Expected CRM side effect: no prebook attempt until customer name and phone exist or customer_id is present.
+
+## Fragmented Booking Transcript
+User: Quero marcar
+
+Assistant: Qual serviço você gostaria de agendar?
+
+User: Corte
+
+Assistant: Quando prefere marcar?
+
+User: amanhã
+
+Assistant: Qual horário funciona melhor?
+
+User: 16h17
+
+Assistant: Resumo para confirmação do pré-agendamento de Corte amanhã às 16:17. Tudo certo?
+
+User: Audit User, 11999998888
+
+Assistant: Resumo para confirmação do pré-agendamento de Corte amanhã às 16:17. Tudo certo?
+
+Expected behavior: workflow remains `book_appointment`, service/date/time/customer identity are preserved, and no RAG or handoff fallback occurs.
 
 ## Interruption Transcript
 User: Quero marcar um corte amanhã às 18h

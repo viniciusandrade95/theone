@@ -2,16 +2,16 @@
 
 - Verdict: FAIL
 - Conversation ID: b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35
-- Session ID: s-c58899fe939940b4
+- Session ID: s-52f5e5ce8ceb4f3e
 - Judge: DISABLED
 
 ## Transcript
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888
-Turn 1 assistant: Perfeito, troquei para Corte: resumo de pré‑agendamento de Corte no dia 19 de abr às 16:17. Tudo certo e posso encaminhar para confirmação humana?
+Turn 1 assistant: Perfeito, alterei para Corte. Confirma o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?
 Turn 2 user: sim, pode confirmar
-Turn 2 assistant: Para confirmar, me diz o nome do cliente?
+Turn 2 assistant: Antes de confirmar, qual é o nome do cliente para esse agendamento?
 ```
 
 ## Failures

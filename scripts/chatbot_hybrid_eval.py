@@ -290,6 +290,11 @@ def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, 
         if not contains_casefold(summary.reply_text, str(needle)):
             reasons.append(f"reply missing expected text: {needle}")
 
+    contains_any = step.get("expected_reply_contains_any") or []
+    if contains_any and not any(contains_casefold(summary.reply_text, str(needle)) for needle in contains_any):
+        joined = ", ".join(str(needle) for needle in contains_any)
+        reasons.append(f"reply missing any expected text: {joined}")
+
     for needle in step.get("expected_reply_not_contains") or []:
         if contains_casefold(summary.reply_text, str(needle)):
             reasons.append(f"reply contained forbidden text: {needle}")
@@ -314,7 +319,13 @@ def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, 
     if step.get("expected_no_rag_reset"):
         if summary.route == "rag":
             reasons.append("unexpected RAG route")
-        if summary.workflow == "book_appointment" and summary.workflow_status == "collecting" and not summary.slots:
+        allows_empty_collection = bool(step.get("allow_empty_collecting_slots")) or expected_status == "collecting"
+        if (
+            summary.workflow == "book_appointment"
+            and summary.workflow_status == "collecting"
+            and not summary.slots
+            and not allows_empty_collection
+        ):
             reasons.append("workflow appears to have reset to collecting with empty slots")
 
     return AssertionResult(status="FAIL" if reasons else "PASS", reasons=reasons)

@@ -77,6 +77,68 @@ def test_deterministic_assertions_fail_on_stub_and_missing_slot():
     assert any("expected slot service" in reason for reason in result.reasons)
 
 
+def test_deterministic_assertions_allow_any_reply_phrase_for_semantic_wording():
+    http = eval_runner.HttpResult(
+        status_code=200,
+        body_text=json.dumps({"status": "ok"}),
+        json_body={"status": "ok"},
+        headers={},
+    )
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Resumo para confirmação: Corte amanhã às 16:17. Tudo certo?",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="book_appointment",
+        workflow_status="awaiting_confirmation",
+        slots={"service": "Corte", "date": "2026-04-19", "time": "16:17"},
+        action_result={},
+    )
+
+    result = eval_runner.evaluate_step(
+        {"expected_reply_contains_any": ["confirmar", "confirmação", "posso encaminhar"]},
+        http,
+        summary,
+        allow_prebooking_stub=False,
+    )
+
+    assert result.status == "PASS"
+
+
+def test_expected_collecting_step_with_empty_slots_is_not_treated_as_reset():
+    http = eval_runner.HttpResult(
+        status_code=200,
+        body_text=json.dumps({"status": "ok"}),
+        json_body={"status": "ok"},
+        headers={},
+    )
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Qual serviço você gostaria de agendar?",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="book_appointment",
+        workflow_status="collecting",
+        slots={},
+        action_result={},
+    )
+
+    result = eval_runner.evaluate_step(
+        {"expected_status": "collecting", "expected_no_rag_reset": True},
+        http,
+        summary,
+        allow_prebooking_stub=False,
+    )
+
+    assert result.status == "PASS"
+
+
 def test_transcript_building_uses_user_and_assistant_turns():
     transcript = eval_runner.build_transcript(
         [

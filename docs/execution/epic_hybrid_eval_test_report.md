@@ -7,6 +7,7 @@ The tests validate the harness itself without calling live theone, chatbot1, CRM
 - scenario loading from `docs/test_runs/scenarios/core_booking_scenarios.json`
 - nested chatbot response parsing
 - deterministic assertion failures for stub execution and missing slots
+- deterministic assertion support for semantic reply alternatives via `expected_reply_contains_any`
 - transcript construction from multi-turn step records
 - malformed judge output handling
 - judge mode with mocked structured JSON
@@ -40,6 +41,7 @@ The runner checks:
 - workflow name
 - response/workflow status
 - reply contains / not contains
+- reply contains any acceptable phrase for semantic wording checks
 - required slots
 - action result fields
 - unexpected RAG reset
@@ -72,6 +74,9 @@ Expected result: all harness tests pass.
 - old appointments are not accepted as proof of a new scenario run
 - infra/runtime, product assertion, and CRM verification failures are reported separately
 - first-turn scenario requests can force a fresh chatbot session, preventing stale state from causing premature summaries
+- `booking_with_fragmented_inputs` accepts valid progressive collection and confirmation-summary wording without requiring one exact word.
+- `booking_missing_phone` follows the current product guardrail sequence: missing name first, then missing phone.
+- Expected `collecting` steps with empty slots are not treated as resets; unexpected empty-slot collection is still flagged.
 
 ## Remaining Gaps
 - Live API execution is not covered by unit tests.

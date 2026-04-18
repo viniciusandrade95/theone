@@ -90,11 +90,11 @@
     },
     {
       "name": "booking_missing_phone",
-      "description": "User provides customer name but no phone; assistant must ask for phone before prebook callback.",
+      "description": "User starts without CRM customer identity; assistant must collect name first when needed, then phone before prebook callback.",
       "tags": ["booking", "missing_phone", "guardrail"],
       "steps": [
         {
-          "user_message": "Quero marcar um corte amanhã às 15h para Audit User",
+          "user_message": "Quero marcar um corte amanhã às 15h",
           "expected_route": "workflow",
           "expected_workflow": "book_appointment",
           "expected_status": "awaiting_confirmation",
@@ -105,15 +105,42 @@
           "user_message": "pode confirmar",
           "expected_route": "workflow",
           "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["nome"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_action_result_fields": {
+            "missing_customer_identity": true
+          },
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Audit User",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar"],
+          "expected_slots_present": ["service", "date", "time", "customer_name"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
           "expected_reply_contains": ["telefone"],
           "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_action_result_fields": {
+            "missing_customer_phone": true
+          },
           "expected_no_rag_reset": true
         },
         {
           "user_message": "11999998888",
           "expected_route": "workflow",
           "expected_workflow": "book_appointment",
-          "expected_reply_contains": ["confirmar"],
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar"],
+          "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
           "expected_no_rag_reset": true
         }
       ]
@@ -242,32 +269,45 @@
       "steps": [
         {
           "user_message": "Quero marcar",
+          "expected_route": "workflow",
           "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
           "expected_reply_contains": ["serviço"],
           "expected_no_rag_reset": true
         },
         {
           "user_message": "Corte",
+          "expected_route": "workflow",
           "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
           "expected_slots_present": ["service"],
           "expected_no_rag_reset": true
         },
         {
           "user_message": "amanhã",
+          "expected_route": "workflow",
           "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
           "expected_slots_present": ["service", "date"],
           "expected_no_rag_reset": true
         },
         {
           "user_message": "16h17",
+          "expected_route": "workflow",
           "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
           "expected_slots_present": ["service", "date", "time"],
           "expected_no_rag_reset": true
         },
         {
           "user_message": "Audit User, 11999998888",
+          "expected_route": "workflow",
           "expected_workflow": "book_appointment",
-          "expected_reply_contains": ["confirmar"],
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
+          "expected_reply_not_contains": ["handoff", "prebooking_stub"],
           "expected_no_rag_reset": true
         }
       ]
