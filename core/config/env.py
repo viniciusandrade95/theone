@@ -45,6 +45,7 @@ class AppConfig:
 
     # Security
     SECRET_KEY: str
+    AUTH_TOKEN_TTL_SECONDS: int
 
     # Observability
     LOG_LEVEL: str
@@ -112,6 +113,7 @@ class AppConfig:
             DATABASE_URL=_get("DATABASE_URL"),
 
             SECRET_KEY=_get("SECRET_KEY"),
+            AUTH_TOKEN_TTL_SECONDS=int(_get("AUTH_TOKEN_TTL_SECONDS", required=False, default="604800")),
 
             LOG_LEVEL=_get("LOG_LEVEL", default="INFO"),
 
