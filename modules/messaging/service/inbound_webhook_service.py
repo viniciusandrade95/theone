@@ -14,6 +14,13 @@ from modules.chatbot.service.chatbot_client import ChatbotClient
 from modules.chatbot.service.normalizer import normalize_chatbot_response
 from modules.messaging.providers.meta_whatsapp_cloud import MetaWhatsAppCloudProvider
 from modules.messaging.repo.outbound_sql import OutboundRepo
+from core.db.session import db_session
+from modules.assistant.service.funnel_events import (
+    ASSISTANT_CONVERSATION_STARTED,
+    ASSISTANT_MESSAGE_RECEIVED,
+    ASSISTANT_MESSAGE_REPLIED,
+    AssistantFunnelEventsService,
+)
 
 
 class InboundWebhookService:
@@ -90,6 +97,43 @@ class InboundWebhookService:
                 body=text,
             )
             self.repo.create_message(message)
+
+            # Conversation analytics (tenant-safe): record assistant surface signals even if the bot is disabled later.
+            # This allows reconstructing WhatsApp conversations alongside dashboard sessions.
+            try:
+                tenant_uuid = uuid.UUID(account.tenant_id)
+                conversation_uuid = uuid.UUID(conversation.id)
+                customer_uuid = uuid.UUID(customer.id)
+                inbound_trace_id = f"wa:{provider}:{provider_message_id}"
+                with db_session() as session:
+                    funnel = AssistantFunnelEventsService(session)
+                    funnel.emit_once(
+                        tenant_id=tenant_uuid,
+                        dedupe_key=f"assistant_conversation_started:{conversation.id}:0",
+                        event_name=ASSISTANT_CONVERSATION_STARTED,
+                        trace_id=inbound_trace_id,
+                        conversation_id=conversation_uuid,
+                        assistant_session_id=conversation.assistant_session_id,
+                        customer_id=customer_uuid,
+                        event_source="whatsapp_inbound",
+                        channel="whatsapp",
+                        metadata={"provider": provider, "external_event_id": external_event_id},
+                    )
+                    funnel.emit_once(
+                        tenant_id=tenant_uuid,
+                        dedupe_key=f"assistant_message_received:{provider}:{provider_message_id}",
+                        event_name=ASSISTANT_MESSAGE_RECEIVED,
+                        trace_id=inbound_trace_id,
+                        conversation_id=conversation_uuid,
+                        assistant_session_id=conversation.assistant_session_id,
+                        customer_id=customer_uuid,
+                        event_source="whatsapp_inbound",
+                        channel="whatsapp",
+                        metadata={"provider": provider, "provider_message_id": provider_message_id},
+                    )
+            except Exception:
+                # Best-effort; never fail inbound processing on analytics.
+                pass
 
             self.crm.add_interaction(customer_id=customer.id, type="whatsapp", content=text)
             self.repo.mark_webhook_event_status(
@@ -181,8 +225,6 @@ class InboundWebhookService:
         reply_text = reply_text.strip()
 
         # Best-effort outbound send + persistence.
-        from core.db.session import db_session  # local import to avoid cycles
-
         tenant_uuid = uuid.UUID(tenant_id)
         customer_uuid = uuid.UUID(customer_id)
         conversation_uuid = uuid.UUID(conversation.id)
@@ -218,6 +260,23 @@ class InboundWebhookService:
                 conversation_id=conversation_uuid,
                 assistant_session_id=chatbot_session_id,
             )
+
+            # Analytics: tie the reply to the WhatsApp conversation id.
+            try:
+                funnel = AssistantFunnelEventsService(session)
+                funnel.emit(
+                    tenant_id=tenant_uuid,
+                    event_name=ASSISTANT_MESSAGE_REPLIED,
+                    trace_id=trace_id,
+                    conversation_id=conversation_uuid,
+                    assistant_session_id=chatbot_session_id,
+                    customer_id=customer_uuid,
+                    event_source="whatsapp_bot",
+                    channel="whatsapp",
+                    metadata={"type": "assistant_whatsapp_reply"},
+                )
+            except Exception:
+                pass
 
             to_phone_digits = _normalize_phone_for_wa(from_phone)
             if to_phone_digits is None:

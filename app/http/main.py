@@ -166,6 +166,9 @@ def create_app() -> FastAPI:
 
             return await call_next(request)
         except Exception as err:
+            # In tests, prefer surfacing exceptions (tracebacks) over swallowing them.
+            if cfg.ENV == "test":
+                raise
             http_err = to_http_error(err)
             return JSONResponse(status_code=http_err.status_code, content=http_err.body)
 

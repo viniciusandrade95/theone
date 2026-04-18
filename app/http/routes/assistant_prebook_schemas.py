@@ -26,6 +26,7 @@ class PrebookBookingIn(BaseModel):
 
 class PrebookIn(BaseModel):
     tenant_id: str | None = None
+    conversation_id: str | None = None
     session_id: str | None = None
     trace_id: str | None = None
     idempotency_key: str | None = None

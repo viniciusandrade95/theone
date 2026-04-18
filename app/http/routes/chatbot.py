@@ -18,6 +18,8 @@ from modules.chatbot.service.chatbot_client import ChatbotClient
 from modules.chatbot.service.normalizer import normalize_chatbot_response
 from modules.assistant.service.assistant_quickwins import apply_assistant_quickwins
 from modules.assistant.service.funnel_events import (
+    ASSISTANT_CONVERSATION_RESET,
+    ASSISTANT_CONVERSATION_STARTED,
     ASSISTANT_MESSAGE_RECEIVED,
     ASSISTANT_MESSAGE_REPLIED,
     AssistantFunnelEventsService,
@@ -89,6 +91,18 @@ def chatbot_message(
         )
 
         funnel = AssistantFunnelEventsService(session)
+        funnel.emit_once(
+            tenant_id=uuid.UUID(tenant_id),
+            dedupe_key=f"assistant_conversation_started:{conversation.conversation_id}:{int(conversation.conversation_epoch or 0)}",
+            event_name=ASSISTANT_CONVERSATION_STARTED,
+            trace_id=effective_trace_id,
+            conversation_id=conversation.conversation_id,
+            assistant_session_id=payload.session_id or conversation.chatbot_session_id,
+            customer_id=conversation.customer_id,
+            event_source="chatbot_proxy",
+            channel="chat",
+            metadata={"surface": payload.surface, "conversation_epoch": int(conversation.conversation_epoch or 0)},
+        )
         funnel.emit(
             tenant_id=uuid.UUID(tenant_id),
             event_name=ASSISTANT_MESSAGE_RECEIVED,
@@ -102,7 +116,7 @@ def chatbot_message(
         )
 
         # Persist the incoming user turn (compact).
-        history.append(conversation=conversation, role="user", content=payload.message)
+        history.append(conversation=conversation, role="user", content=payload.message, meta={"trace_id": effective_trace_id})
 
         upstream_payload = {
             "client_id": client_id,
@@ -126,7 +140,7 @@ def chatbot_message(
                 conversation=conversation,
                 role="system",
                 content="chatbot_upstream_failed",
-                meta={"status": status},
+                meta={"status": status, "trace_id": effective_trace_id},
             )
             log_event("assistant_chatbot_request_completed", level="error", surface="chatbot_message", status_code=status)
             raise ValidationError("Chatbot service request failed", meta={"status": status})
@@ -136,7 +150,7 @@ def chatbot_message(
                 conversation=conversation,
                 role="system",
                 content="chatbot_upstream_failed",
-                meta={"status": 502},
+                meta={"status": 502, "trace_id": effective_trace_id},
             )
             log_event("assistant_chatbot_request_completed", level="error", surface="chatbot_message", status_code=502)
             raise ValidationError("Chatbot service unavailable")
@@ -210,6 +224,7 @@ def chatbot_message(
                 "status": normalized.get("status"),
                 "actions_count": len(normalized.get("reply", {}).get("actions") or []),
                 "handoff_requested": bool(normalized.get("handoff", {}).get("requested")),
+                "trace_id": effective_trace_id,
             },
         )
 
@@ -275,6 +290,19 @@ def chatbot_reset(
 
         repo.reset(entity=conversation)
         history.append(conversation=conversation, role="system", content="reset", meta={"source": "api"})
+
+        funnel = AssistantFunnelEventsService(session)
+        funnel.emit(
+            tenant_id=uuid.UUID(tenant_id),
+            event_name=ASSISTANT_CONVERSATION_RESET,
+            trace_id=effective_trace_id,
+            conversation_id=conversation.conversation_id,
+            assistant_session_id=None,
+            customer_id=conversation.customer_id,
+            event_source="chatbot_proxy",
+            channel="chat",
+            metadata={"surface": payload.surface, "conversation_epoch": int(conversation.conversation_epoch or 0)},
+        )
 
         resp = {
             "ok": True,

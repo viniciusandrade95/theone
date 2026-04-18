@@ -17,7 +17,11 @@ from core.tenancy import require_tenant_id
 
 from modules.assistant.repo.prebook_request_repo import AssistantPrebookRequestRepo
 from modules.assistant.service.funnel_events import (
+    ASSISTANT_CUSTOMER_IDENTITY_MISSING,
+    ASSISTANT_CUSTOMER_PHONE_MISSING,
+    ASSISTANT_OPERATIONAL_FAILED,
     ASSISTANT_PREBOOK_CREATED,
+    ASSISTANT_PREBOOK_FAILED,
     ASSISTANT_PREBOOK_REQUESTED,
     AssistantFunnelEventsService,
 )
@@ -251,6 +255,12 @@ def prebook(
     trace_id = require_trace_id()
 
     effective_idem = (idempotency_key or payload.idempotency_key or "").strip() or None
+    conversation_uuid = None
+    if (payload.conversation_id or "").strip():
+        try:
+            conversation_uuid = uuid.UUID(str(payload.conversation_id))
+        except ValueError:
+            conversation_uuid = None
 
     with db_session() as session:
         container = request.app.state.container
@@ -264,7 +274,7 @@ def prebook(
                 dedupe_key=f"assistant_prebook_requested:{effective_idem}",
                 event_name=ASSISTANT_PREBOOK_REQUESTED,
                 trace_id=trace_id,
-                conversation_id=None,
+                conversation_id=conversation_uuid,
                 assistant_session_id=payload.session_id,
                 customer_id=None,
                 event_source="assistant_prebook",
@@ -275,7 +285,7 @@ def prebook(
                 tenant_id=tenant_uuid,
                 event_name=ASSISTANT_PREBOOK_REQUESTED,
                 trace_id=trace_id,
-                conversation_id=None,
+                conversation_id=conversation_uuid,
                 assistant_session_id=payload.session_id,
                 customer_id=None,
                 event_source="assistant_prebook",
@@ -288,7 +298,7 @@ def prebook(
             started, existing = prebook_repo.create_started(
                 tenant_id=tenant_uuid,
                 idempotency_key=effective_idem,
-                conversation_id=None,
+                conversation_id=conversation_uuid,
                 session_id=payload.session_id,
                 trace_id=payload.trace_id,
                 actor_type=None,
@@ -310,6 +320,7 @@ def prebook(
                         dedupe_key=f"assistant_prebook_created:{appointment_id}",
                         event_name=ASSISTANT_PREBOOK_CREATED,
                         trace_id=trace_id,
+                        conversation_id=conversation_uuid,
                         assistant_session_id=payload.session_id,
                         customer_id=existing.customer_id,
                         event_source="assistant_prebook",
@@ -468,6 +479,7 @@ def prebook(
                 dedupe_key=f"assistant_prebook_created:{appointment_id}",
                 event_name=ASSISTANT_PREBOOK_CREATED,
                 trace_id=trace_id,
+                conversation_id=conversation_uuid,
                 assistant_session_id=payload.session_id,
                 customer_id=customer_id,
                 event_source="assistant_prebook",
@@ -481,7 +493,7 @@ def prebook(
                     appointment_id=appointment.id,
                     customer_id=customer_id,
                     trace_id=trace_id,
-                    conversation_id=None,
+                    conversation_id=conversation_uuid,
                     assistant_session_id=payload.session_id,
                 )
             except Exception as err:
@@ -521,6 +533,21 @@ def prebook(
                 conflict_count=len(conflict_ids),
                 duration_ms=int(timer.seconds() * 1000),
             )
+            try:
+                funnel.emit_once(
+                    tenant_id=tenant_uuid,
+                    dedupe_key=f"assistant_prebook_failed:{effective_idem or trace_id}",
+                    event_name=ASSISTANT_PREBOOK_FAILED,
+                    trace_id=trace_id,
+                    conversation_id=conversation_uuid,
+                    assistant_session_id=payload.session_id,
+                    customer_id=None,
+                    event_source="assistant_prebook",
+                    channel="prebook",
+                    metadata={"reason": "overlap", "conflicts": conflict_ids, "idempotency_key": effective_idem},
+                )
+            except Exception:
+                pass
             return JSONResponse(
                 status_code=409,
                 content={
@@ -535,6 +562,48 @@ def prebook(
             if started is not None:
                 prebook_repo.delete(row=started)
             message = err.message
+            # Analytics: record the failure reason (best-effort).
+            try:
+                if message == "missing_customer_name":
+                    funnel.emit_once(
+                        tenant_id=tenant_uuid,
+                        dedupe_key=f"assistant_customer_identity_missing:{effective_idem or trace_id}",
+                        event_name=ASSISTANT_CUSTOMER_IDENTITY_MISSING,
+                        trace_id=trace_id,
+                        conversation_id=conversation_uuid,
+                        assistant_session_id=payload.session_id,
+                        customer_id=None,
+                        event_source="assistant_prebook",
+                        channel="prebook",
+                        metadata={"idempotency_key": effective_idem},
+                    )
+                if message == "missing_customer_phone":
+                    funnel.emit_once(
+                        tenant_id=tenant_uuid,
+                        dedupe_key=f"assistant_customer_phone_missing:{effective_idem or trace_id}",
+                        event_name=ASSISTANT_CUSTOMER_PHONE_MISSING,
+                        trace_id=trace_id,
+                        conversation_id=conversation_uuid,
+                        assistant_session_id=payload.session_id,
+                        customer_id=None,
+                        event_source="assistant_prebook",
+                        channel="prebook",
+                        metadata={"idempotency_key": effective_idem},
+                    )
+                funnel.emit_once(
+                    tenant_id=tenant_uuid,
+                    dedupe_key=f"assistant_prebook_failed:{effective_idem or trace_id}",
+                    event_name=ASSISTANT_PREBOOK_FAILED,
+                    trace_id=trace_id,
+                    conversation_id=conversation_uuid,
+                    assistant_session_id=payload.session_id,
+                    customer_id=None,
+                    event_source="assistant_prebook",
+                    channel="prebook",
+                    metadata={"reason": message, "idempotency_key": effective_idem},
+                )
+            except Exception:
+                pass
             if message == "missing_customer_name":
                 return _bad_request("customer.name is required when customer_id is not provided")
             if message == "missing_customer_phone":
@@ -559,4 +628,19 @@ def prebook(
         except Exception:
             if started is not None:
                 prebook_repo.delete(row=started)
+            try:
+                funnel.emit_once(
+                    tenant_id=tenant_uuid,
+                    dedupe_key=f"assistant_operational_failed:{effective_idem or trace_id}",
+                    event_name=ASSISTANT_OPERATIONAL_FAILED,
+                    trace_id=trace_id,
+                    conversation_id=conversation_uuid,
+                    assistant_session_id=payload.session_id,
+                    customer_id=None,
+                    event_source="assistant_prebook",
+                    channel="prebook",
+                    metadata={"idempotency_key": effective_idem},
+                )
+            except Exception:
+                pass
             raise
