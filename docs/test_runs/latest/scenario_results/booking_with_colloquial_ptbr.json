@@ -25,7 +25,7 @@
     },
     {
       "category": "assertion_failure",
-      "message": "expected workflow book_appointment, got create_lead",
+      "message": "expected workflow book_appointment, got None",
       "step_index": 2
     },
     {
@@ -35,7 +35,17 @@
     },
     {
       "category": "assertion_failure",
-      "message": "expected workflow book_appointment, got create_lead",
+      "message": "unexpected RAG route",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 3
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
       "step_index": 3
     }
   ],
@@ -43,9 +53,11 @@
     "step 1: assertion_failure: expected workflow book_appointment, got None",
     "step 1: assertion_failure: expected slot service to be present",
     "step 1: assertion_failure: expected slot date to be present",
-    "step 2: assertion_failure: expected workflow book_appointment, got create_lead",
+    "step 2: assertion_failure: expected workflow book_appointment, got None",
     "step 2: assertion_failure: reply missing expected text: confirmar",
-    "step 3: assertion_failure: expected workflow book_appointment, got create_lead"
+    "step 2: assertion_failure: unexpected RAG route",
+    "step 3: assertion_failure: expected workflow book_appointment, got None",
+    "step 3: assertion_failure: unexpected RAG route"
   ],
   "final_verdict": "FAIL",
   "guardrails_observed": [],
@@ -53,9 +65,9 @@
     "status": "DISABLED"
   },
   "scenario_name": "booking_with_colloquial_ptbr",
-  "scenario_run_id": "20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr",
-  "session_id": "s-48f51aef8c5c400c",
-  "started_at": "2026-04-18T19:19:43.878580+00:00",
+  "scenario_run_id": "20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr",
+  "session_id": "s-985c620ad6e141a1",
+  "started_at": "2026-04-18T19:50:24.806172+00:00",
   "steps": [
     {
       "assertions": {
@@ -70,27 +82,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-48f51aef8c5c400c\",\"status\":\"ok\",\"reply\":{\"text\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-48f51aef8c5c400c\",\"reply\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?\",\"route\":\"smalltalk\",\"workflow\":null,\"handoff_",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-985c620ad6e141a1\",\"status\":\"ok\",\"reply\":{\"text\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-985c620ad6e141a1\",\"reply\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?\",\"route\":\"smalltalk\",\"workflow\":null",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-48f51aef8c5c400c\",\"status\":\"ok\",\"reply\":{\"text\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-48f51aef8c5c400c\",\"reply\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?\",\"route\":\"smalltalk\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-985c620ad6e141a1\",\"status\":\"ok\",\"reply\":{\"text\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-985c620ad6e141a1\",\"reply\":\"Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?\",\"route\":\"smalltalk\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee604fe1f91d7f6-GIG",
+          "CF-RAY": "9ee632056c0ed7f2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 19:19:22 GMT",
+          "Date": "Sat, 18 Apr 2026 19:50:05 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "bf31dace-49ae-4a9b",
+          "rndr-id": "6a2c7c52-41a2-439a",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-1"
+          "x-trace-id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-1"
         },
         "status_code": 200
       },
@@ -106,9 +118,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?",
+            "reply": "Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?",
             "route": "smalltalk",
-            "session_id": "s-48f51aef8c5c400c",
+            "session_id": "s-985c620ad6e141a1",
             "status": "ok",
             "workflow": null,
             "workflow_result": null
@@ -117,11 +129,11 @@
         },
         "reply": {
           "actions": [],
-          "text": "Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?"
+          "text": "Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?"
         },
-        "session_id": "s-48f51aef8c5c400c",
+        "session_id": "s-985c620ad6e141a1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-1"
+        "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-1"
       },
       "request": {
         "conversation_id": null,
@@ -134,23 +146,24 @@
       "summary": {
         "action_result": {},
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?",
+        "reply_text": "Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?",
         "route": "smalltalk",
-        "session_id": "s-48f51aef8c5c400c",
+        "session_id": "s-985c620ad6e141a1",
         "slots": {},
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-1",
+        "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-1",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-1"
+      "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-1"
     },
     {
       "assertions": {
         "reasons": [
-          "expected workflow book_appointment, got create_lead",
-          "reply missing expected text: confirmar"
+          "expected workflow book_appointment, got None",
+          "reply missing expected text: confirmar",
+          "unexpected RAG route"
         ],
         "status": "FAIL"
       },
@@ -158,27 +171,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-48f51aef8c5c400c\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-48f51aef8c5c400c\",\"reply\":\"Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para conf",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-985c620ad6e141a1\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-985c620ad6e141a1\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"route\":\"rag\",\"workflow\":null,\"hand",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-48f51aef8c5c400c\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-48f51aef8c5c400c\",\"reply\":\"Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"create_lead\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"customer_name\":\"Audit User\",\"phone\":\"11999998888\",\"notes\":\"meu nome é Audit User e o zap é 11999998888\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:customer_name, notes, phone\"}}}},\"trace_id\":\"hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-985c620ad6e141a1\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-985c620ad6e141a1\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee605516fffd7f2-GIG",
+          "CF-RAY": "9ee632517b00d7e2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 19:19:39 GMT",
+          "Date": "Sat, 18 Apr 2026 19:50:15 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "644bd1b1-4146-4ccf",
+          "rndr-id": "164d8fed-c926-4566",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-2"
+          "x-trace-id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-2"
         },
         "status_code": 200
       },
@@ -194,73 +207,51 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?",
-            "route": "workflow",
-            "session_id": "s-48f51aef8c5c400c",
+            "reply": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?",
+            "route": "rag",
+            "session_id": "s-985c620ad6e141a1",
             "status": "ok",
-            "workflow": "create_lead",
-            "workflow_result": {
-              "action_result": {
-                "pending_confirmation_kind": "none",
-                "pending_confirmation_resolution": "none",
-                "progress_detected": true,
-                "progress_reason": "operations:customer_name, notes, phone"
-              },
-              "pending_confirmation": true,
-              "slots": {
-                "customer_name": "Audit User",
-                "notes": "meu nome é Audit User e o zap é 11999998888",
-                "phone": "11999998888"
-              },
-              "status": "awaiting_confirmation"
-            }
+            "workflow": null,
+            "workflow_result": null
           },
           "source": "chatbot1"
         },
         "reply": {
           "actions": [],
-          "text": "Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?"
+          "text": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?"
         },
-        "session_id": "s-48f51aef8c5c400c",
+        "session_id": "s-985c620ad6e141a1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-2"
+        "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-2"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "meu nome é Audit User e o zap é 11999998888",
-        "session_id": "s-48f51aef8c5c400c",
+        "session_id": "s-985c620ad6e141a1",
         "start_new": false,
         "surface": "dashboard"
       },
       "step_index": 2,
       "summary": {
-        "action_result": {
-          "pending_confirmation_kind": "none",
-          "pending_confirmation_resolution": "none",
-          "progress_detected": true,
-          "progress_reason": "operations:customer_name, notes, phone"
-        },
+        "action_result": {},
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?",
-        "route": "workflow",
-        "session_id": "s-48f51aef8c5c400c",
-        "slots": {
-          "customer_name": "Audit User",
-          "notes": "meu nome é Audit User e o zap é 11999998888",
-          "phone": "11999998888"
-        },
+        "reply_text": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?",
+        "route": "rag",
+        "session_id": "s-985c620ad6e141a1",
+        "slots": {},
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-2",
-        "workflow": "create_lead",
-        "workflow_status": "awaiting_confirmation"
+        "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-2",
+        "workflow": null,
+        "workflow_status": null
       },
-      "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-2"
+      "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-2"
     },
     {
       "assertions": {
         "reasons": [
-          "expected workflow book_appointment, got create_lead"
+          "expected workflow book_appointment, got None",
+          "unexpected RAG route"
         ],
         "status": "FAIL"
       },
@@ -268,27 +259,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-48f51aef8c5c400c\",\"status\":\"ok\",\"reply\":{\"text\":\"Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-48f51aef8c5c400c\",\"reply\":\"Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda.\",\"route\":\"workflow\",\"workflow\":\"",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-985c620ad6e141a1\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-985c620ad6e141a1\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"route\":\"rag\",\"workflow\":null,\"hand",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-48f51aef8c5c400c\",\"status\":\"ok\",\"reply\":{\"text\":\"Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-48f51aef8c5c400c\",\"reply\":\"Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda.\",\"route\":\"workflow\",\"workflow\":\"create_lead\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"customer_name\":\"Audit User\",\"phone\":\"11999998888\",\"notes\":\"meu nome é Audit User e o zap é 11999998888\"},\"pending_confirmation\":true,\"action_result\":{\"confirmation_pending\":true,\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"clarification_needed\"}}}},\"trace_id\":\"hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-985c620ad6e141a1\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-985c620ad6e141a1\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee605bcb9fdd7e6-GIG",
+          "CF-RAY": "9ee63294bf89d7f6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 19:19:44 GMT",
+          "Date": "Sat, 18 Apr 2026 19:50:25 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "58409c7f-14b5-45bd",
+          "rndr-id": "3a984ee0-2a43-43d6",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-3"
+          "x-trace-id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-3"
         },
         "status_code": 200
       },
@@ -304,66 +295,45 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda.",
-            "route": "workflow",
-            "session_id": "s-48f51aef8c5c400c",
+            "reply": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?",
+            "route": "rag",
+            "session_id": "s-985c620ad6e141a1",
             "status": "ok",
-            "workflow": "create_lead",
-            "workflow_result": {
-              "action_result": {
-                "confirmation_pending": true,
-                "pending_confirmation_kind": "workflow_confirmation",
-                "pending_confirmation_resolution": "clarification_needed"
-              },
-              "pending_confirmation": true,
-              "slots": {
-                "customer_name": "Audit User",
-                "notes": "meu nome é Audit User e o zap é 11999998888",
-                "phone": "11999998888"
-              },
-              "status": "awaiting_confirmation"
-            }
+            "workflow": null,
+            "workflow_result": null
           },
           "source": "chatbot1"
         },
         "reply": {
           "actions": [],
-          "text": "Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda."
+          "text": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?"
         },
-        "session_id": "s-48f51aef8c5c400c",
+        "session_id": "s-985c620ad6e141a1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-3"
+        "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-3"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "isso, manda bala",
-        "session_id": "s-48f51aef8c5c400c",
+        "session_id": "s-985c620ad6e141a1",
         "start_new": false,
         "surface": "dashboard"
       },
       "step_index": 3,
       "summary": {
-        "action_result": {
-          "confirmation_pending": true,
-          "pending_confirmation_kind": "workflow_confirmation",
-          "pending_confirmation_resolution": "clarification_needed"
-        },
+        "action_result": {},
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda.",
-        "route": "workflow",
-        "session_id": "s-48f51aef8c5c400c",
-        "slots": {
-          "customer_name": "Audit User",
-          "notes": "meu nome é Audit User e o zap é 11999998888",
-          "phone": "11999998888"
-        },
+        "reply_text": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?",
+        "route": "rag",
+        "session_id": "s-985c620ad6e141a1",
+        "slots": {},
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-3",
-        "workflow": "create_lead",
-        "workflow_status": "awaiting_confirmation"
+        "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-3",
+        "workflow": null,
+        "workflow_status": null
       },
-      "trace_id": "hybrid-eval-20260418T191524Z-ec98b79c-booking_with_colloquial_ptbr-3"
+      "trace_id": "hybrid-eval-20260418T194556Z-ba6a018c-booking_with_colloquial_ptbr-3"
     }
   ],
   "tags": [
@@ -372,5 +342,5 @@
     "nlu",
     "colloquial"
   ],
-  "transcript": "Turn 1 user: opa, queria corta o cabelo amanha la pras 4 e 17 da tarde\nTurn 1 assistant: Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar?\nTurn 2 user: meu nome é Audit User e o zap é 11999998888\nTurn 2 assistant: Resumo para confirmação: registro de contato de Audit User. Tudo certo, posso encaminhar para confirmação humana?\nTurn 3 user: isso, manda bala\nTurn 3 assistant: Se estiver tudo bem, digite “sim”. Se precisar ajustar, diga “não” ou informe o que muda."
+  "transcript": "Turn 1 user: opa, queria corta o cabelo amanha la pras 4 e 17 da tarde\nTurn 1 assistant: Oi! 😊 Em que posso ajudar? Precisa de horários, preços, políticas ou quer agendar algo?\nTurn 2 user: meu nome é Audit User e o zap é 11999998888\nTurn 2 assistant: Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\nTurn 3 user: isso, manda bala\nTurn 3 assistant: Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?"
 }
