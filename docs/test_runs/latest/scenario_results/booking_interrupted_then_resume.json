@@ -25,9 +25,9 @@
     "status": "DISABLED"
   },
   "scenario_name": "booking_interrupted_then_resume",
-  "scenario_run_id": "20260418T200201Z-7496cd81-booking_interrupted_then_resume",
-  "session_id": "s-6bfb93f927614a43",
-  "started_at": "2026-04-18T20:04:13.427526+00:00",
+  "scenario_run_id": "20260418T202421Z-ffb713d5-booking_interrupted_then_resume",
+  "session_id": "s-0ba8fadc504649d1",
+  "started_at": "2026-04-18T20:26:10.187442+00:00",
   "steps": [
     {
       "assertions": {
@@ -38,27 +38,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-6bfb93f927614a43\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6bfb93f927614a43\",\"reply\":\"Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação hu",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-0ba8fadc504649d1\",\"status\":\"ok\",\"reply\":{\"text\":\"Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-0ba8fadc504649d1\",\"reply\":\"Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?\",\"route\":\"work",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-6bfb93f927614a43\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6bfb93f927614a43\",\"reply\":\"Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"date\":\"2026-04-19\",\"time\":\"18:00\",\"service\":\"Corte\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:date, service, time\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-0ba8fadc504649d1\",\"status\":\"ok\",\"reply\":{\"text\":\"Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-0ba8fadc504649d1\",\"reply\":\"Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"date\":\"2026-04-19\",\"time\":\"18:00\",\"service\":\"Corte\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:date, service, time\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee6469d1967d7e6-GIG",
+          "CF-RAY": "9ee666cd7b10d7f6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:04:04 GMT",
+          "Date": "Sat, 18 Apr 2026 20:26:02 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "00093ee0-65b5-4422",
+          "rndr-id": "f6077150-2c04-4d9f",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-1"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-1"
         },
         "status_code": 200
       },
@@ -74,9 +74,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?",
+            "reply": "Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?",
             "route": "workflow",
-            "session_id": "s-6bfb93f927614a43",
+            "session_id": "s-0ba8fadc504649d1",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -99,11 +99,11 @@
         },
         "reply": {
           "actions": [],
-          "text": "Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?"
+          "text": "Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?"
         },
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-1"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-1"
       },
       "request": {
         "conversation_id": null,
@@ -121,9 +121,9 @@
           "progress_reason": "operations:date, service, time"
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?",
+        "reply_text": "Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?",
         "route": "workflow",
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "slots": {
           "date": "2026-04-19",
           "service": "Corte",
@@ -131,11 +131,11 @@
         },
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-1",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-1",
         "workflow": "book_appointment",
         "workflow_status": "awaiting_confirmation"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-1"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-1"
     },
     {
       "assertions": {
@@ -148,27 +148,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-6bfb93f927614a43\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6bfb93f927614a43\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer o e",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-0ba8fadc504649d1\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-0ba8fadc504649d1\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer o e",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-6bfb93f927614a43\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6bfb93f927614a43\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-0ba8fadc504649d1\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-0ba8fadc504649d1\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee646cc3978d7f2-GIG",
+          "CF-RAY": "9ee666fe9df1d7e2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:04:06 GMT",
+          "Date": "Sat, 18 Apr 2026 20:26:05 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "34d38a72-6526-4115",
+          "rndr-id": "bf8ee860-aca0-4e2c",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-2"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-2"
         },
         "status_code": 200
       },
@@ -186,7 +186,7 @@
             "handoff_requested": false,
             "reply": "Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.",
             "route": "rag",
-            "session_id": "s-6bfb93f927614a43",
+            "session_id": "s-0ba8fadc504649d1",
             "status": "ok",
             "workflow": null,
             "workflow_result": null
@@ -197,14 +197,14 @@
           "actions": [],
           "text": "Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento."
         },
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-2"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-2"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "Qual o endereço mesmo?",
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "start_new": false,
         "surface": "dashboard"
       },
@@ -214,15 +214,15 @@
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "reply_text": "Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.",
         "route": "rag",
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "slots": {},
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-2",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-2",
         "workflow": null,
         "workflow_status": null
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-2"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-2"
     },
     {
       "assertions": {
@@ -233,27 +233,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-6bfb93f927614a43\",\"status\":\"ok\",\"reply\":{\"text\":\"Antes de confirmar, poderia me informar o nome do cliente para este agendamento?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6bfb93f927614a43\",\"reply\":\"Antes de confirmar, poderia me informar o nome do cliente para este agendamento?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-0ba8fadc504649d1\",\"status\":\"ok\",\"reply\":{\"text\":\"Antes de confirmar, qual o nome do cliente para este agendamento?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-0ba8fadc504649d1\",\"reply\":\"Antes de confirmar, qual o nome do cliente para este agendamento?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"han",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-6bfb93f927614a43\",\"status\":\"ok\",\"reply\":{\"text\":\"Antes de confirmar, poderia me informar o nome do cliente para este agendamento?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6bfb93f927614a43\",\"reply\":\"Antes de confirmar, poderia me informar o nome do cliente para este agendamento?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"2026-04-19\",\"time\":\"18:00\",\"service\":\"Corte\"},\"pending_confirmation\":false,\"action_result\":{\"missing_customer_identity\":true,\"required\":[\"customer_name\"],\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"blocked_missing_customer_identity\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-0ba8fadc504649d1\",\"status\":\"ok\",\"reply\":{\"text\":\"Antes de confirmar, qual o nome do cliente para este agendamento?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-0ba8fadc504649d1\",\"reply\":\"Antes de confirmar, qual o nome do cliente para este agendamento?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"2026-04-19\",\"time\":\"18:00\",\"service\":\"Corte\"},\"pending_confirmation\":false,\"action_result\":{\"missing_customer_identity\":true,\"required\":[\"customer_name\"],\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"blocked_missing_customer_identity\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee646ddce02d7f2-GIG",
+          "CF-RAY": "9ee6670ef9d8d7e2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:04:14 GMT",
+          "Date": "Sat, 18 Apr 2026 20:26:10 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "9c3accea-90b9-4e07",
+          "rndr-id": "225782cd-975e-4bd8",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-3"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-3"
         },
         "status_code": 200
       },
@@ -269,9 +269,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Antes de confirmar, poderia me informar o nome do cliente para este agendamento?",
+            "reply": "Antes de confirmar, qual o nome do cliente para este agendamento?",
             "route": "workflow",
-            "session_id": "s-6bfb93f927614a43",
+            "session_id": "s-0ba8fadc504649d1",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -296,16 +296,16 @@
         },
         "reply": {
           "actions": [],
-          "text": "Antes de confirmar, poderia me informar o nome do cliente para este agendamento?"
+          "text": "Antes de confirmar, qual o nome do cliente para este agendamento?"
         },
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-3"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-3"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "Beleza, pode continuar",
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "start_new": false,
         "surface": "dashboard"
       },
@@ -320,9 +320,9 @@
           ]
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Antes de confirmar, poderia me informar o nome do cliente para este agendamento?",
+        "reply_text": "Antes de confirmar, qual o nome do cliente para este agendamento?",
         "route": "workflow",
-        "session_id": "s-6bfb93f927614a43",
+        "session_id": "s-0ba8fadc504649d1",
         "slots": {
           "date": "2026-04-19",
           "service": "Corte",
@@ -330,11 +330,11 @@
         },
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-3",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-3",
         "workflow": "book_appointment",
         "workflow_status": "collecting"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_interrupted_then_resume-3"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_interrupted_then_resume-3"
     }
   ],
   "tags": [
@@ -342,5 +342,5 @@
     "interruption",
     "robustness"
   ],
-  "transcript": "Turn 1 user: Quero marcar um corte amanhã às 18h\nTurn 1 assistant: Tudo bem, alterei para Corte e pre‑agendado em 19 de abr às 18:00. Posso encaminhar para confirmação humana?\nTurn 2 user: Qual o endereço mesmo?\nTurn 2 assistant: Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\nTurn 3 user: Beleza, pode continuar\nTurn 3 assistant: Antes de confirmar, poderia me informar o nome do cliente para este agendamento?"
+  "transcript": "Turn 1 user: Quero marcar um corte amanhã às 18h\nTurn 1 assistant: Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?\nTurn 2 user: Qual o endereço mesmo?\nTurn 2 assistant: Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.\nTurn 3 user: Beleza, pode continuar\nTurn 3 assistant: Antes de confirmar, qual o nome do cliente para este agendamento?"
 }

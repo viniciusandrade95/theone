@@ -23,9 +23,9 @@
     "status": "DISABLED"
   },
   "scenario_name": "booking_with_fragmented_inputs",
-  "scenario_run_id": "20260418T200201Z-7496cd81-booking_with_fragmented_inputs",
-  "session_id": "s-d7a0964bcdd84ecc",
-  "started_at": "2026-04-18T20:06:02.725458+00:00",
+  "scenario_run_id": "20260418T202421Z-ffb713d5-booking_with_fragmented_inputs",
+  "session_id": "s-64cb6a3d6a424556",
+  "started_at": "2026-04-18T20:27:51.995979+00:00",
   "steps": [
     {
       "assertions": {
@@ -36,27 +36,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual serviço deseja? Posso ajudar com Corte.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Qual serviço deseja? Posso ajudar com Corte.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"co",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual serviço você prefere? Posso te ajudar com o corte.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Qual serviço você prefere? Posso te ajudar com o corte.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual serviço deseja? Posso ajudar com Corte.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Qual serviço deseja? Posso ajudar com Corte.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual serviço você prefere? Posso te ajudar com o corte.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Qual serviço você prefere? Posso te ajudar com o corte.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee648deb8c1d7f2-GIG",
+          "CF-RAY": "9ee668ef2806d7e6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:05:33 GMT",
+          "Date": "Sat, 18 Apr 2026 20:27:27 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "4c9a79a1-d458-47c5",
+          "rndr-id": "6ef693e7-1982-46c8",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-1"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-1"
         },
         "status_code": 200
       },
@@ -72,9 +72,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Qual serviço deseja? Posso ajudar com Corte.",
+            "reply": "Qual serviço você prefere? Posso te ajudar com o corte.",
             "route": "workflow",
-            "session_id": "s-d7a0964bcdd84ecc",
+            "session_id": "s-64cb6a3d6a424556",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -95,11 +95,11 @@
         },
         "reply": {
           "actions": [],
-          "text": "Qual serviço deseja? Posso ajudar com Corte."
+          "text": "Qual serviço você prefere? Posso te ajudar com o corte."
         },
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-1"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-1"
       },
       "request": {
         "conversation_id": null,
@@ -119,17 +119,17 @@
           "progress_reason": "none"
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Qual serviço deseja? Posso ajudar com Corte.",
+        "reply_text": "Qual serviço você prefere? Posso te ajudar com o corte.",
         "route": "workflow",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "slots": {},
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-1",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-1",
         "workflow": "book_appointment",
         "workflow_status": "collecting"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-1"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-1"
     },
     {
       "assertions": {
@@ -140,27 +140,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. Qual dia fica melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Perfeito, ajustei para Corte. Qual dia fica melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":nu",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte! Em qual dia você prefere marcar?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Perfeito, ajustei para Corte! Em qual dia você prefere marcar?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. Qual dia fica melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Perfeito, ajustei para Corte. Qual dia fica melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"Corte\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":1,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte! Em qual dia você prefere marcar?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Perfeito, ajustei para Corte! Em qual dia você prefere marcar?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"Corte\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":1,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee648fd7c3fd7e2-GIG",
+          "CF-RAY": "9ee6690f6cc3d7f2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:05:41 GMT",
+          "Date": "Sat, 18 Apr 2026 20:27:33 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "65c51ef1-fe04-4628",
+          "rndr-id": "801fe2bd-c525-4628",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-2"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-2"
         },
         "status_code": 200
       },
@@ -176,9 +176,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Perfeito, ajustei para Corte. Qual dia fica melhor para você?",
+            "reply": "Perfeito, ajustei para Corte! Em qual dia você prefere marcar?",
             "route": "workflow",
-            "session_id": "s-d7a0964bcdd84ecc",
+            "session_id": "s-64cb6a3d6a424556",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -201,16 +201,16 @@
         },
         "reply": {
           "actions": [],
-          "text": "Perfeito, ajustei para Corte. Qual dia fica melhor para você?"
+          "text": "Perfeito, ajustei para Corte! Em qual dia você prefere marcar?"
         },
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-2"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-2"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "Corte",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "start_new": false,
         "surface": "dashboard"
       },
@@ -225,19 +225,19 @@
           "progress_reason": "none"
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Perfeito, ajustei para Corte. Qual dia fica melhor para você?",
+        "reply_text": "Perfeito, ajustei para Corte! Em qual dia você prefere marcar?",
         "route": "workflow",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "slots": {
           "service": "Corte"
         },
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-2",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-2",
         "workflow": "book_appointment",
         "workflow_status": "collecting"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-2"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-2"
     },
     {
       "assertions": {
@@ -248,27 +248,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo certo, já ajustei aqui. Qual horário te fica melhor?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Tudo certo, já ajustei aqui. Qual horário te fica melhor?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"work",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, já ajustei aqui. Qual horário funciona melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Perfeito, já ajustei aqui. Qual horário funciona melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"h",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo certo, já ajustei aqui. Qual horário te fica melhor?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Tudo certo, já ajustei aqui. Qual horário te fica melhor?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"Corte\",\"date\":\"2026-04-19\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":1,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, já ajustei aqui. Qual horário funciona melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Perfeito, já ajustei aqui. Qual horário funciona melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"Corte\",\"date\":\"2026-04-19\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":1,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee6492a6c97d7f6-GIG",
+          "CF-RAY": "9ee6693439ced7f6-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:05:45 GMT",
+          "Date": "Sat, 18 Apr 2026 20:27:38 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "49f42016-311f-4208",
+          "rndr-id": "8756917f-242f-4a39",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-3"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-3"
         },
         "status_code": 200
       },
@@ -284,9 +284,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Tudo certo, já ajustei aqui. Qual horário te fica melhor?",
+            "reply": "Perfeito, já ajustei aqui. Qual horário funciona melhor para você?",
             "route": "workflow",
-            "session_id": "s-d7a0964bcdd84ecc",
+            "session_id": "s-64cb6a3d6a424556",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -310,16 +310,16 @@
         },
         "reply": {
           "actions": [],
-          "text": "Tudo certo, já ajustei aqui. Qual horário te fica melhor?"
+          "text": "Perfeito, já ajustei aqui. Qual horário funciona melhor para você?"
         },
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-3"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-3"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "amanhã",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "start_new": false,
         "surface": "dashboard"
       },
@@ -334,20 +334,20 @@
           "progress_reason": "none"
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Tudo certo, já ajustei aqui. Qual horário te fica melhor?",
+        "reply_text": "Perfeito, já ajustei aqui. Qual horário funciona melhor para você?",
         "route": "workflow",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "slots": {
           "date": "2026-04-19",
           "service": "Corte"
         },
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-3",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-3",
         "workflow": "book_appointment",
         "workflow_status": "collecting"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-3"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-3"
     },
     {
       "assertions": {
@@ -358,27 +358,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr à",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para conf",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"service\":\"Corte\",\"date\":\"2026-04-19\",\"time\":\"16:17\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-4\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"service\":\"Corte\",\"date\":\"2026-04-19\",\"time\":\"16:17\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-4\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee64948aec7d7e6-GIG",
+          "CF-RAY": "9ee669537e1bd7f2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:05:56 GMT",
+          "Date": "Sat, 18 Apr 2026 20:27:44 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "bdf1e9e7-1429-4b9a",
+          "rndr-id": "0dda4d75-f450-4469",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-4"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-4"
         },
         "status_code": 200
       },
@@ -394,9 +394,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?",
+            "reply": "Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?",
             "route": "workflow",
-            "session_id": "s-d7a0964bcdd84ecc",
+            "session_id": "s-64cb6a3d6a424556",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -419,16 +419,16 @@
         },
         "reply": {
           "actions": [],
-          "text": "Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?"
+          "text": "Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?"
         },
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-4"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-4"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "16h17",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "start_new": false,
         "surface": "dashboard"
       },
@@ -441,9 +441,9 @@
           "progress_reason": "none"
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?",
+        "reply_text": "Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?",
         "route": "workflow",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "slots": {
           "date": "2026-04-19",
           "service": "Corte",
@@ -451,11 +451,11 @@
         },
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-4",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-4",
         "workflow": "book_appointment",
         "workflow_status": "awaiting_confirmation"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-4"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-4"
     },
     {
       "assertions": {
@@ -468,27 +468,27 @@
         "attempts": [
           {
             "attempt": 1,
-            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo",
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, ",
             "error": null,
             "status_code": 200,
             "transient_upstream_failure": false
           }
         ],
-        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d7a0964bcdd84ecc\",\"reply\":\"Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"service\":\"Corte\",\"date\":\"2026-04-19\",\"time\":\"16:17\",\"phone\":\"11999998888\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"continued_with_operations\",\"progress_detected\":true,\"progress_reason\":\"operations:phone\"}}}},\"trace_id\":\"hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-5\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-64cb6a3d6a424556\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-64cb6a3d6a424556\",\"reply\":\"Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"service\":\"Corte\",\"date\":\"2026-04-19\",\"time\":\"16:17\",\"phone\":\"11999998888\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"continued_with_operations\",\"progress_detected\":true,\"progress_reason\":\"operations:phone\"}}}},\"trace_id\":\"hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-5\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
         "error": null,
         "headers": {
-          "CF-RAY": "9ee6498a9d4fd7e6-GIG",
+          "CF-RAY": "9ee669788934d7e2-GIG",
           "Connection": "close",
           "Content-Type": "application/json",
-          "Date": "Sat, 18 Apr 2026 20:06:03 GMT",
+          "Date": "Sat, 18 Apr 2026 20:27:52 GMT",
           "Server": "cloudflare",
           "Transfer-Encoding": "chunked",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "rndr-id": "a146cc02-821e-47c7",
+          "rndr-id": "3924c867-7aab-44a7",
           "vary": "Accept-Encoding",
           "x-render-origin-server": "cloudflare",
-          "x-trace-id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-5"
+          "x-trace-id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-5"
         },
         "status_code": 200
       },
@@ -504,9 +504,9 @@
           "raw": {
             "handoff": null,
             "handoff_requested": false,
-            "reply": "Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?",
+            "reply": "Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?",
             "route": "workflow",
-            "session_id": "s-d7a0964bcdd84ecc",
+            "session_id": "s-64cb6a3d6a424556",
             "status": "ok",
             "workflow": "book_appointment",
             "workflow_result": {
@@ -530,16 +530,16 @@
         },
         "reply": {
           "actions": [],
-          "text": "Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?"
+          "text": "Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?"
         },
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-5"
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-5"
       },
       "request": {
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
         "message": "Audit User, 11999998888",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "start_new": false,
         "surface": "dashboard"
       },
@@ -552,9 +552,9 @@
           "progress_reason": "operations:phone"
         },
         "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
-        "reply_text": "Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?",
+        "reply_text": "Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?",
         "route": "workflow",
-        "session_id": "s-d7a0964bcdd84ecc",
+        "session_id": "s-64cb6a3d6a424556",
         "slots": {
           "date": "2026-04-19",
           "phone": "11999998888",
@@ -563,11 +563,11 @@
         },
         "source": "chatbot1",
         "status": "ok",
-        "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-5",
+        "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-5",
         "workflow": "book_appointment",
         "workflow_status": "awaiting_confirmation"
       },
-      "trace_id": "hybrid-eval-20260418T200201Z-7496cd81-booking_with_fragmented_inputs-5"
+      "trace_id": "hybrid-eval-20260418T202421Z-ffb713d5-booking_with_fragmented_inputs-5"
     }
   ],
   "tags": [
@@ -575,5 +575,5 @@
     "fragmented",
     "state"
   ],
-  "transcript": "Turn 1 user: Quero marcar\nTurn 1 assistant: Qual serviço deseja? Posso ajudar com Corte.\nTurn 2 user: Corte\nTurn 2 assistant: Perfeito, ajustei para Corte. Qual dia fica melhor para você?\nTurn 3 user: amanhã\nTurn 3 assistant: Tudo certo, já ajustei aqui. Qual horário te fica melhor?\nTurn 4 user: 16h17\nTurn 4 assistant: Tudo certo? Ajustei o horário para o pré‑agendamento de Corte no dia 19 de abr às 16:17 e posso encaminhar para confirmação humana?\nTurn 5 user: Audit User, 11999998888\nTurn 5 assistant: Resumo para confirmação: pré-agendamento de Corte no dia 19 de abr às 16:17. Tudo certo? Posso encaminhar para confirmação humana?"
+  "transcript": "Turn 1 user: Quero marcar\nTurn 1 assistant: Qual serviço você prefere? Posso te ajudar com o corte.\nTurn 2 user: Corte\nTurn 2 assistant: Perfeito, ajustei para Corte! Em qual dia você prefere marcar?\nTurn 3 user: amanhã\nTurn 3 assistant: Perfeito, já ajustei aqui. Qual horário funciona melhor para você?\nTurn 4 user: 16h17\nTurn 4 assistant: Horário ajustado! Pré-agendamento de Corte: 19 de abr às 16:17. Tudo certo? Posso enviar para confirmação humana?\nTurn 5 user: Audit User, 11999998888\nTurn 5 assistant: Resumo para confirmação: pré-agendamento de Corte em 19 de abr às 16:17. Tudo certo, posso encaminhar para confirmação humana?"
 }

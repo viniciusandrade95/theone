@@ -30,6 +30,7 @@ from app.http.routes.dashboard import router as dashboard_router
 from app.http.routes.health import router as health_router
 from app.http.routes.chatbot import router as chatbot_router
 from app.http.routes.assistant import router as assistant_router
+from app.http.routes.assistant_workflows import router as assistant_workflows_router
 from app.http.routes.metrics import router as metrics_router
 
 
@@ -63,8 +64,11 @@ def create_app() -> FastAPI:
 
     ASSISTANT_SURFACE_PATHS = {"/api/chatbot/message", "/api/chatbot/reset", "/crm/assistant/prebook"}
 
+    def _is_assistant_surface_path(path: str) -> bool:
+        return path in ASSISTANT_SURFACE_PATHS or path.startswith("/internal/chatbot/workflows/")
+
     def _inject_trace_id_if_assistant(request: Request, body: dict) -> dict:
-        if request.url.path in ASSISTANT_SURFACE_PATHS and "trace_id" not in body:
+        if _is_assistant_surface_path(request.url.path) and "trace_id" not in body:
             body = dict(body)
             body["trace_id"] = get_trace_id()
         return body
@@ -217,6 +221,8 @@ def create_app() -> FastAPI:
                 surface = "chatbot_reset"
             elif request.url.path == "/crm/assistant/prebook":
                 surface = "prebook"
+            elif request.url.path.startswith("/internal/chatbot/workflows/"):
+                surface = "assistant_workflow_operation"
             if surface is not None:
                 if 200 <= status_code < 300:
                     outcome = "success"
@@ -245,6 +251,7 @@ def create_app() -> FastAPI:
     app.include_router(auth_router, prefix="/auth", tags=["auth"])
     app.include_router(crm_router, prefix="/crm", tags=["crm"])
     app.include_router(assistant_router, prefix="/crm", tags=["assistant"])
+    app.include_router(assistant_workflows_router, tags=["assistant"])
     app.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
     app.include_router(assistant_analytics_router, prefix="/analytics", tags=["analytics"])
     app.include_router(billing_router, prefix="/billing", tags=["billing"])

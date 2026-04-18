@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Core live booking scenarios for theone -> chatbot1 hybrid evaluation.",
+  "description": "Core live booking and rescheduling scenarios for theone -> chatbot1 hybrid evaluation.",
   "scenarios": [
     {
       "name": "booking_happy_path_full",
@@ -333,6 +333,95 @@
         {
           "user_message": "isso, manda bala",
           "expected_workflow": "book_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_happy_path",
+      "description": "User requests remarcação with enough new date/time data; environment should have exactly one upcoming appointment or an explicit target.",
+      "tags": ["reschedule", "happy_path", "crm_side_effect", "requires_existing_appointment"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã às 16h17",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["remarcação", "confirmar", "confirmação"],
+          "expected_slots_present": ["new_date", "new_time"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim, pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "completed",
+          "expected_reply_contains_any": ["remarcação", "remarcado", "confirmada", "confirmado"],
+          "expected_reply_not_contains": ["prebooking_stub", "erro técnico"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_conflict",
+      "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+      "tags": ["reschedule", "conflict", "crm_failure", "requires_seeded_conflict"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã às 15h",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_reply_contains_any": ["indisponível", "disponibilidade", "sugerir", "remarcação", "confirmar"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_missing_time",
+      "description": "User gives remarcação intent and date but no new time; assistant asks for the missing time.",
+      "tags": ["reschedule", "missing_data"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["horário"],
+          "expected_slots_present": ["new_date"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_interrupted_then_resume",
+      "description": "User interrupts remarcação with FAQ and resumes without losing new date.",
+      "tags": ["reschedule", "interruption", "robustness"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "collecting",
+          "expected_slots_present": ["new_date"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "qual o endereço mesmo?",
+          "expected_workflow": "reschedule_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "16h17",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_slots_present": ["new_date", "new_time"],
+          "expected_reply_contains_any": ["remarcação", "confirmar", "confirmação"],
           "expected_reply_not_contains": ["prebooking_stub"],
           "expected_no_rag_reset": true
         }
