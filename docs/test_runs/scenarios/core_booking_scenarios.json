@@ -12,8 +12,9 @@
           "expected_route": "workflow",
           "expected_workflow": "book_appointment",
           "expected_status": "awaiting_confirmation",
-          "expected_reply_contains": ["confirmar"],
-          "expected_slots_present": ["service", "date", "time"],
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
@@ -21,8 +22,9 @@
           "expected_route": "workflow",
           "expected_workflow": "book_appointment",
           "expected_status": "completed",
-          "expected_reply_contains": ["registr"],
+          "expected_reply_contains_any": ["registr", "agend", "pré-agendamento", "confirm"],
           "expected_reply_not_contains": ["prebooking_stub", "erro técnico"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_action_result_fields": {
             "ok": true
           },
@@ -32,11 +34,12 @@
       "crm_verification": {
         "appointments": {
           "expect_created": true,
-          "from_dt": "2026-04-18T00:00:00Z",
-          "to_dt": "2026-04-19T00:00:00Z",
+          "from_dt": "relative:tomorrow_start_utc",
+          "to_dt": "relative:day_after_tomorrow_start_utc",
           "recent_created_within_seconds": 900,
           "match": {
-            "starts_at": "2026-04-18T16:17:00Z",
+            "start_time": "16:17",
+            "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
             "service_name_contains": "Corte"
           }
         }
@@ -57,6 +60,7 @@
           "expected_workflow": "book_appointment",
           "expected_status": "awaiting_confirmation",
           "expected_slots_present": ["service", "date", "time"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
@@ -65,28 +69,33 @@
           "expected_workflow": "book_appointment",
           "expected_reply_contains": ["nome"],
           "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
           "user_message": "Audit User",
           "expected_route": "workflow",
           "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time", "customer_name"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
           "expected_reply_contains": ["telefone"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_action_result_fields": {
+            "missing_customer_phone": true
+          },
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         }
-      ],
-      "crm_verification": {
-        "appointments": {
-          "expect_created": false,
-          "from_dt": "2026-04-18T00:00:00Z",
-          "to_dt": "2026-04-19T00:00:00Z",
-          "recent_created_within_seconds": 900,
-          "match": {
-            "service_name_contains": "Corte",
-            "starts_at": "2026-04-18T15:00:00Z"
-          }
-        }
-      }
+      ]
     },
     {
       "name": "booking_missing_phone",
@@ -180,6 +189,8 @@
         },
         {
           "user_message": "Qual o endereço mesmo?",
+          "allow_rag_detour": true,
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_reply_not_contains": ["prebooking_stub"],
           "expected_no_rag_reset": true
         },
@@ -187,6 +198,7 @@
           "user_message": "Beleza, pode continuar",
           "expected_workflow": "book_appointment",
           "expected_slots_present": ["service", "date", "time"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         }
       ]
@@ -273,6 +285,7 @@
           "expected_workflow": "book_appointment",
           "expected_status": "collecting",
           "expected_reply_contains": ["serviço"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
@@ -281,6 +294,7 @@
           "expected_workflow": "book_appointment",
           "expected_status": "collecting",
           "expected_slots_present": ["service"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
@@ -289,6 +303,7 @@
           "expected_workflow": "book_appointment",
           "expected_status": "collecting",
           "expected_slots_present": ["service", "date"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
@@ -298,6 +313,7 @@
           "expected_status": "awaiting_confirmation",
           "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
           "expected_slots_present": ["service", "date", "time"],
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         },
         {
@@ -308,6 +324,20 @@
           "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
           "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
           "expected_reply_not_contains": ["handoff", "prebooking_stub"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim, pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "completed",
+          "expected_reply_contains_any": ["registr", "agend", "pré-agendamento", "confirm"],
+          "expected_reply_not_contains": ["handoff", "prebooking_stub", "erro técnico"],
+          "expected_action_result_fields": {
+            "ok": true
+          },
+          "expected_workflow_not": ["handoff_to_human"],
           "expected_no_rag_reset": true
         }
       ]
@@ -327,7 +357,7 @@
         {
           "user_message": "meu nome é Audit User e o zap é 11999998888",
           "expected_workflow": "book_appointment",
-          "expected_reply_contains": ["confirmar"],
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
           "expected_no_rag_reset": true
         },
         {

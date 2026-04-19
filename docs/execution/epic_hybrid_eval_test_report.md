@@ -19,6 +19,9 @@ The tests validate the harness itself without calling live theone, chatbot1, CRM
 - weak CRM matching classified as partial
 - summary markdown separated by failure category
 - theone proxy `start_new` behavior resets stale scoped session before the first eval turn
+- allowed RAG detours for interruption turns
+- forbidden workflow assertions for no unexpected handoff
+- rolling CRM appointment verification with relative windows and exact start-time matching
 
 ## Scenario Coverage
 The seeded scenario file covers:
@@ -42,6 +45,8 @@ The runner checks:
 - response/workflow status
 - reply contains / not contains
 - reply contains any acceptable phrase for semantic wording checks
+- allowed RAG detours for FAQ interruption steps
+- forbidden workflows such as `handoff_to_human`
 - required slots
 - action result fields
 - unexpected RAG reset
@@ -74,8 +79,10 @@ Expected result: all harness tests pass.
 - old appointments are not accepted as proof of a new scenario run
 - infra/runtime, product assertion, and CRM verification failures are reported separately
 - first-turn scenario requests can force a fresh chatbot session, preventing stale state from causing premature summaries
-- `booking_with_fragmented_inputs` accepts valid progressive collection and confirmation-summary wording without requiring one exact word.
-- `booking_missing_phone` follows the current product guardrail sequence: missing name first, then missing phone.
+- `booking_happy_path_full` accepts valid confirmation-summary wording, executes on turn two when identity exists, and verifies recent CRM side effects by service UUID and start time.
+- `booking_with_fragmented_inputs` accepts valid progressive collection, confirmation-summary wording, identity progression, and final confirmation/execution without requiring one exact phrase.
+- `booking_missing_name` and `booking_missing_phone` follow the current product guardrail sequence: missing name first, summary after name, then missing phone on the next confirmation.
+- `booking_interrupted_then_resume` allows a temporary FAQ/RAG detour only if booking resumes with service/date/time preserved.
 - Expected `collecting` steps with empty slots are not treated as resets; unexpected empty-slot collection is still flagged.
 
 ## Remaining Gaps

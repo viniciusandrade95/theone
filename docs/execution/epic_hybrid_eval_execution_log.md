@@ -31,6 +31,9 @@ Follow-up hardening added:
 - summary sections that separate infrastructure instability from product logic failures
 - `start_new` support for first-turn scenario execution so eval scenarios do not inherit stale dashboard/chatbot session state
 - semantic reply substring alternatives through `expected_reply_contains_any`, used where several valid confirmation-summary phrasings are acceptable
+- explicit `allow_rag_detour` support so an FAQ interruption can route through RAG without being counted as abandoned workflow when later steps prove booking state was preserved
+- explicit forbidden workflow checks through `expected_workflow_not`, used to keep scenarios strict on no unexpected `handoff_to_human`
+- rolling CRM appointment windows such as `relative:tomorrow_start_utc`, plus `match.start_time`, so scenarios using `amanhã` verify the correct time and a recent record instead of stale hard-coded dates
 
 ## Files Changed
 - `scripts/__init__.py`
@@ -57,7 +60,10 @@ Follow-up hardening added:
 - Scenario expectations stay strict on route, workflow, slot preservation, missing-data guardrails, and no RAG/handoff fallback, but avoid brittle checks for one exact confirmation word when the assistant clearly returns a confirmation summary.
 - Empty-slot `collecting` is allowed only when a scenario explicitly expects collection, so vague first turns such as `Quero marcar` are not misclassified as resets.
 - `booking_missing_phone` now reflects the intended missing-data order: collect customer name first when no customer identity exists, then collect phone before any prebook execution.
-- `booking_with_fragmented_inputs` now treats progressive service/date/time collection as valid and accepts confirmation-summary wording that may use `confirmação`, `tudo certo`, `posso encaminhar`, or `pré-agendamento`.
+- `booking_happy_path_full` accepts confirmation-summary wording instead of requiring the exact word `confirmar`, and verifies CRM side effects by recent creation, service UUID, and start time.
+- `booking_missing_name` now accepts the real name-first flow: after the name is supplied, the assistant may summarize again before asking for phone on the next confirmation.
+- `booking_with_fragmented_inputs` treats progressive service/date/time collection as valid, accepts confirmation-summary wording that may use `confirmação`, `tudo certo`, `posso encaminhar`, or `pré-agendamento`, and includes the final confirmation/execution step.
+- `booking_interrupted_then_resume` allows a temporary RAG/FAQ detour only when the following step resumes `book_appointment` with preserved slots.
 
 ## Behavior Before
 Validation depended on one-off curl commands and manual interpretation. Conversation IDs, session IDs, trace IDs, CRM verification, and transcripts were not captured in a durable repeatable format.

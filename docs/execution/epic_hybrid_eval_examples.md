@@ -60,7 +60,11 @@ User: Audit User, 11999998888
 
 Assistant: Resumo para confirmação do pré-agendamento de Corte amanhã às 16:17. Tudo certo?
 
-Expected behavior: workflow remains `book_appointment`, service/date/time/customer identity are preserved, and no RAG or handoff fallback occurs.
+User: sim, pode confirmar
+
+Assistant: Tudo certo. O pré-agendamento foi registrado.
+
+Expected behavior: workflow remains `book_appointment`, service/date/time/customer identity are preserved, no RAG or handoff fallback occurs, and final confirmation executes exactly once.
 
 ## Interruption Transcript
 User: Quero marcar um corte amanhã às 18h
@@ -69,13 +73,13 @@ Assistant: Corte amanhã às 18:00. Posso confirmar?
 
 User: Qual o endereço mesmo?
 
-Assistant: O atendimento é na unidade principal. Posso continuar com o agendamento de Corte amanhã às 18:00?
+Assistant: O atendimento é na unidade principal.
 
 User: Pode continuar
 
-Assistant: Para confirmar, preciso do nome e telefone do cliente.
+Assistant: Posso continuar com o agendamento de Corte amanhã às 18:00.
 
-Expected behavior: booking slots stay preserved after the FAQ interruption.
+Expected behavior: a temporary FAQ/RAG detour is valid only if booking slots stay preserved and the next workflow turn resumes `book_appointment`.
 
 ## Weird-Language Transcript
 User: opa, queria corta o cabelo amanha la pras 4 e 17 da tarde

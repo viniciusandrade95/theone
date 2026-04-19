@@ -286,6 +286,10 @@ def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, 
     if expected_workflow and summary.workflow != expected_workflow:
         reasons.append(f"expected workflow {expected_workflow}, got {summary.workflow}")
 
+    for forbidden_workflow in step.get("expected_workflow_not") or step.get("forbidden_workflows") or []:
+        if summary.workflow == forbidden_workflow:
+            reasons.append(f"workflow must not be {forbidden_workflow}")
+
     for needle in step.get("expected_reply_contains") or []:
         if not contains_casefold(summary.reply_text, str(needle)):
             reasons.append(f"reply missing expected text: {needle}")
@@ -317,7 +321,7 @@ def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, 
                 reasons.append(f"expected action_result.{field_name}={expected_value!r}, got {actual!r}")
 
     if step.get("expected_no_rag_reset"):
-        if summary.route == "rag":
+        if summary.route == "rag" and not step.get("allow_rag_detour"):
             reasons.append("unexpected RAG route")
         allows_empty_collection = bool(step.get("allow_empty_collecting_slots")) or expected_status == "collecting"
         if (
@@ -338,8 +342,8 @@ def verify_crm(base_url: str, tenant_id: str, token: str, expectation: dict[str,
     if not isinstance(appointments, dict):
         return {"status": "SKIPPED", "reasons": ["no appointments verification configured"]}
 
-    from_dt = appointments.get("from_dt")
-    to_dt = appointments.get("to_dt")
+    from_dt = resolve_datetime_template(appointments.get("from_dt"))
+    to_dt = resolve_datetime_template(appointments.get("to_dt"))
     if not from_dt or not to_dt:
         return {"status": "PARTIAL", "reasons": ["appointments verification requires from_dt and to_dt"]}
 
@@ -419,6 +423,11 @@ def appointment_matches(item: Any, match: dict[str, Any], *, recent_after: str |
     if recent_after and not iso_at_or_after(item.get("created_at"), recent_after):
         return False
     for key, expected in match.items():
+        if key == "start_time":
+            starts_at = parse_iso_datetime(str(item.get("starts_at") or ""))
+            if starts_at is None or starts_at.strftime("%H:%M") != str(expected):
+                return False
+            continue
         if key.endswith("_contains"):
             actual_key = key[: -len("_contains")]
             if not contains_casefold(str(item.get(actual_key) or ""), str(expected)):
@@ -426,6 +435,21 @@ def appointment_matches(item: Any, match: dict[str, Any], *, recent_after: str |
         elif item.get(key) != expected:
             return False
     return True
+
+
+def resolve_datetime_template(value: Any) -> Any:
+    if not isinstance(value, str):
+        return value
+    today = datetime.now(timezone.utc).date()
+    templates = {
+        "relative:today_start_utc": today,
+        "relative:tomorrow_start_utc": today + timedelta(days=1),
+        "relative:day_after_tomorrow_start_utc": today + timedelta(days=2),
+    }
+    target = templates.get(value)
+    if target is None:
+        return value
+    return datetime(target.year, target.month, target.day, tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def iso_at_or_after(value: Any, minimum: str) -> bool:

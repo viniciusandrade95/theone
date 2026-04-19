@@ -1,0 +1,119 @@
+{
+  "iteration_count": 1,
+  "iterations": [
+    {
+      "completed_at": "2026-04-19T03:06:15.217483+00:00",
+      "fail_count": 10,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 9,
+      "run_id": "20260419T025630Z-3922e31d",
+      "top_5_failure_patterns": [
+        {
+          "count": 4,
+          "pattern": "booking correction fragmented generated ptbr: Slot loss detected: date"
+        },
+        {
+          "count": 3,
+          "pattern": "booking missing_data guardrail: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"tr"
+        },
+        {
+          "count": 3,
+          "pattern": "booking missing_data guardrail: expected route workflow, got None"
+        },
+        {
+          "count": 3,
+          "pattern": "booking missing_data guardrail: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 3,
+          "pattern": "booking ptbr nlu colloquial: expected workflow book_appointment, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 55,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 8,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 5,
+          "type": "loop_detected"
+        },
+        {
+          "count": 4,
+          "type": "slot_loss"
+        },
+        {
+          "count": 2,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 2,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 55,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 8,
+      "type": "upstream_runtime_failure"
+    },
+    {
+      "count": 5,
+      "type": "loop_detected"
+    },
+    {
+      "count": 4,
+      "type": "slot_loss"
+    },
+    {
+      "count": 2,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 2,
+      "type": "failure_to_complete_task"
+    },
+    {
+      "count": 1,
+      "type": "crm_verification_failure"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 4,
+      "pattern": "booking correction fragmented generated ptbr: Slot loss detected: date"
+    },
+    {
+      "count": 3,
+      "pattern": "booking missing_data guardrail: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"tr"
+    },
+    {
+      "count": 3,
+      "pattern": "booking missing_data guardrail: expected route workflow, got None"
+    },
+    {
+      "count": 3,
+      "pattern": "booking missing_data guardrail: expected workflow book_appointment, got None"
+    },
+    {
+      "count": 3,
+      "pattern": "booking ptbr nlu colloquial: expected workflow book_appointment, got None"
+    }
+  ],
+  "updated_at": "2026-04-19T03:06:15.220364+00:00"
+}

@@ -1,5 +1,6 @@
 import json
 from argparse import Namespace
+from datetime import datetime, timezone
 
 from scripts import chatbot_hybrid_eval as eval_runner
 
@@ -137,6 +138,73 @@ def test_expected_collecting_step_with_empty_slots_is_not_treated_as_reset():
     )
 
     assert result.status == "PASS"
+
+
+def test_allow_rag_detour_keeps_interruption_step_from_false_failure():
+    http = eval_runner.HttpResult(
+        status_code=200,
+        body_text=json.dumps({"status": "ok"}),
+        json_body={"status": "ok"},
+        headers={},
+    )
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="O endereço é Rua Principal, 123.",
+        trace_id="t-1",
+        source="chatbot1",
+        route="rag",
+        workflow=None,
+        workflow_status=None,
+        slots={},
+        action_result={},
+    )
+
+    result = eval_runner.evaluate_step(
+        {
+            "expected_no_rag_reset": True,
+            "allow_rag_detour": True,
+            "expected_workflow_not": ["handoff_to_human"],
+        },
+        http,
+        summary,
+        allow_prebooking_stub=False,
+    )
+
+    assert result.status == "PASS"
+
+
+def test_forbidden_workflow_catches_unexpected_handoff():
+    http = eval_runner.HttpResult(
+        status_code=200,
+        body_text=json.dumps({"status": "ok"}),
+        json_body={"status": "ok"},
+        headers={},
+    )
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Vou encaminhar para um atendente.",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="handoff_to_human",
+        workflow_status="awaiting_confirmation",
+        slots={},
+        action_result={},
+    )
+
+    result = eval_runner.evaluate_step(
+        {"expected_workflow_not": ["handoff_to_human"]},
+        http,
+        summary,
+        allow_prebooking_stub=False,
+    )
+
+    assert result.status == "FAIL"
+    assert any("workflow must not be handoff_to_human" in reason for reason in result.reasons)
 
 
 def test_transcript_building_uses_user_and_assistant_turns():
@@ -373,6 +441,53 @@ def test_crm_verification_marks_weak_match_partial(monkeypatch):
 
     assert result["status"] == "PARTIAL"
     assert any("expected date/time" in reason for reason in result["reasons"])
+
+
+def test_crm_verification_supports_relative_window_and_start_time(monkeypatch):
+    body = {
+        "items": [
+            {
+                "id": "new",
+                "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
+                "service_name": "Corte (audit)",
+                "starts_at": "2026-04-20T16:17:00Z",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+        ]
+    }
+
+    monkeypatch.setattr(
+        eval_runner,
+        "get_json",
+        lambda *args, **kwargs: eval_runner.HttpResult(
+            status_code=200,
+            body_text=json.dumps(body),
+            json_body=body,
+            headers={},
+        ),
+    )
+
+    result = eval_runner.verify_crm(
+        "https://example.test",
+        "tenant",
+        "token",
+        {
+            "appointments": {
+                "expect_created": True,
+                "from_dt": "relative:tomorrow_start_utc",
+                "to_dt": "relative:day_after_tomorrow_start_utc",
+                "recent_created_within_seconds": 900,
+                "match": {
+                    "start_time": "16:17",
+                    "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
+                    "service_name_contains": "Corte",
+                },
+            }
+        },
+    )
+
+    assert result["status"] == "PASS"
+    assert result["matched"][0]["id"] == "new"
 
 
 def test_summary_markdown_separates_failure_categories():

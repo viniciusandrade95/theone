@@ -1,0 +1,165 @@
+{
+  "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+  "failure_records": [],
+  "failures": [],
+  "final_verdict": "PASS",
+  "guardrails_observed": [
+    "conflict_or_unavailable"
+  ],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_conflict",
+  "scenario_run_id": "20260419T025630Z-3922e31d-reschedule_conflict",
+  "session_id": "s-f2a603046df746c8",
+  "started_at": "2026-04-19T03:03:01.968296+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-f2a603046df746c8\",\"status\":\"ok\",\"reply\":{\"text\":\"A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f2a603046df746c8\",\"reply\":\"A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano.\",\"ro",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-f2a603046df746c8\",\"status\":\"ok\",\"reply\":{\"text\":\"A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f2a603046df746c8\",\"reply\":\"A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano.\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"amanhã\",\"time\":\"15:00\",\"service\":\"corte\",\"new_date\":\"2026-04-20\",\"new_time\":\"15:00\"},\"pending_confirmation\":false,\"action_result\":{\"reschedule_availability\":{\"outcome\":\"availability_check_failed\",\"ok\":false,\"target\":\"seu agendamento\",\"new_date\":\"2026-04-20\",\"new_time\":\"15:00\",\"suggestions\":[],\"error_code\":\"http_404\",\"retriable\":true,\"operational_status\":\"temporary_failure\"},\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\"}}}},\"trace_id\":\"autonomous-eval-deterministic-20260419T025630Z-3922e31d-reschedule_conflict-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8ac63cb47d7e2-GIG",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:03:02 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "d2f200b3-5488-4ae9",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-deterministic-20260419T025630Z-3922e31d-reschedule_conflict-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano.",
+            "route": "workflow",
+            "session_id": "s-f2a603046df746c8",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "reschedule_availability": {
+                  "error_code": "http_404",
+                  "new_date": "2026-04-20",
+                  "new_time": "15:00",
+                  "ok": false,
+                  "operational_status": "temporary_failure",
+                  "outcome": "availability_check_failed",
+                  "retriable": true,
+                  "suggestions": [],
+                  "target": "seu agendamento"
+                }
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "amanhã",
+                "new_date": "2026-04-20",
+                "new_time": "15:00",
+                "service": "corte",
+                "time": "15:00"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano."
+        },
+        "session_id": "s-f2a603046df746c8",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260419T025630Z-3922e31d-reschedule_conflict-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 15h",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "reschedule_availability": {
+            "error_code": "http_404",
+            "new_date": "2026-04-20",
+            "new_time": "15:00",
+            "ok": false,
+            "operational_status": "temporary_failure",
+            "outcome": "availability_check_failed",
+            "retriable": true,
+            "suggestions": [],
+            "target": "seu agendamento"
+          }
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano.",
+        "route": "workflow",
+        "session_id": "s-f2a603046df746c8",
+        "slots": {
+          "date": "amanhã",
+          "new_date": "2026-04-20",
+          "new_time": "15:00",
+          "service": "corte",
+          "time": "15:00"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260419T025630Z-3922e31d-reschedule_conflict-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260419T025630Z-3922e31d-reschedule_conflict-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "conflict",
+    "crm_failure",
+    "requires_seeded_conflict"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 15h\nTurn 1 assistant: A integração está temporariamente indisponível. Vou transferir sua solicitação para atendimento humano."
+}

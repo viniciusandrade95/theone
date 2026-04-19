@@ -3,36 +3,24 @@
   "common_failure_patterns": {
     "assertion_failure": [
       {
-        "count": 3,
-        "pattern": "unexpected RAG route"
-      },
-      {
-        "count": 3,
-        "pattern": "expected workflow book_appointment, got None"
+        "count": 2,
+        "pattern": "reply missing any expected text: registr, agend, pré-agendamento, confirm"
       },
       {
         "count": 2,
-        "pattern": "reply missing expected text: confirmar"
+        "pattern": "expected workflow book_appointment, got create_lead"
+      },
+      {
+        "count": 2,
+        "pattern": "expected status awaiting_confirmation, got response=ok workflow=collecting"
+      },
+      {
+        "count": 2,
+        "pattern": "reply missing any expected text: remarcação, confirmar, confirmação"
       },
       {
         "count": 1,
-        "pattern": "expected status completed, got response=ok workflow=collecting"
-      },
-      {
-        "count": 1,
-        "pattern": "reply missing expected text: registr"
-      },
-      {
-        "count": 1,
-        "pattern": "expected action_result.ok=True, got None"
-      },
-      {
-        "count": 1,
-        "pattern": "reply missing expected text: telefone"
-      },
-      {
-        "count": 1,
-        "pattern": "expected slot customer_name to be present"
+        "pattern": "expected workflow book_appointment, got None"
       },
       {
         "count": 1,
@@ -41,6 +29,18 @@
       {
         "count": 1,
         "pattern": "expected slot date to be present"
+      },
+      {
+        "count": 1,
+        "pattern": "expected status completed, got response=ok workflow=awaiting_confirmation"
+      },
+      {
+        "count": 1,
+        "pattern": "expected workflow reschedule_appointment, got book_appointment"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
       }
     ],
     "crm_verification_failure": [
@@ -51,15 +51,15 @@
     ],
     "upstream_runtime_failure": []
   },
-  "completed_at": "2026-04-18T20:28:29.880181+00:00",
+  "completed_at": "2026-04-19T02:37:59.895940+00:00",
   "fail_count": 5,
   "judge_enabled": false,
   "partial_count": 0,
-  "pass_count": 5,
-  "run_id": "20260418T202421Z-ffb713d5",
-  "started_at": "2026-04-18T20:24:21.894224+00:00",
+  "pass_count": 9,
+  "run_id": "20260419T023240Z-d9cb33bc",
+  "started_at": "2026-04-19T02:32:40.961780+00:00",
   "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
   "top_judge_issues": [],
-  "total_scenarios": 10,
+  "total_scenarios": 14,
   "worst_conversational_scores": []
 }

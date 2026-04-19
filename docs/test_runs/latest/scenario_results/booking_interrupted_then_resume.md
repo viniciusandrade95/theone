@@ -1,24 +1,24 @@
 # booking_interrupted_then_resume
 
-- Verdict: FAIL
+- Verdict: PASS
 - Conversation ID: b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35
-- Session ID: s-0ba8fadc504649d1
+- Session ID: s-52c6382a45df440f
 - Judge: DISABLED
 
 ## Transcript
 
 ```text
 Turn 1 user: Quero marcar um corte amanhã às 18h
-Turn 1 assistant: Corte agendado para 19 de abr às 18:00, está tudo certo? Posso encaminhar para confirmação humana?
+Turn 1 assistant: Ótimo, já troquei para Corte. Confirma que deseja pré-agendar Corte no dia 19 de abr às 18:00? Posso encaminhar para confirmação humana?
 Turn 2 user: Qual o endereço mesmo?
 Turn 2 assistant: Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma o agendamento.
 Turn 3 user: Beleza, pode continuar
-Turn 3 assistant: Antes de confirmar, qual o nome do cliente para este agendamento?
+Turn 3 assistant: Antes de confirmar, qual é o nome do cliente para este agendamento?
 ```
 
 ## Failures
 
-- step 2: assertion_failure: unexpected RAG route
+- None
 
 ## CRM Verification
 
