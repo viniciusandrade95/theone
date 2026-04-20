@@ -1,0 +1,278 @@
+{
+  "iteration_count": 4,
+  "iterations": [
+    {
+      "completed_at": "2026-04-19T15:39:32.713091+00:00",
+      "fail_count": 9,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 10,
+      "run_id": "20260419T152928Z-3288eeda",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "booking affirmation short_turns: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "booking affirmation short_turns: unexpected RAG route"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking affirmation short_turns: expected slot service to be present"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 33,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 2,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T15:49:12.520489+00:00",
+      "fail_count": 7,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 12,
+      "run_id": "20260419T153947Z-e979a30f",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status awaiting_confirmation, got response=ok workflow=collecting"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, confirmar, confirmação"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 17,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T16:39:44.527207+00:00",
+      "fail_count": 9,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 10,
+      "run_id": "20260419T163207Z-d0cfffad",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking interruption robustness: HTTP request failed with status 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Ga"
+        },
+        {
+          "count": 1,
+          "pattern": "booking interruption robustness: response body is not a JSON object"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 17,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 5,
+          "type": "loop_detected"
+        },
+        {
+          "count": 4,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T16:48:07.826851+00:00",
+      "fail_count": 7,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 12,
+      "run_id": "20260419T163959Z-250c085e",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: Repeated date question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking fragmented state: Repeated date question"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 11,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 5,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 78,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 16,
+      "type": "loop_detected"
+    },
+    {
+      "count": 8,
+      "type": "upstream_runtime_failure"
+    },
+    {
+      "count": 7,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 4,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 4,
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 4,
+      "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    },
+    {
+      "count": 4,
+      "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+    },
+    {
+      "count": 2,
+      "pattern": "booking affirmation short_turns: expected workflow book_appointment, got None"
+    },
+    {
+      "count": 2,
+      "pattern": "booking affirmation short_turns: unexpected RAG route"
+    },
+    {
+      "count": 2,
+      "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    }
+  ],
+  "updated_at": "2026-04-19T16:48:07.828440+00:00"
+}

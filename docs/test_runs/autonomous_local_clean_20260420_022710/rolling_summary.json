@@ -1,0 +1,156 @@
+{
+  "iteration_count": 2,
+  "iterations": [
+    {
+      "completed_at": "2026-04-20T01:28:12.360803+00:00",
+      "fail_count": 7,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 12,
+      "run_id": "20260420T012711Z-ad58390f",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 14,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T01:29:29.849432+00:00",
+      "fail_count": 7,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 12,
+      "run_id": "20260420T012828Z-f309ad11",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 14,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 28,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 6,
+      "type": "loop_detected"
+    },
+    {
+      "count": 2,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 2,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 2,
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 2,
+      "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    },
+    {
+      "count": 2,
+      "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+    },
+    {
+      "count": 2,
+      "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+    },
+    {
+      "count": 2,
+      "pattern": "booking missing_phone guardrail: Repeated date question"
+    },
+    {
+      "count": 2,
+      "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    }
+  ],
+  "updated_at": "2026-04-20T01:29:29.850154+00:00"
+}

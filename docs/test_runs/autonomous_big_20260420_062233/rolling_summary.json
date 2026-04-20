@@ -1,0 +1,144 @@
+{
+  "iteration_count": 2,
+  "iterations": [
+    {
+      "completed_at": "2026-04-20T05:23:37.089989+00:00",
+      "fail_count": 26,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260420T052233Z-af77fff3",
+      "top_5_failure_patterns": [
+        {
+          "count": 12,
+          "pattern": "ambiguous generated reschedule: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+        },
+        {
+          "count": 12,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 10,
+          "pattern": "booking faq generated interruption: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+        },
+        {
+          "count": 10,
+          "pattern": "booking correction fragmented generated ptbr: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+        },
+        {
+          "count": 10,
+          "pattern": "booking correction fragmented generated ptbr: expected workflow book_appointment, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 225,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 91,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 6,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T05:24:51.168938+00:00",
+      "fail_count": 26,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260420T052347Z-9e5ff56f",
+      "top_5_failure_patterns": [
+        {
+          "count": 15,
+          "pattern": "ambiguous booking generated missing_time: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+        },
+        {
+          "count": 15,
+          "pattern": "ambiguous booking generated missing_time: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 12,
+          "pattern": "ambiguous generated reschedule: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+        },
+        {
+          "count": 12,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 10,
+          "pattern": "booking faq generated interruption: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 227,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 93,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 7,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 452,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 184,
+      "type": "upstream_runtime_failure"
+    },
+    {
+      "count": 13,
+      "type": "failure_to_complete_task"
+    },
+    {
+      "count": 2,
+      "type": "crm_verification_failure"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 24,
+      "pattern": "ambiguous generated reschedule: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+    },
+    {
+      "count": 24,
+      "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+    },
+    {
+      "count": 20,
+      "pattern": "booking faq generated interruption: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+    },
+    {
+      "count": 15,
+      "pattern": "ambiguous booking generated missing_time: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Missing tenant header: X-Tenant-I"
+    },
+    {
+      "count": 15,
+      "pattern": "ambiguous booking generated missing_time: expected workflow book_appointment, got None"
+    }
+  ],
+  "updated_at": "2026-04-20T05:24:51.170247+00:00"
+}

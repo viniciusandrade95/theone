@@ -1,0 +1,262 @@
+{
+  "iteration_count": 4,
+  "iterations": [
+    {
+      "completed_at": "2026-04-20T01:12:04.853506+00:00",
+      "fail_count": 8,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 11,
+      "run_id": "20260420T011103Z-1a2e06f6",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: unexpected RAG route"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 20,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T01:13:21.256995+00:00",
+      "fail_count": 8,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 11,
+      "run_id": "20260420T011219Z-05df3a02",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: unexpected RAG route"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 20,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T01:14:37.661017+00:00",
+      "fail_count": 8,
+      "iteration": 3,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 11,
+      "run_id": "20260420T011336Z-f0347a0e",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: unexpected RAG route"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 20,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T01:15:53.972833+00:00",
+      "fail_count": 8,
+      "iteration": 4,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 11,
+      "run_id": "20260420T011454Z-30da6903",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: unexpected RAG route"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 20,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 80,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 12,
+      "type": "loop_detected"
+    },
+    {
+      "count": 4,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 4,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 4,
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 8,
+      "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+    },
+    {
+      "count": 8,
+      "pattern": "ambiguous generated reschedule: unexpected RAG route"
+    },
+    {
+      "count": 8,
+      "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+    },
+    {
+      "count": 4,
+      "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    },
+    {
+      "count": 4,
+      "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+    }
+  ],
+  "updated_at": "2026-04-20T01:15:53.973742+00:00"
+}

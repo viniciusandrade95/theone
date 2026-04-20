@@ -1,0 +1,145 @@
+{
+  "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User gives remarcação intent and date but no new time; assistant asks for the missing time.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected status collecting, got response=ok workflow=None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got rag",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected slot new_date to be present",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
+      "step_index": 1
+    }
+  ],
+  "failures": [
+    "step 1: assertion_failure: expected status collecting, got response=ok workflow=None",
+    "step 1: assertion_failure: expected route workflow, got rag",
+    "step 1: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 1: assertion_failure: expected slot new_date to be present",
+    "step 1: assertion_failure: unexpected RAG route"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_missing_time",
+  "scenario_run_id": "20260420T004439Z-bddfcdc9-reschedule_missing_time",
+  "session_id": "s-81f545dea49d4c15",
+  "started_at": "2026-04-20T00:45:30.559559+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "expected status collecting, got response=ok workflow=None",
+          "expected route workflow, got rag",
+          "expected workflow reschedule_appointment, got None",
+          "expected slot new_date to be present",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-81f545dea49d4c15\",\"status\":\"ok\",\"reply\":{\"text\":\"No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-81f545dea49d4c15\",\"reply\":\"No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para enco",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-81f545dea49d4c15\",\"status\":\"ok\",\"reply\":{\"text\":\"No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-81f545dea49d4c15\",\"reply\":\"No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-reschedule_missing_time-1\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "766",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:45:30 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-reschedule_missing_time-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência.",
+            "route": "rag",
+            "session_id": "s-81f545dea49d4c15",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência."
+        },
+        "session_id": "s-81f545dea49d4c15",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-reschedule_missing_time-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência.",
+        "route": "rag",
+        "session_id": "s-81f545dea49d4c15",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-reschedule_missing_time-1",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-reschedule_missing_time-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "missing_data"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã\nTurn 1 assistant: No studio, sobre remarcação: Se precisares remarcar, fazemos o possível para encontrar outro horário no mesmo dia ou na sequência."
+}
