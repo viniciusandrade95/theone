@@ -12,12 +12,12 @@ def reset_config_singleton(monkeypatch):
     import core.config.loader as loader
 
     monkeypatch.setattr(loader, "_config", None)
-    os.environ.setdefault("ENV", "test")
-    os.environ.setdefault("APP_NAME", "beauty-crm")
-    os.environ.setdefault("DATABASE_URL", "dev")
-    os.environ.setdefault("SECRET_KEY", "test-secret")
-    os.environ.setdefault("TENANT_HEADER", "X-Tenant-ID")
-    os.environ.setdefault("ASSISTANT_CONNECTOR_TOKEN", "test-connector-token")
+    monkeypatch.setenv("ENV", "test")
+    monkeypatch.setenv("APP_NAME", "beauty-crm")
+    monkeypatch.setenv("DATABASE_URL", "dev")
+    monkeypatch.setenv("SECRET_KEY", "test-secret")
+    monkeypatch.setenv("TENANT_HEADER", "X-Tenant-ID")
+    monkeypatch.setenv("ASSISTANT_CONNECTOR_TOKEN", "test-connector-token")
     yield
     monkeypatch.setattr(loader, "_config", None)
 
@@ -71,6 +71,7 @@ def _create_appointment(
     service_id: str,
     starts_at: str,
     ends_at: str,
+    status: str = "booked",
 ) -> str:
     response = client.post(
         "/crm/appointments",
@@ -81,6 +82,7 @@ def _create_appointment(
             "service_id": service_id,
             "starts_at": starts_at,
             "ends_at": ends_at,
+            "status": status,
         },
     )
     assert response.status_code == 200
@@ -202,6 +204,48 @@ def test_internal_reschedule_can_resolve_single_upcoming_appointment_without_ref
     body = response.json()
     assert body["ok"] is True
     assert body["operational_status"] == "ok"
+    assert body["data"]["appointment_id"] == appointment_id
+
+
+def test_internal_reschedule_ignores_pending_prebooks_when_resolving_without_reference() -> None:
+    app = create_app()
+    client = TestClient(app)
+    tenant_id, token, customer_id, service_id, location_id = _setup_calendar(client)
+    appointment_id = _create_appointment(
+        client,
+        tenant_id=tenant_id,
+        token=token,
+        customer_id=customer_id,
+        location_id=location_id,
+        service_id=service_id,
+        starts_at="2099-05-04T11:00:00Z",
+        ends_at="2099-05-04T11:45:00Z",
+    )
+    _create_appointment(
+        client,
+        tenant_id=tenant_id,
+        token=token,
+        customer_id=customer_id,
+        location_id=location_id,
+        service_id=service_id,
+        starts_at="2099-05-04T12:00:00Z",
+        ends_at="2099-05-04T12:45:00Z",
+        status="pending",
+    )
+
+    response = client.post(
+        "/internal/chatbot/workflows/reschedule-request",
+        headers=_assistant_headers(tenant_id),
+        json=_operation_body(
+            tenant_id,
+            "reschedule_request",
+            {"service": "Corte", "new_date": "2099-05-04", "new_time": "17:00"},
+        ),
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ok"] is True
     assert body["data"]["appointment_id"] == appointment_id
 
 

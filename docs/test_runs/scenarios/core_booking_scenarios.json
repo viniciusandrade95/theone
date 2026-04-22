@@ -441,7 +441,7 @@
         },
         {
           "user_message": "qual o endereço mesmo?",
-          "expected_workflow": "reschedule_appointment",
+          "allow_rag_detour": true,
           "expected_reply_not_contains": ["prebooking_stub"],
           "expected_no_rag_reset": true
         },

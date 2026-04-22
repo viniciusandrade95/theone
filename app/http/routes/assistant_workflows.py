@@ -157,7 +157,7 @@ def _resolve_target_appointment(
                 select(AppointmentORM)
                 .where(AppointmentORM.tenant_id == tenant_uuid)
                 .where(AppointmentORM.deleted_at.is_(None))
-                .where(AppointmentORM.status != "cancelled")
+                .where(AppointmentORM.status == "booked")
                 .where(AppointmentORM.starts_at >= start)
                 .where(AppointmentORM.starts_at < end)
                 .order_by(AppointmentORM.starts_at.asc(), AppointmentORM.id.asc())
@@ -177,7 +177,7 @@ def _resolve_target_appointment(
         select(AppointmentORM)
         .where(AppointmentORM.tenant_id == tenant_uuid)
         .where(AppointmentORM.deleted_at.is_(None))
-        .where(AppointmentORM.status != "cancelled")
+        .where(AppointmentORM.status == "booked")
         .where(AppointmentORM.starts_at >= datetime.now(timezone.utc))
         .order_by(AppointmentORM.starts_at.asc(), AppointmentORM.id.asc())
         .limit(2)
@@ -212,7 +212,10 @@ def _reschedule_failure_for(reason: str | None) -> dict[str, Any]:
             request_kind="reschedule_request",
             operational_status="validation_error",
             error_code="appointment_not_found",
-            message="Não encontrei esse agendamento para remarcar. Confira a referência ou a data do agendamento.",
+            message=(
+                "Não consegui confirmar a remarcação porque não encontrei esse agendamento. "
+                "Confira a referência ou a data do agendamento."
+            ),
             human_confirmation_required=False,
         )
     return _operation_result(

@@ -139,6 +139,100 @@ def test_heuristics_allow_explicit_rag_detour():
     assert all(finding["type"] != "rag_during_operational_flow" for finding in findings)
 
 
+def test_heuristics_do_not_fail_awaiting_confirmation_expected_after_explicit_confirmation_completed():
+    result = {
+        "steps": [
+            {
+                "step_index": 1,
+                "request": {"message": "quero marcar corte amanhã"},
+                "summary": {
+                    "route": "workflow",
+                    "workflow": "book_appointment",
+                    "workflow_status": "awaiting_confirmation",
+                    "reply_text": "Resumo para confirmação",
+                    "slots": {"service": "Corte", "date": "2026-04-20", "time": "16:00"},
+                    "action_result": {},
+                },
+            },
+            {
+                "step_index": 2,
+                "request": {"message": "ok"},
+                "summary": {
+                    "route": "workflow",
+                    "workflow": "book_appointment",
+                    "workflow_status": "completed",
+                    "reply_text": "Pré-agendamento registrado.",
+                    "slots": {"service": "Corte", "date": "2026-04-20", "time": "16:00"},
+                    "action_result": {"ok": True},
+                },
+            },
+        ]
+    }
+    scenario = {"steps": [{"user_message": "quero marcar corte amanhã"}, {"user_message": "ok"}], "expected_final_status": "awaiting_confirmation"}
+
+    findings = auto.heuristic_findings(result, scenario)
+
+    assert all(finding["type"] != "failure_to_complete_task" for finding in findings)
+
+
+def test_add_heuristic_findings_adds_failure_taxonomy():
+    result = {
+        "failure_records": [],
+        "steps": [
+            {
+                "step_index": 1,
+                "summary": {
+                    "route": "workflow",
+                    "workflow": "book_appointment",
+                    "workflow_status": "collecting",
+                    "reply_text": "Que horário?",
+                    "slots": {"service": "Corte", "date": "2026-04-20"},
+                    "action_result": {},
+                },
+            },
+            {
+                "step_index": 2,
+                "summary": {
+                    "route": "workflow",
+                    "workflow": "book_appointment",
+                    "workflow_status": "collecting",
+                    "reply_text": "Qual horário?",
+                    "slots": {"service": "Corte", "date": "2026-04-20"},
+                    "action_result": {},
+                },
+            },
+            {
+                "step_index": 3,
+                "summary": {
+                    "route": "workflow",
+                    "workflow": "book_appointment",
+                    "workflow_status": "collecting",
+                    "reply_text": "Que horário?",
+                    "slots": {"service": "Corte", "date": "2026-04-20"},
+                    "action_result": {},
+                },
+            },
+        ],
+    }
+
+    auto.add_heuristic_findings(result, {"steps": [{}, {}, {}], "tags": ["booking", "missing_time"]})
+
+    assert result["failure_records"]
+    assert result["failure_records"][0]["failure_family"] == "conversation.time_flexible_mishandled"
+    assert result["failure_records"][0]["failure_layer"] == "conversation"
+
+
+def test_question_classifier_ignores_confirmation_summaries_with_dates():
+    assert (
+        auto.classify_question(
+            "Resumo para confirmação: pré-agendamento de Corte no dia 23 de abr às 16:17. Tudo certo por aqui?"
+        )
+        is None
+    )
+    assert auto.classify_question("Continuo com Corte no dia 23 de abr. Para fechar isso, preciso so do horario.") == "time"
+    assert auto.classify_question("Qual dia fica melhor?") == "date"
+
+
 def test_rolling_summary_tracks_top_failures(tmp_path):
     summary = {
         "iteration": 1,

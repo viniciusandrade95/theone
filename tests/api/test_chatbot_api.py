@@ -96,6 +96,46 @@ def test_chatbot_message_and_reset(monkeypatch):
     assert calls[1]["headers"]["X-Trace-Id"]
 
 
+def test_chatbot_message_uses_configured_chatbot_client_id(monkeypatch):
+    import core.config.loader as loader
+
+    monkeypatch.setenv("CHATBOT_CLIENT_ID", "demo_barbearia")
+    monkeypatch.setattr(loader, "_config", None)
+
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    calls = []
+
+    class DummyResponse:
+        content = b"{}"
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"status": "ok", "reply": "hello from bot", "session_id": "s-override"}
+
+    def fake_post(url, json, headers, timeout):
+        calls.append({"url": url, "json": json, "headers": headers, "timeout": timeout})
+        return DummyResponse()
+
+    monkeypatch.setattr("modules.chatbot.service.chatbot_client.requests.post", fake_post)
+
+    send = client.post(
+        "/api/chatbot/message",
+        headers={"X-Tenant-ID": tenant_id, "Authorization": f"Bearer {token}"},
+        json={"message": "hi assistant", "surface": "dashboard"},
+    )
+
+    assert send.status_code == 200
+    assert send.json()["client_id"] == "demo_barbearia"
+    assert calls[0]["json"]["client_id"] == "demo_barbearia"
+    assert calls[0]["json"]["tenant_id"] == tenant_id
+
+
 def test_chatbot_generates_trace_id_and_propagates_to_upstream(monkeypatch):
     app = create_app()
     client = TestClient(app)

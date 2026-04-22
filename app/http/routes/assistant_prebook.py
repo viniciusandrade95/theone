@@ -137,42 +137,50 @@ def _resolve_customer(session, request: Request, *, tenant_uuid: uuid.UUID, payl
         raise ValidationError("invalid_customer_id_created")
 
 
-def _resolve_service(session, *, tenant_uuid: uuid.UUID, service_id: str) -> ServiceORM:
+def _service_by_name(session, *, tenant_uuid: uuid.UUID, service_name: str) -> ServiceORM | None:
+    desired_key = service_name.strip().lower()
+    if not desired_key:
+        return None
+    stmt = (
+        select(ServiceORM)
+        .where(ServiceORM.tenant_id == tenant_uuid)
+        .where(ServiceORM.deleted_at.is_(None))
+        .where(ServiceORM.is_active.is_(True))
+        .where(func.lower(ServiceORM.name) == desired_key)
+    )
+    matches = list(session.execute(stmt).scalars().all())
+    if len(matches) > 1:
+        raise ValidationError("service_ambiguous", meta={"service_name": service_name, "count": len(matches)})
+    return matches[0] if matches else None
+
+
+def _resolve_service(session, *, tenant_uuid: uuid.UUID, service_id: str, service_name: str | None = None) -> ServiceORM:
     raw = (service_id or "").strip()
     if not raw:
         raise ValidationError("missing_service_id")
     try:
         service_uuid = uuid.UUID(raw)
     except ValueError:
-        # Fallback by name (case-insensitive).
-        desired_key = raw.lower()
-        stmt = (
-            select(ServiceORM)
-            .where(ServiceORM.tenant_id == tenant_uuid)
-            .where(ServiceORM.deleted_at.is_(None))
-            .where(ServiceORM.is_active.is_(True))
-            .where(func.lower(ServiceORM.name) == desired_key)
-        )
-        matches = list(session.execute(stmt).scalars().all())
-        if not matches:
-            raise ValidationError("service_not_found", meta={"service_name": raw})
-        if len(matches) > 1:
-            raise ValidationError("service_ambiguous", meta={"service_name": raw, "count": len(matches)})
-        return matches[0]
+        svc = _service_by_name(session, tenant_uuid=tenant_uuid, service_name=raw)
+        if svc is None and service_name:
+            svc = _service_by_name(session, tenant_uuid=tenant_uuid, service_name=service_name)
+        if svc is None:
+            raise ValidationError("service_not_found", meta={"service_name": service_name or raw})
+        return svc
 
-    AppointmentsRepo(session)._assert_service_is_usable(
-        tenant_id=tenant_uuid,
-        service_id=service_uuid,
-        require_active=True,
-    )
     stmt = (
         select(ServiceORM)
         .where(ServiceORM.tenant_id == tenant_uuid)
         .where(ServiceORM.id == service_uuid)
         .where(ServiceORM.deleted_at.is_(None))
+        .where(ServiceORM.is_active.is_(True))
     )
     svc = session.execute(stmt).scalar_one_or_none()
     if svc is None:
+        if service_name:
+            fallback = _service_by_name(session, tenant_uuid=tenant_uuid, service_name=service_name)
+            if fallback is not None:
+                return fallback
         raise ValidationError("service_not_found_or_inactive", meta={"service_id": raw})
     return svc
 
@@ -366,7 +374,12 @@ def prebook(
                 tenant_uuid=tenant_uuid,
                 location_id=payload.booking.location_id,
             )
-            service = _resolve_service(session, tenant_uuid=tenant_uuid, service_id=payload.booking.service_id)
+            service = _resolve_service(
+                session,
+                tenant_uuid=tenant_uuid,
+                service_id=payload.booking.service_id,
+                service_name=payload.booking.service_name,
+            )
             starts_utc, ends_utc = _resolve_window(booking=payload.booking, service=service, location=location)
             if ends_utc <= starts_utc:
                 return _bad_request("starts_at must be before ends_at")

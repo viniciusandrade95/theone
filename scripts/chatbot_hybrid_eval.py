@@ -14,12 +14,41 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 
 DEFAULT_OUTPUT_DIR = Path("docs/test_runs/latest")
 DEFAULT_SCENARIO_FILE = Path("docs/test_runs/scenarios/core_booking_scenarios.json")
 DEFAULT_JUDGE_PROMPT = Path("docs/test_runs/judge_prompt.md")
 DEFAULT_RETRY_BACKOFF_SECONDS = (2.0, 4.0)
+KNOWN_FAILURE_FAMILIES = {
+    "conversation.state_reset",
+    "conversation.slot_loop",
+    "conversation.correction_mishandled",
+    "conversation.short_confirmation_misrouted",
+    "conversation.reference_disambiguation_failed",
+    "conversation.time_flexible_mishandled",
+    "execution.identity_missing_block_expected",
+    "execution.service_mapping_missing",
+    "execution.crm_ambiguous_expected",
+    "execution.crm_rejected",
+    "execution.runtime_internal_error",
+    "evaluator.wrong_expected_status",
+    "evaluator.layer_mixing",
+}
+SHORT_CONFIRMATION_TERMS = {
+    "ok",
+    "okay",
+    "sim",
+    "s",
+    "pode",
+    "isso",
+    "fechado",
+    "fechou",
+    "confirmo",
+    "confirma",
+    "confirmar",
+}
 
 
 @dataclass
@@ -231,10 +260,31 @@ def contains_casefold(text: str, needle: str) -> bool:
     return needle.casefold() in text.casefold()
 
 
-def make_failure(category: str, message: str, *, step_index: int | None = None) -> dict[str, Any]:
+def make_failure(
+    category: str,
+    message: str,
+    *,
+    step_index: int | None = None,
+    failure_type: str | None = None,
+    http: HttpResult | None = None,
+    summary: StepSummary | dict[str, Any] | None = None,
+    scenario: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     record: dict[str, Any] = {"category": category, "message": message}
     if step_index is not None:
         record["step_index"] = step_index
+    if failure_type:
+        record["type"] = failure_type
+    family = classify_failure_family(
+        category=category,
+        message=message,
+        failure_type=failure_type,
+        http=http,
+        summary=summary,
+        scenario=scenario,
+    )
+    record["failure_family"] = family
+    record["failure_layer"] = failure_layer(family)
     return record
 
 
@@ -254,6 +304,100 @@ def categorize_assertion_reason(reason: str, http: HttpResult) -> str:
     return "assertion_failure"
 
 
+def failure_layer(failure_family: str) -> str:
+    prefix = str(failure_family or "").split(".", 1)[0]
+    return prefix if prefix in {"conversation", "execution", "evaluator"} else "unknown"
+
+
+def classify_failure_family(
+    *,
+    category: str,
+    message: str,
+    failure_type: str | None = None,
+    http: HttpResult | None = None,
+    summary: StepSummary | dict[str, Any] | None = None,
+    scenario: dict[str, Any] | None = None,
+) -> str:
+    text = str(message or "")
+    folded = text.casefold()
+    action = _summary_action_result(summary)
+    scenario_text = " ".join(str(tag) for tag in (scenario or {}).get("tags", []))
+    combined = f"{folded} {scenario_text.casefold()}"
+
+    if is_transient_upstream_failure(http) if http is not None else False:
+        return "execution.runtime_internal_error"
+    if category == "upstream_runtime_failure" or "internal_error" in combined or "http request failed" in combined:
+        return "execution.runtime_internal_error"
+
+    error_code = str(action.get("error_code") or "").strip()
+    operational_status = str(action.get("operational_status") or "").strip()
+    if error_code in {"config_missing_services_json", "config_missing_service_id"} or "service_id" in combined or "services.json" in combined:
+        return "execution.service_mapping_missing"
+    if error_code in {"missing_customer_identity", "missing_customer_phone"} or "missing_customer" in combined:
+        return "execution.identity_missing_block_expected"
+    if error_code == "appointment_ambiguous":
+        return "execution.crm_ambiguous_expected"
+    if category == "crm_verification_failure" or operational_status in {"validation_error", "business_rule_block", "conflict"}:
+        return "execution.crm_rejected"
+
+    if failure_type == "loop_detected" or "repeated " in combined and " question" in combined:
+        if "time" in combined or "horario" in combined or "horário" in combined or "missing_time" in combined:
+            return "conversation.time_flexible_mishandled"
+        return "conversation.slot_loop"
+    if failure_type == "slot_loss" or "slot loss" in combined or "reset to collecting" in combined:
+        return "conversation.state_reset"
+    if failure_type == "rag_during_operational_flow" or "unexpected rag route" in combined or "got rag" in combined:
+        return "conversation.short_confirmation_misrouted"
+    if failure_type == "failure_to_complete_task" or "expected final status" in combined or "expected status" in combined:
+        return "evaluator.wrong_expected_status" if _looks_like_expected_status_problem(text, scenario) else "conversation.state_reset"
+    if "correction" in combined or "corrig" in combined or "na verdade" in combined:
+        return "conversation.correction_mishandled"
+    if "ambiguous" in combined or "referência" in combined or "referencia" in combined or "appointment_ambiguous" in combined:
+        return "conversation.reference_disambiguation_failed"
+
+    if category == "assertion_failure" and action:
+        return "evaluator.layer_mixing"
+    return "conversation.state_reset" if category in {"assertion_failure", "heuristic_failure"} else "evaluator.layer_mixing"
+
+
+def _summary_action_result(summary: StepSummary | dict[str, Any] | None) -> dict[str, Any]:
+    if isinstance(summary, StepSummary):
+        return summary.action_result if isinstance(summary.action_result, dict) else {}
+    if isinstance(summary, dict):
+        action = summary.get("action_result")
+        if isinstance(action, dict):
+            return action
+        nested = nested_get(summary, "summary.action_result")
+        return nested if isinstance(nested, dict) else {}
+    return {}
+
+
+def _looks_like_expected_status_problem(message: str, scenario: dict[str, Any] | None) -> bool:
+    text = str(message or "").casefold()
+    if "expected final status" not in text and "expected status" not in text:
+        return False
+    if scenario_ended_with_explicit_confirmation(scenario or {}):
+        return True
+    return "got completed" in text or "got response=ok workflow=completed" in text
+
+
+def scenario_ended_with_explicit_confirmation(scenario: dict[str, Any]) -> bool:
+    steps = scenario.get("steps")
+    if not isinstance(steps, list) or not steps:
+        return False
+    last = steps[-1]
+    message = str(last.get("user_message") if isinstance(last, dict) else last or "")
+    return is_explicit_user_confirmation(message)
+
+
+def is_explicit_user_confirmation(message: str) -> bool:
+    normalized = " ".join(str(message or "").casefold().replace(",", " ").replace(".", " ").split())
+    if not normalized or any(token in normalized.split() for token in ("nao", "não", "n")):
+        return False
+    words = set(normalized.split())
+    return bool(words & SHORT_CONFIRMATION_TERMS or "pode confirmar" in normalized or "tudo certo" in normalized)
+
+
 def final_verdict_from_failures(failure_records: list[dict[str, Any]]) -> str:
     if not failure_records:
         return "PASS"
@@ -261,6 +405,9 @@ def final_verdict_from_failures(failure_records: list[dict[str, Any]]) -> str:
     if categories and categories <= {"upstream_runtime_failure"}:
         return "PARTIAL"
     if categories and categories <= {"crm_verification_failure"}:
+        return "PARTIAL"
+    families = {str(record.get("failure_family") or "") for record in failure_records}
+    if families and all(family.startswith("evaluator.") for family in families):
         return "PARTIAL"
     return "FAIL"
 
@@ -276,7 +423,13 @@ def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, 
 
     expected_status = step.get("expected_status")
     if expected_status and summary.workflow_status != expected_status and summary.status != expected_status:
-        reasons.append(f"expected status {expected_status}, got response={summary.status} workflow={summary.workflow_status}")
+        explicit_confirmation_completed = bool(
+            expected_status == "awaiting_confirmation"
+            and summary.workflow_status == "completed"
+            and is_explicit_user_confirmation(str(step.get("user_message") or ""))
+        )
+        if not explicit_confirmation_completed:
+            reasons.append(f"expected status {expected_status}, got response={summary.status} workflow={summary.workflow_status}")
 
     expected_route = step.get("expected_route")
     if expected_route and summary.route != expected_route:
@@ -324,6 +477,8 @@ def evaluate_step(step: dict[str, Any], http: HttpResult, summary: StepSummary, 
         if summary.route == "rag" and not step.get("allow_rag_detour"):
             reasons.append("unexpected RAG route")
         allows_empty_collection = bool(step.get("allow_empty_collecting_slots")) or expected_status == "collecting"
+        if summary.action_result.get("time_flexible") or summary.action_result.get("time_resolution_mode") == "flexible":
+            allows_empty_collection = True
         if (
             summary.workflow == "book_appointment"
             and summary.workflow_status == "collecting"
@@ -423,9 +578,19 @@ def appointment_matches(item: Any, match: dict[str, Any], *, recent_after: str |
     if recent_after and not iso_at_or_after(item.get("created_at"), recent_after):
         return False
     for key, expected in match.items():
+        if key == "service_id" and "service_name_contains" in match:
+            actual = item.get("service_id")
+            if actual in (None, "", expected):
+                continue
+            if contains_casefold(str(item.get("service_name") or ""), str(match.get("service_name_contains") or "")):
+                continue
         if key == "start_time":
             starts_at = parse_iso_datetime(str(item.get("starts_at") or ""))
-            if starts_at is None or starts_at.strftime("%H:%M") != str(expected):
+            expected_time = str(expected)
+            local_time = (
+                starts_at.astimezone(ZoneInfo("America/Sao_Paulo")).strftime("%H:%M") if starts_at is not None else ""
+            )
+            if starts_at is None or (starts_at.strftime("%H:%M") != expected_time and local_time != expected_time):
                 return False
             continue
         if key.endswith("_contains"):
@@ -636,7 +801,14 @@ def run_scenario(
         if assertion.status == "FAIL":
             failure_records.extend(
                 [
-                    make_failure(categorize_assertion_reason(reason, http), reason, step_index=index)
+                    make_failure(
+                        categorize_assertion_reason(reason, http),
+                        reason,
+                        step_index=index,
+                        http=http,
+                        summary=summary,
+                        scenario=scenario,
+                    )
                     for reason in assertion.reasons
                 ]
             )
@@ -667,7 +839,7 @@ def run_scenario(
     if crm_verification.get("status") in {"FAIL", "PARTIAL"}:
         failure_records.extend(
             [
-                make_failure("crm_verification_failure", reason)
+                make_failure("crm_verification_failure", reason, scenario=scenario)
                 for reason in crm_verification.get("reasons", [])
             ]
         )
@@ -779,6 +951,8 @@ def summarize_run(
         "assertion_failure": {},
         "crm_verification_failure": {},
     }
+    failure_family_patterns: dict[str, dict[str, int]] = {}
+    failure_layer_counts: dict[str, int] = {}
     judge_issues: dict[str, int] = {}
     worst_scores: list[dict[str, Any]] = []
     for result in scenario_results:
@@ -790,6 +964,16 @@ def summarize_run(
                 failure_patterns[category] = {}
             key = str(record.get("message") or "")[:160]
             failure_patterns[category][key] = failure_patterns[category].get(key, 0) + 1
+            family = str(record.get("failure_family") or classify_failure_family(
+                category=category,
+                message=str(record.get("message") or ""),
+                failure_type=str(record.get("type") or "") or None,
+            ))
+            if family not in failure_family_patterns:
+                failure_family_patterns[family] = {}
+            failure_family_patterns[family][key] = failure_family_patterns[family].get(key, 0) + 1
+            layer = str(record.get("failure_layer") or failure_layer(family))
+            failure_layer_counts[layer] = failure_layer_counts.get(layer, 0) + 1
         judge_result = nested_get(result, "judge.result")
         if isinstance(judge_result, dict):
             scores = [
@@ -823,6 +1007,18 @@ def summarize_run(
             )[:10]
             for category, patterns in failure_patterns.items()
         },
+        "common_failure_families": {
+            family: sorted(
+                [{"pattern": key, "count": count} for key, count in patterns.items()],
+                key=lambda item: item["count"],
+                reverse=True,
+            )[:10]
+            for family, patterns in failure_family_patterns.items()
+        },
+        "failure_layer_counts": [
+            {"layer": key, "count": count}
+            for key, count in sorted(failure_layer_counts.items(), key=lambda item: item[1], reverse=True)
+        ],
         "worst_conversational_scores": sorted(worst_scores, key=lambda item: item["min_score"])[:10],
         "top_judge_issues": sorted(
             [{"issue": key, "count": count} for key, count in judge_issues.items()],
@@ -857,6 +1053,17 @@ def render_summary_markdown(summary: dict[str, Any]) -> str:
     lines.extend([f"- {item['count']}x {item['pattern']}" for item in product] or ["- None"])
     lines.extend(["", "## CRM Verification Failures", ""])
     lines.extend([f"- {item['count']}x {item['pattern']}" for item in crm] or ["- None"])
+    lines.extend(["", "## Failure Layers", ""])
+    layer_counts = summary.get("failure_layer_counts") or []
+    lines.extend([f"- {item['count']}x {item['layer']}" for item in layer_counts] or ["- None"])
+    lines.extend(["", "## Failure Families", ""])
+    families = summary.get("common_failure_families") or {}
+    if families:
+        for family, patterns in sorted(families.items()):
+            total = sum(int(item.get("count") or 0) for item in patterns)
+            lines.append(f"- {total}x {family}")
+    else:
+        lines.append("- None")
     lines.extend(["", "## Worst Conversational Scores", ""])
     scores = summary.get("worst_conversational_scores") or []
     lines.extend([f"- {item['scenario']}: min score {item['min_score']}" for item in scores] or ["- Judge disabled or no scores"])

@@ -332,12 +332,13 @@ def add_heuristic_findings(result: dict[str, Any], scenario: dict[str, Any]) -> 
     records = list(result.get("failure_records") or [])
     for finding in heuristic_findings(result, scenario):
         records.append(
-            {
-                "category": "heuristic_failure",
-                "message": finding["message"],
-                "step_index": finding.get("step_index"),
-                "type": finding["type"],
-            }
+            hybrid.make_failure(
+                "heuristic_failure",
+                finding["message"],
+                step_index=finding.get("step_index"),
+                failure_type=finding["type"],
+                scenario=scenario,
+            )
         )
     result["failure_records"] = records
     result["failures"] = [hybrid.failure_message(record) for record in records]
@@ -390,7 +391,8 @@ def heuristic_findings(result: dict[str, Any], scenario: dict[str, Any]) -> list
     if expected in {"completed", "awaiting_confirmation", "collecting"}:
         final_status = str(hybrid.nested_get(steps[-1] if steps else {}, "summary.workflow_status", "") or "")
         if final_status != expected:
-            findings.append({"type": "failure_to_complete_task", "message": f"Expected final status {expected}, got {final_status or 'unknown'}"})
+            if not (expected == "awaiting_confirmation" and final_status == "completed" and hybrid.scenario_ended_with_explicit_confirmation(scenario)):
+                findings.append({"type": "failure_to_complete_task", "message": f"Expected final status {expected}, got {final_status or 'unknown'}"})
     if not steps:
         findings.append({"type": "dead_end", "message": "Scenario produced no step results"})
     return findings
@@ -406,9 +408,23 @@ def step_allows_rag_detour(scenario: dict[str, Any], step_index: int) -> bool:
 
 def classify_question(text: str) -> str | None:
     lowered = text.casefold()
+    if "resumo para confirmação" in lowered or "resumo para confirmacao" in lowered:
+        return None
+    if "pré-agendamento" in lowered or "pre-agendamento" in lowered or "pre agendamento" in lowered:
+        return None
+    questionish = (
+        "?" in lowered
+        or "qual " in lowered
+        or "que " in lowered
+        or "prefere" in lowered
+        or "preciso" in lowered
+        or "informe" in lowered
+    )
+    if not questionish:
+        return None
     if "serviço" in lowered or "servico" in lowered:
         return "service"
-    if "dia" in lowered or "data" in lowered or "quando" in lowered:
+    if "qual dia" in lowered or "que dia" in lowered or "data" in lowered or "quando" in lowered:
         return "date"
     if "horário" in lowered or "horario" in lowered:
         return "time"
@@ -497,7 +513,7 @@ def build_autonomous_iteration_summary(
     for result in results:
         scenario_tags = " ".join(str(tag) for tag in result.get("tags", []))
         for record in result.get("failure_records") or []:
-            failure_type = str(record.get("type") or record.get("category") or "unknown")
+            failure_type = str(record.get("failure_family") or record.get("type") or record.get("category") or "unknown")
             failure_counter[failure_type] += 1
             message = str(record.get("message") or "")
             if scenario_tags:

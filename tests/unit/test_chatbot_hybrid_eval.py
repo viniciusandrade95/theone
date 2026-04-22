@@ -140,6 +140,37 @@ def test_expected_collecting_step_with_empty_slots_is_not_treated_as_reset():
     assert result.status == "PASS"
 
 
+def test_expected_awaiting_confirmation_allows_completed_after_explicit_confirmation():
+    http = eval_runner.HttpResult(
+        status_code=200,
+        body_text=json.dumps({"status": "ok"}),
+        json_body={"status": "ok"},
+        headers={},
+    )
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Pré-agendamento registrado.",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="book_appointment",
+        workflow_status="completed",
+        slots={"service": "Corte", "date": "2026-04-20", "time": "16:00"},
+        action_result={"ok": True},
+    )
+
+    result = eval_runner.evaluate_step(
+        {"user_message": "ok", "expected_status": "awaiting_confirmation"},
+        http,
+        summary,
+        allow_prebooking_stub=False,
+    )
+
+    assert result.status == "PASS"
+
+
 def test_allow_rag_detour_keeps_interruption_step_from_false_failure():
     http = eval_runner.HttpResult(
         status_code=200,
@@ -336,6 +367,92 @@ def test_summary_generation_counts_failures_and_judge_issues():
     assert summary["top_judge_issues"][0]["issue"] == "wordy"
 
 
+def test_failure_taxonomy_classifies_conversation_state_reset():
+    record = eval_runner.make_failure(
+        "assertion_failure",
+        "workflow appears to have reset to collecting with empty slots",
+        step_index=1,
+    )
+
+    assert record["failure_family"] == "conversation.state_reset"
+    assert record["failure_layer"] == "conversation"
+    assert record["category"] == "assertion_failure"
+
+
+def test_failure_taxonomy_classifies_config_error_as_execution_not_slot_bug():
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Configuração incompleta",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="book_appointment",
+        workflow_status="failed",
+        slots={"service": "Corte"},
+        action_result={"ok": False, "error_code": "config_missing_services_json", "operational_status": "validation_error"},
+    )
+
+    record = eval_runner.make_failure(
+        "assertion_failure",
+        "expected status awaiting_confirmation, got response=ok workflow=failed",
+        summary=summary,
+    )
+
+    assert record["failure_family"] == "execution.service_mapping_missing"
+    assert record["failure_layer"] == "execution"
+
+
+def test_failure_taxonomy_classifies_crm_ambiguity_as_execution_stage():
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Encontrei mais de um agendamento possível.",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="reschedule_appointment",
+        workflow_status="awaiting_target_reference",
+        slots={"new_date": "2026-04-24", "new_time": "16:00"},
+        action_result={"ok": False, "error_code": "appointment_ambiguous", "operational_status": "validation_error"},
+    )
+
+    record = eval_runner.make_failure(
+        "assertion_failure",
+        "expected status awaiting_confirmation, got response=ok workflow=awaiting_target_reference",
+        summary=summary,
+    )
+
+    assert record["failure_family"] == "execution.crm_ambiguous_expected"
+    assert record["failure_layer"] == "execution"
+
+
+def test_summary_keeps_legacy_patterns_and_adds_failure_families():
+    summary = eval_runner.summarize_run(
+        run_id="r1",
+        started_at="2026-04-18T00:00:00+00:00",
+        base_url="https://example.test",
+        tenant_id="tenant",
+        judge_enabled=False,
+        scenario_results=[
+            {
+                "scenario_name": "fail",
+                "final_verdict": "FAIL",
+                "failure_records": [
+                    eval_runner.make_failure("heuristic_failure", "Repeated time question", failure_type="loop_detected")
+                ],
+                "judge": {"status": "DISABLED"},
+            }
+        ],
+    )
+
+    assert summary["common_failure_patterns"]["heuristic_failure"][0]["pattern"] == "Repeated time question"
+    assert summary["common_failure_families"]["conversation.time_flexible_mishandled"][0]["pattern"] == "Repeated time question"
+    assert summary["failure_layer_counts"][0] == {"layer": "conversation", "count": 1}
+
+
 def test_transient_upstream_502_retries_and_records_attempts(monkeypatch):
     transient_body = {
         "error": "VALIDATION_ERROR",
@@ -488,6 +605,125 @@ def test_crm_verification_supports_relative_window_and_start_time(monkeypatch):
 
     assert result["status"] == "PASS"
     assert result["matched"][0]["id"] == "new"
+
+
+def test_crm_verification_accepts_dynamic_service_id_when_service_name_matches(monkeypatch):
+    body = {
+        "items": [
+            {
+                "id": "new",
+                "service_id": "runtime-service-id",
+                "service_name": "Corte",
+                "starts_at": "2026-04-20T16:17:00Z",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+        ]
+    }
+
+    monkeypatch.setattr(
+        eval_runner,
+        "get_json",
+        lambda *args, **kwargs: eval_runner.HttpResult(
+            status_code=200,
+            body_text=json.dumps(body),
+            json_body=body,
+            headers={},
+        ),
+    )
+
+    result = eval_runner.verify_crm(
+        "https://example.test",
+        "tenant",
+        "token",
+        {
+            "appointments": {
+                "expect_created": True,
+                "from_dt": "2026-04-20T00:00:00Z",
+                "to_dt": "2026-04-21T00:00:00Z",
+                "recent_created_within_seconds": 900,
+                "match": {
+                    "start_time": "16:17",
+                    "service_id": "stale-static-service-id",
+                    "service_name_contains": "Corte",
+                },
+            }
+        },
+    )
+
+    assert result["status"] == "PASS"
+    assert result["matched"][0]["id"] == "new"
+
+
+def test_crm_verification_matches_local_start_time_from_utc_stored_appointment(monkeypatch):
+    body = {
+        "items": [
+            {
+                "id": "new",
+                "service_id": "runtime-service-id",
+                "service_name": "Corte",
+                "starts_at": "2026-04-23T19:17:00",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+        ]
+    }
+
+    monkeypatch.setattr(
+        eval_runner,
+        "get_json",
+        lambda *args, **kwargs: eval_runner.HttpResult(
+            status_code=200,
+            body_text=json.dumps(body),
+            json_body=body,
+            headers={},
+        ),
+    )
+
+    result = eval_runner.verify_crm(
+        "https://example.test",
+        "tenant",
+        "token",
+        {
+            "appointments": {
+                "expect_created": True,
+                "from_dt": "2026-04-23T00:00:00Z",
+                "to_dt": "2026-04-24T00:00:00Z",
+                "recent_created_within_seconds": 900,
+                "match": {
+                    "start_time": "16:17",
+                    "service_id": "stale-static-service-id",
+                    "service_name_contains": "Corte",
+                },
+            }
+        },
+    )
+
+    assert result["status"] == "PASS"
+    assert result["matched"][0]["id"] == "new"
+
+
+def test_empty_collecting_slots_are_allowed_for_flexible_time_prompt():
+    summary = eval_runner.StepSummary(
+        conversation_id="c-1",
+        session_id="s-1",
+        status="ok",
+        reply_text="Claro. Para eu sugerir horários, qual serviço você quer?",
+        trace_id="t-1",
+        source="chatbot1",
+        route="workflow",
+        workflow="book_appointment",
+        workflow_status="collecting",
+        slots={},
+        action_result={"time_flexible": True, "time_resolution_mode": "flexible"},
+    )
+
+    result = eval_runner.evaluate_step(
+        {"expected_no_rag_reset": True},
+        eval_runner.HttpResult(status_code=200, body_text="{}", json_body={}, headers={}),
+        summary,
+        allow_prebooking_stub=False,
+    )
+
+    assert result.status == "PASS"
 
 
 def test_summary_markdown_separates_failure_categories():
