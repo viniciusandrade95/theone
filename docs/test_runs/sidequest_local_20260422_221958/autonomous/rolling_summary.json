@@ -1,0 +1,63 @@
+{
+  "iteration_count": 5,
+  "iterations": [
+    {
+      "completed_at": "2026-04-22T21:21:16.343942+00:00",
+      "fail_count": 0,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 19,
+      "run_id": "20260422T212040Z-d60e59a7",
+      "top_5_failure_patterns": [],
+      "top_failure_types": []
+    },
+    {
+      "completed_at": "2026-04-22T21:22:03.871072+00:00",
+      "fail_count": 0,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 19,
+      "run_id": "20260422T212128Z-939c20c9",
+      "top_5_failure_patterns": [],
+      "top_failure_types": []
+    },
+    {
+      "completed_at": "2026-04-22T21:22:49.529193+00:00",
+      "fail_count": 0,
+      "iteration": 3,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 19,
+      "run_id": "20260422T212213Z-1db23b01",
+      "top_5_failure_patterns": [],
+      "top_failure_types": []
+    },
+    {
+      "completed_at": "2026-04-22T21:23:35.583688+00:00",
+      "fail_count": 0,
+      "iteration": 4,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 19,
+      "run_id": "20260422T212259Z-074d64c9",
+      "top_5_failure_patterns": [],
+      "top_failure_types": []
+    },
+    {
+      "completed_at": "2026-04-22T21:24:23.569387+00:00",
+      "fail_count": 0,
+      "iteration": 5,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 19,
+      "run_id": "20260422T212347Z-88b5c81b",
+      "top_5_failure_patterns": [],
+      "top_failure_types": []
+    }
+  ],
+  "most_frequent_bugs": [],
+  "top_5_failure_patterns": [],
+  "updated_at": "2026-04-22T21:24:23.571012+00:00"
+}

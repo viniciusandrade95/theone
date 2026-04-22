@@ -1,0 +1,47 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "common_failure_families": {
+    "execution.crm_rejected": [
+      {
+        "count": 1,
+        "pattern": "expected matching appointment to exist"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+      }
+    ]
+  },
+  "common_failure_patterns": {
+    "assertion_failure": [
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+      }
+    ],
+    "crm_verification_failure": [
+      {
+        "count": 1,
+        "pattern": "expected matching appointment to exist"
+      }
+    ],
+    "upstream_runtime_failure": []
+  },
+  "completed_at": "2026-04-22T21:14:23.511811+00:00",
+  "fail_count": 1,
+  "failure_layer_counts": [
+    {
+      "count": 2,
+      "layer": "execution"
+    }
+  ],
+  "judge_enabled": false,
+  "partial_count": 1,
+  "pass_count": 12,
+  "run_id": "20260422T211353Z-4f9999c7",
+  "started_at": "2026-04-22T21:13:53.220952+00:00",
+  "tenant_id": "f1f3731f-303a-4ad9-86b0-05e4635c92de",
+  "top_judge_issues": [],
+  "total_scenarios": 14,
+  "worst_conversational_scores": []
+}

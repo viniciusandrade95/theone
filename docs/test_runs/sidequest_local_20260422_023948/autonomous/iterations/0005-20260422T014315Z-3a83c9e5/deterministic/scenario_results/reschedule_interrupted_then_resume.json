@@ -1,0 +1,386 @@
+{
+  "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User interrupts remarcação with FAQ and resumes without losing new date.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.short_confirmation_misrouted",
+      "failure_layer": "conversation",
+      "message": "unexpected RAG route",
+      "step_index": 2
+    },
+    {
+      "category": "heuristic_failure",
+      "failure_family": "conversation.short_confirmation_misrouted",
+      "failure_layer": "conversation",
+      "message": "RAG route during operational flow",
+      "step_index": 2,
+      "type": "rag_during_operational_flow"
+    }
+  ],
+  "failures": [
+    "step 2: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 2: assertion_failure: unexpected RAG route",
+    "step 2: heuristic_failure: RAG route during operational flow"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": [
+      {
+        "category": "heuristic_failure",
+        "failure_family": "conversation.short_confirmation_misrouted",
+        "failure_layer": "conversation",
+        "message": "RAG route during operational flow",
+        "step_index": 2,
+        "type": "rag_during_operational_flow"
+      }
+    ]
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_interrupted_then_resume",
+  "scenario_run_id": "20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume",
+  "session_id": "s-d1ad538bb1f84c58",
+  "started_at": "2026-04-22T01:43:39.292126+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"699d095e-02bb-4c4d-853e-fcbae6832ed8\",\"session_id\":\"s-d1ad538bb1f84c58\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d1ad538bb1f84c58\",\"reply\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":nu",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"699d095e-02bb-4c4d-853e-fcbae6832ed8\",\"session_id\":\"s-d1ad538bb1f84c58\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d1ad538bb1f84c58\",\"reply\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"corte\",\"new_date\":\"2026-04-22\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":true,\"progress_reason\":\"operations:new_date, service\",\"last_prompted_slot\":\"new_time\",\"repeated_prompt_suppressed\":false}}}},\"trace_id\":\"autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-1\",\"client_id\":\"82e54494-d4c0-4529-be81-6a3180b4cdca\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1063",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 01:43:37 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "82e54494-d4c0-4529-be81-6a3180b4cdca",
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, ajustei para Corte. E qual horário você prefere?",
+            "route": "workflow",
+            "session_id": "s-d1ad538bb1f84c58",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 1,
+                "fallback_before": 0,
+                "last_prompted_slot": "new_time",
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:new_date, service",
+                "repeated_prompt_suppressed": false
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "new_date": "2026-04-22",
+                "service": "corte"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, ajustei para Corte. E qual horário você prefere?"
+        },
+        "session_id": "s-d1ad538bb1f84c58",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "fallback_after": 1,
+          "fallback_before": 0,
+          "last_prompted_slot": "new_time",
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:new_date, service",
+          "repeated_prompt_suppressed": false
+        },
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "reply_text": "Perfeito, ajustei para Corte. E qual horário você prefere?",
+        "route": "workflow",
+        "session_id": "s-d1ad538bb1f84c58",
+        "slots": {
+          "new_date": "2026-04-22",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected workflow reschedule_appointment, got None",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"699d095e-02bb-4c4d-853e-fcbae6832ed8\",\"session_id\":\"s-d1ad538bb1f84c58\",\"status\":\"ok\",\"reply\":{\"text\":\"Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d1ad538bb1f84c58\",\"reply\":\"Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quis",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"699d095e-02bb-4c4d-853e-fcbae6832ed8\",\"session_id\":\"s-d1ad538bb1f84c58\",\"status\":\"ok\",\"reply\":{\"text\":\"Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d1ad538bb1f84c58\",\"reply\":\"Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-2\",\"client_id\":\"82e54494-d4c0-4529-be81-6a3180b4cdca\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "800",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 01:43:37 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "82e54494-d4c0-4529-be81-6a3180b4cdca",
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação.",
+            "route": "rag",
+            "session_id": "s-d1ad538bb1f84c58",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação."
+        },
+        "session_id": "s-d1ad538bb1f84c58",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-2"
+      },
+      "request": {
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "message": "qual o endereço mesmo?",
+        "session_id": "s-d1ad538bb1f84c58",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "reply_text": "Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação.",
+        "route": "rag",
+        "session_id": "s-d1ad538bb1f84c58",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-2"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"699d095e-02bb-4c4d-853e-fcbae6832ed8\",\"session_id\":\"s-d1ad538bb1f84c58\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d1ad538bb1f84c58\",\"reply\":\"Perfeito, ajustei o horário. Res",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"699d095e-02bb-4c4d-853e-fcbae6832ed8\",\"session_id\":\"s-d1ad538bb1f84c58\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d1ad538bb1f84c58\",\"reply\":\"Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"service\":\"corte\",\"new_date\":\"2026-04-22\",\"new_time\":\"16:17\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":false,\"progress_reason\":\"none\",\"workflow_status\":\"awaiting_confirmation\",\"target_reference_selected\":null,\"reschedule_state\":{\"target_reference_required\":false,\"target_reference_candidates\":[],\"target_reference_selected\":null,\"old_appointment_date\":null,\"old_appointment_time\":null,\"old_service\":null,\"new_service\":null,\"new_date\":null,\"new_time\":null}}}}},\"trace_id\":\"autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-3\",\"client_id\":\"82e54494-d4c0-4529-be81-6a3180b4cdca\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1541",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 01:43:38 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-3"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "82e54494-d4c0-4529-be81-6a3180b4cdca",
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-d1ad538bb1f84c58",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": false,
+                "progress_reason": "none",
+                "reschedule_state": {
+                  "new_date": null,
+                  "new_service": null,
+                  "new_time": null,
+                  "old_appointment_date": null,
+                  "old_appointment_time": null,
+                  "old_service": null,
+                  "target_reference_candidates": [],
+                  "target_reference_required": false,
+                  "target_reference_selected": null
+                },
+                "target_reference_selected": null,
+                "workflow_status": "awaiting_confirmation"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "new_date": "2026-04-22",
+                "new_time": "16:17",
+                "service": "corte"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-d1ad538bb1f84c58",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-3"
+      },
+      "request": {
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "message": "16h17",
+        "session_id": "s-d1ad538bb1f84c58",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": false,
+          "progress_reason": "none",
+          "reschedule_state": {
+            "new_date": null,
+            "new_service": null,
+            "new_time": null,
+            "old_appointment_date": null,
+            "old_appointment_time": null,
+            "old_service": null,
+            "target_reference_candidates": [],
+            "target_reference_required": false,
+            "target_reference_selected": null
+          },
+          "target_reference_selected": null,
+          "workflow_status": "awaiting_confirmation"
+        },
+        "conversation_id": "699d095e-02bb-4c4d-853e-fcbae6832ed8",
+        "reply_text": "Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-d1ad538bb1f84c58",
+        "slots": {
+          "new_date": "2026-04-22",
+          "new_time": "16:17",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-3",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260422T014315Z-3a83c9e5-reschedule_interrupted_then_resume-3"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "interruption",
+    "robustness"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã\nTurn 1 assistant: Perfeito, ajustei para Corte. E qual horário você prefere?\nTurn 2 user: qual o endereço mesmo?\nTurn 2 assistant: Rua das Palmeiras, 123 - Centro. Há estacionamento conveniado na mesma quadra. Se quiser, depois a gente retoma a remarcação.\nTurn 3 user: 16h17\nTurn 3 assistant: Perfeito, ajustei o horário. Resumo para confirmação: remarcação de seu próximo agendamento para 22 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?"
+}

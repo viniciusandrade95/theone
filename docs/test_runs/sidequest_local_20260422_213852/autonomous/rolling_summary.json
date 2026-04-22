@@ -1,0 +1,315 @@
+{
+  "iteration_count": 5,
+  "iterations": [
+    {
+      "completed_at": "2026-04-22T20:40:05.968309+00:00",
+      "fail_count": 3,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 1,
+      "pass_count": 15,
+      "run_id": "20260422T203931Z-e858dacd",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status completed, got response=ok workflow=awaiting_target_reference"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 2,
+          "type": "execution.crm_ambiguous_expected"
+        },
+        {
+          "count": 2,
+          "type": "conversation.state_reset"
+        },
+        {
+          "count": 1,
+          "type": "execution.crm_rejected"
+        },
+        {
+          "count": 1,
+          "type": "evaluator.layer_mixing"
+        },
+        {
+          "count": 1,
+          "type": "conversation.time_flexible_mishandled"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-22T20:40:52.559364+00:00",
+      "fail_count": 3,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 1,
+      "pass_count": 15,
+      "run_id": "20260422T204017Z-2c1fbf08",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status completed, got response=ok workflow=awaiting_target_reference"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 2,
+          "type": "execution.crm_ambiguous_expected"
+        },
+        {
+          "count": 2,
+          "type": "conversation.state_reset"
+        },
+        {
+          "count": 1,
+          "type": "execution.crm_rejected"
+        },
+        {
+          "count": 1,
+          "type": "evaluator.layer_mixing"
+        },
+        {
+          "count": 1,
+          "type": "conversation.time_flexible_mishandled"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-22T20:41:37.673981+00:00",
+      "fail_count": 3,
+      "iteration": 3,
+      "mode": "hybrid",
+      "partial_count": 1,
+      "pass_count": 15,
+      "run_id": "20260422T204102Z-dd36b5d3",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status completed, got response=ok workflow=awaiting_target_reference"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 2,
+          "type": "execution.crm_ambiguous_expected"
+        },
+        {
+          "count": 2,
+          "type": "conversation.state_reset"
+        },
+        {
+          "count": 1,
+          "type": "execution.crm_rejected"
+        },
+        {
+          "count": 1,
+          "type": "evaluator.layer_mixing"
+        },
+        {
+          "count": 1,
+          "type": "conversation.time_flexible_mishandled"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-22T20:42:21.846612+00:00",
+      "fail_count": 3,
+      "iteration": 4,
+      "mode": "hybrid",
+      "partial_count": 1,
+      "pass_count": 15,
+      "run_id": "20260422T204147Z-9b97c1c7",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status completed, got response=ok workflow=awaiting_target_reference"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 2,
+          "type": "execution.crm_ambiguous_expected"
+        },
+        {
+          "count": 2,
+          "type": "conversation.state_reset"
+        },
+        {
+          "count": 1,
+          "type": "execution.crm_rejected"
+        },
+        {
+          "count": 1,
+          "type": "evaluator.layer_mixing"
+        },
+        {
+          "count": 1,
+          "type": "conversation.time_flexible_mishandled"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-22T20:43:07.522936+00:00",
+      "fail_count": 3,
+      "iteration": 5,
+      "mode": "hybrid",
+      "partial_count": 1,
+      "pass_count": 15,
+      "run_id": "20260422T204233Z-8dfcb751",
+      "top_5_failure_patterns": [
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+        },
+        {
+          "count": 1,
+          "pattern": "booking ptbr nlu colloquial: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status completed, got response=ok workflow=awaiting_target_reference"
+        },
+        {
+          "count": 1,
+          "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 2,
+          "type": "execution.crm_ambiguous_expected"
+        },
+        {
+          "count": 2,
+          "type": "conversation.state_reset"
+        },
+        {
+          "count": 1,
+          "type": "execution.crm_rejected"
+        },
+        {
+          "count": 1,
+          "type": "evaluator.layer_mixing"
+        },
+        {
+          "count": 1,
+          "type": "conversation.time_flexible_mishandled"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 10,
+      "type": "execution.crm_ambiguous_expected"
+    },
+    {
+      "count": 10,
+      "type": "conversation.state_reset"
+    },
+    {
+      "count": 5,
+      "type": "execution.crm_rejected"
+    },
+    {
+      "count": 5,
+      "type": "evaluator.layer_mixing"
+    },
+    {
+      "count": 5,
+      "type": "conversation.time_flexible_mishandled"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 5,
+      "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+    },
+    {
+      "count": 5,
+      "pattern": "booking ptbr nlu colloquial: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+    },
+    {
+      "count": 5,
+      "pattern": "booking ptbr nlu colloquial: Repeated time question"
+    },
+    {
+      "count": 5,
+      "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: expected status completed, got response=ok workflow=awaiting_target_reference"
+    },
+    {
+      "count": 5,
+      "pattern": "reschedule happy_path crm_side_effect requires_existing_appointment: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+    }
+  ],
+  "updated_at": "2026-04-22T20:43:07.523887+00:00"
+}

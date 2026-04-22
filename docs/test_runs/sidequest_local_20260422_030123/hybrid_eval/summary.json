@@ -1,0 +1,103 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "common_failure_families": {
+    "conversation.short_confirmation_misrouted": [
+      {
+        "count": 1,
+        "pattern": "unexpected RAG route"
+      }
+    ],
+    "conversation.state_reset": [
+      {
+        "count": 1,
+        "pattern": "expected workflow reschedule_appointment, got None"
+      }
+    ],
+    "evaluator.layer_mixing": [
+      {
+        "count": 2,
+        "pattern": "reply missing any expected text: registr, agend, pré-agendamento, confirm"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+      }
+    ],
+    "execution.crm_ambiguous_expected": [
+      {
+        "count": 1,
+        "pattern": "expected status completed, got response=ok workflow=awaiting_target_reference"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+      }
+    ],
+    "execution.crm_rejected": [
+      {
+        "count": 1,
+        "pattern": "expected matching appointment to exist"
+      }
+    ]
+  },
+  "common_failure_patterns": {
+    "assertion_failure": [
+      {
+        "count": 2,
+        "pattern": "reply missing any expected text: registr, agend, pré-agendamento, confirm"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+      },
+      {
+        "count": 1,
+        "pattern": "expected status completed, got response=ok workflow=awaiting_target_reference"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+      },
+      {
+        "count": 1,
+        "pattern": "expected workflow reschedule_appointment, got None"
+      },
+      {
+        "count": 1,
+        "pattern": "unexpected RAG route"
+      }
+    ],
+    "crm_verification_failure": [
+      {
+        "count": 1,
+        "pattern": "expected matching appointment to exist"
+      }
+    ],
+    "upstream_runtime_failure": []
+  },
+  "completed_at": "2026-04-22T02:01:53.085071+00:00",
+  "fail_count": 3,
+  "failure_layer_counts": [
+    {
+      "count": 3,
+      "layer": "evaluator"
+    },
+    {
+      "count": 3,
+      "layer": "execution"
+    },
+    {
+      "count": 2,
+      "layer": "conversation"
+    }
+  ],
+  "judge_enabled": false,
+  "partial_count": 2,
+  "pass_count": 9,
+  "run_id": "20260422T020124Z-c3df89ed",
+  "started_at": "2026-04-22T02:01:24.499301+00:00",
+  "tenant_id": "82e54494-d4c0-4529-be81-6a3180b4cdca",
+  "top_judge_issues": [],
+  "total_scenarios": 14,
+  "worst_conversational_scores": []
+}

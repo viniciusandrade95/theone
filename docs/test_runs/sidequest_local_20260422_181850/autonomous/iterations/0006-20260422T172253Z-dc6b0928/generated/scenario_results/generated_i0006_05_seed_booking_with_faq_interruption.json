@@ -1,0 +1,427 @@
+{
+  "conversation_id": null,
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "Booking flow interrupted by price question, then resumed.",
+  "failure_records": [
+    {
+      "category": "upstream_runtime_failure",
+      "failure_family": "execution.runtime_internal_error",
+      "failure_layer": "execution",
+      "message": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1\"}",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "failure_family": "execution.runtime_internal_error",
+      "failure_layer": "execution",
+      "message": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2\"}",
+      "step_index": 2
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "failure_family": "execution.runtime_internal_error",
+      "failure_layer": "execution",
+      "message": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3\"}",
+      "step_index": 3
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 3
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "failure_family": "execution.runtime_internal_error",
+      "failure_layer": "execution",
+      "message": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4\"}",
+      "step_index": 4
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 4
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "failure_family": "execution.runtime_internal_error",
+      "failure_layer": "execution",
+      "message": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5\"}",
+      "step_index": 5
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 5
+    },
+    {
+      "category": "heuristic_failure",
+      "failure_family": "evaluator.wrong_expected_status",
+      "failure_layer": "evaluator",
+      "message": "Expected final status completed, got unknown",
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "failures": [
+    "step 1: upstream_runtime_failure: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1\"}",
+    "step 1: assertion_failure: expected workflow book_appointment, got None",
+    "step 2: upstream_runtime_failure: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2\"}",
+    "step 3: upstream_runtime_failure: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3\"}",
+    "step 3: assertion_failure: expected workflow book_appointment, got None",
+    "step 4: upstream_runtime_failure: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4\"}",
+    "step 4: assertion_failure: expected workflow book_appointment, got None",
+    "step 5: upstream_runtime_failure: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5\"}",
+    "step 5: assertion_failure: expected workflow book_appointment, got None",
+    "heuristic_failure: Expected final status completed, got unknown"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": [
+      {
+        "category": "heuristic_failure",
+        "failure_family": "evaluator.wrong_expected_status",
+        "failure_layer": "evaluator",
+        "message": "Expected final status completed, got unknown",
+        "type": "failure_to_complete_task"
+      }
+    ]
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "generated_i0006_05_seed_booking_with_faq_interruption",
+  "scenario_run_id": "20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption",
+  "session_id": null,
+  "started_at": "2026-04-22T17:23:24.695340+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1\"}",
+          "expected workflow book_appointment, got None"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1\"}",
+            "error": "HTTP 400",
+            "status_code": 400,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "Connection": "close",
+          "content-length": "217",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 17:23:23 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 404
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero marcar corte amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2\"}"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2\"}",
+            "error": "HTTP 400",
+            "status_code": 400,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "Connection": "close",
+          "content-length": "217",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 17:23:23 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 404
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "opa, quanto custa?",
+        "session_id": null,
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-2"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3\"}",
+          "expected workflow book_appointment, got None"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3\"}",
+            "error": "HTTP 400",
+            "status_code": 400,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "Connection": "close",
+          "content-length": "217",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 17:23:23 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 404
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "beleza, 16h17 então",
+        "session_id": null,
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-3"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4\"}",
+          "expected workflow book_appointment, got None"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4\"}",
+            "error": "HTTP 400",
+            "status_code": 400,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "Connection": "close",
+          "content-length": "217",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 17:23:24 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 404
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "Audit User, 11999998888",
+        "session_id": null,
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 4,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-4"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5\"}",
+          "expected workflow book_appointment, got None"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5\"}",
+            "error": "HTTP 400",
+            "status_code": 400,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service request failed\",\"status\":404},\"trace_id\":\"autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "Connection": "close",
+          "content-length": "217",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 17:23:24 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service request failed",
+          "status": 404
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "sim, pode confirmar",
+        "session_id": null,
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 5,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260422T172253Z-dc6b0928-generated_i0006_05_seed_booking_with_faq_interruption-5"
+    }
+  ],
+  "tags": [
+    "booking",
+    "faq",
+    "generated",
+    "interruption"
+  ],
+  "transcript": "Turn 1 user: quero marcar corte amanhã\nTurn 1 assistant: \nTurn 2 user: opa, quanto custa?\nTurn 2 assistant: \nTurn 3 user: beleza, 16h17 então\nTurn 3 assistant: \nTurn 4 user: Audit User, 11999998888\nTurn 4 assistant: \nTurn 5 user: sim, pode confirmar\nTurn 5 assistant: "
+}

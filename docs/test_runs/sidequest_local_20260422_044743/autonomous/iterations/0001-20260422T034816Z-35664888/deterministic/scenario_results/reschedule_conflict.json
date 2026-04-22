@@ -1,0 +1,129 @@
+{
+  "conversation_id": null,
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+  "failure_records": [
+    {
+      "category": "upstream_runtime_failure",
+      "failure_family": "execution.runtime_internal_error",
+      "failure_layer": "execution",
+      "message": "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"trace_id\":\"autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1\"}",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected route workflow, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "failure_family": "conversation.state_reset",
+      "failure_layer": "conversation",
+      "message": "reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar",
+      "step_index": 1
+    }
+  ],
+  "failures": [
+    "step 1: upstream_runtime_failure: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"trace_id\":\"autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1\"}",
+    "step 1: assertion_failure: expected route workflow, got None",
+    "step 1: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 1: assertion_failure: reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_conflict",
+  "scenario_run_id": "20260422T034816Z-35664888-reschedule_conflict",
+  "session_id": null,
+  "started_at": "2026-04-22T03:48:36.717038+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"trace_id\":\"autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1\"}",
+          "expected route workflow, got None",
+          "expected workflow reschedule_appointment, got None",
+          "reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"trace_id\":\"autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1\"}",
+            "error": "HTTP 400",
+            "status_code": 400,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"trace_id\":\"autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1\"}",
+        "error": "HTTP 400",
+        "headers": {
+          "Connection": "close",
+          "content-length": "171",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 03:48:36 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1"
+        },
+        "status_code": 400
+      },
+      "raw_response": {
+        "details": {
+          "message": "Chatbot service unavailable"
+        },
+        "error": "VALIDATION_ERROR",
+        "trace_id": "autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 15h",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": "autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-deterministic-20260422T034816Z-35664888-reschedule_conflict-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "conflict",
+    "crm_failure",
+    "requires_seeded_conflict"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 15h\nTurn 1 assistant: "
+}
