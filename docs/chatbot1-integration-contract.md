@@ -62,11 +62,13 @@ O `theone` é o sistema de:
 ## Contrato 1 — `theone` -> `chatbot1`
 
 ### Endpoint inicial esperado no `chatbot1`
-- `POST /chat`
-- `POST /chat/reset`
+- Implementação local atual: `POST /message`
+- Implementação local atual: `POST /reset`
+- Nome histórico em docs antigas: `POST /chat`
+- Nome histórico em docs antigas: `POST /chat/reset`
 - `GET /health`
 
-### Payload inicial mínimo para `/chat`
+### Payload inicial mínimo para `/message`
 ```json
 {
   "client_id": "tenant_123",
@@ -75,7 +77,7 @@ O `theone` é o sistema de:
 }
 ```
 
-### Payload recomendado para evolução de `/chat`
+### Payload recomendado para evolução de `/message`
 ```json
 {
   "client_id": "tenant_123",
@@ -110,7 +112,7 @@ O `theone` é o sistema de:
 
 ## Contrato 2 — `chatbot1` -> `theone`
 
-### Resposta atual esperada de `/chat`
+### Resposta atual esperada de `/message`
 O `chatbot1` já devolve uma estrutura rica com:
 - `trace_id`
 - `client_id`

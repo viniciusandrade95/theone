@@ -85,7 +85,8 @@ O `theone` já está numa posição muito boa para ser a fonte real de dados ope
 O `chatbot1` já demonstra maturidade como motor conversacional multi-tenant.
 
 #### O que já identificámos
-- Runtime FastAPI com `/chat`, `/chat/reset` e `/health`
+- Runtime FastAPI local com `/message`, `/reset` e `/health`
+- Referências antigas a `/chat` e `/chat/reset` devem ser lidas como nomes históricos do contrato inicial.
 - Input principal com `client_id`, `session_id` e `message`
 - Output rico com `route`, `workflow`, `answer`, `router`, `workflow_result`, `rag`, `facts_hit`, `operational`
 - Multi-tenancy via `ClientRegistry`
@@ -94,14 +95,11 @@ O `chatbot1` já demonstra maturidade como motor conversacional multi-tenant.
 - Workflow engine com estado por sessão
 - Continuidade conversacional e gestão de slot filling
 
-#### Problema principal já identificado
-O `chatbot1` ainda executa os workflows através de `FakeCalendarConnector`.
-
-Isto significa que hoje ele:
-- conversa bem
-- pergunta bem
-- conduz bem os fluxos
-- mas não executa sobre o domínio real do `theone`
+#### Estado operacional local atual
+O `chatbot1` já tem `TheOneConnector` para a integração local com `theone`,
+incluindo prebooking via `/crm/assistant/prebook`. O `FakeCalendarConnector`
+continua útil como fallback/test double, mas já não deve ser descrito como o
+centro do fluxo local validado.
 
 #### Conclusão sobre o `chatbot1`
 O `chatbot1` deve ser preservado como motor conversacional, mas precisa de trocar a camada de execução fake por integração real com o `theone`.
@@ -247,7 +245,7 @@ A ideia inicial poderia sugerir uma ligação mais rápida através de um simple
 Esse plano foi ajustado.
 
 #### Novo entendimento
-Não basta ligar o `theone` ao endpoint `/chat`.
+Não basta ligar o `theone` a um endpoint conversacional bruto.
 É necessário tratar a integração como uma ligação entre:
 - sistema operacional de negócio (`theone`)
 - motor conversacional (`chatbot1`)

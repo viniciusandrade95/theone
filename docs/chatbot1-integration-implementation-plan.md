@@ -205,7 +205,8 @@ T0.3
 
 #### Definition of Done
 - `/health` responde 200
-- `/chat` responde com contrato válido
+- `/message` responde com contrato válido no runtime local atual
+- `/chat` é apenas referência histórica em docs antigas
 - `X-Trace-Id` suportado
 
 ---
