@@ -297,10 +297,12 @@ O `tenant_id` e o contexto devem ser resolvidos pelo `theone`.
 ## Contrato operacional — `chatbot1` chama o `theone`
 
 ### Objetivo
-Substituir o `FakeCalendarConnector` por um conector real: `TheOneConnector`.
+Documentar o conector real usado pelo `chatbot1` para chamar o `theone`:
+`TheOneConnector`. O `FakeCalendarConnector` permanece como fallback/test
+double, não como execução central da integração local validada.
 
 ### Casos de uso que o connector deve suportar
-1. `create_prebooking`
+1. `create_prebooking` — validado localmente
 2. `create_consult_request`
 3. `create_quote_request`
 4. `cancel_request`

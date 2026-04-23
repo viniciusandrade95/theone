@@ -11,6 +11,11 @@ Para operar a stack local integrada com `chatbot1`, use:
 /home/vinicius/system-audit/workspace/LOCAL_RUNBOOK.md
 ```
 
+Documentos canônicos de contexto:
+- Estado canônico: `/home/vinicius/system-audit/workspace/CURRENT_CANONICAL_STATE.md`
+- Baseline verde: `/home/vinicius/system-audit/workspace/baseline_green/BASELINE_GREEN_STATUS.md`
+- Handoff Semana 2: `/home/vinicius/system-audit/workspace/WEEK2_HANDOFF.md`
+
 Resumo:
 - `theone`: `/home/vinicius/system-audit/workspace/theone`
 - `chatbot1`: `/home/vinicius/system-audit/workspace/chatbot1`
@@ -41,6 +46,7 @@ A fase de testes do chatbot está fechada.
 - Signoff: `/home/vinicius/system-audit/workspace/final_test_signoff_20260422_225617/FINAL_STATUS.txt`
 - Estado do projeto: `/home/vinicius/system-audit/workspace/PROJECT_STATE_REPORT.md`
 - Runbook operacional: `/home/vinicius/system-audit/workspace/LOCAL_RUNBOOK.md`
+- Estado canônico: `/home/vinicius/system-audit/workspace/CURRENT_CANONICAL_STATE.md`
 
 Arquivos canônicos para runs sidequest:
 - `hybrid_eval/summary.json`
