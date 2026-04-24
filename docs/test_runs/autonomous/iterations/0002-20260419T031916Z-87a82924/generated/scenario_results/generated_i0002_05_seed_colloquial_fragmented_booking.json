@@ -1,0 +1,616 @@
+{
+  "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "Colloquial fragmented booking with time correction.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
+      "step_index": 2
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "message": "HTTP request failed with status 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+      "step_index": 4
+    },
+    {
+      "category": "upstream_runtime_failure",
+      "message": "response body is not a JSON object",
+      "step_index": 4
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 4
+    },
+    {
+      "category": "heuristic_failure",
+      "message": "RAG route during operational flow",
+      "step_index": 2,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "category": "heuristic_failure",
+      "message": "Slot loss detected: date",
+      "step_index": 3,
+      "type": "slot_loss"
+    },
+    {
+      "category": "heuristic_failure",
+      "message": "Slot loss detected: date",
+      "step_index": 5,
+      "type": "slot_loss"
+    },
+    {
+      "category": "heuristic_failure",
+      "message": "Expected final status completed, got collecting",
+      "step_index": null,
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "failures": [
+    "step 2: assertion_failure: expected workflow book_appointment, got None",
+    "step 2: assertion_failure: unexpected RAG route",
+    "step 4: upstream_runtime_failure: HTTP request failed with status 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+    "step 4: upstream_runtime_failure: response body is not a JSON object",
+    "step 4: assertion_failure: expected workflow book_appointment, got None",
+    "step 2: heuristic_failure: RAG route during operational flow",
+    "step 3: heuristic_failure: Slot loss detected: date",
+    "step 5: heuristic_failure: Slot loss detected: date",
+    "heuristic_failure: Expected final status completed, got collecting"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": [
+      {
+        "category": "heuristic_failure",
+        "message": "RAG route during operational flow",
+        "step_index": 2,
+        "type": "rag_during_operational_flow"
+      },
+      {
+        "category": "heuristic_failure",
+        "message": "Slot loss detected: date",
+        "step_index": 3,
+        "type": "slot_loss"
+      },
+      {
+        "category": "heuristic_failure",
+        "message": "Slot loss detected: date",
+        "step_index": 5,
+        "type": "slot_loss"
+      },
+      {
+        "category": "heuristic_failure",
+        "message": "Expected final status completed, got collecting",
+        "step_index": null,
+        "type": "failure_to_complete_task"
+      }
+    ]
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "generated_i0002_05_seed_colloquial_fragmented_booking",
+  "scenario_run_id": "20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking",
+  "session_id": "s-9e91b34816284b18",
+  "started_at": "2026-04-19T03:28:26.793022+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Não consigo iniciar esse fluxo com segurança porque",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"blocked\",\"slots\":{\"date\":\"amanhã\",\"service\":\"corte de cabelo\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":false,\"reference\":\"unavailable\",\"mode\":\"tenant_readiness_guardrail\",\"message\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"human_confirmation_required\":true,\"request_kind\":\"booking_request\",\"error_code\":\"tenant_configuration_incomplete\",\"retriable\":false,\"operational_status\":\"validation_error\",\"metadata\":{\"missing\":[\"kb/services.json:service_mapping\"],\"workflow_name\":\"book_appointment\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}}}}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8d0b1eed7e44b-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:27:49 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "b441b34c-b0ee-4bbf",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+            "route": "workflow",
+            "session_id": "s-9e91b34816284b18",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": "tenant_configuration_incomplete",
+                "human_confirmation_required": true,
+                "message": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+                "metadata": {
+                  "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+                  "missing": [
+                    "kb/services.json:service_mapping"
+                  ],
+                  "workflow_name": "book_appointment"
+                },
+                "mode": "tenant_readiness_guardrail",
+                "ok": false,
+                "operational_status": "validation_error",
+                "reference": "unavailable",
+                "request_kind": "booking_request",
+                "retriable": false
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "amanhã",
+                "service": "corte de cabelo"
+              },
+              "status": "blocked"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados."
+        },
+        "session_id": "s-9e91b34816284b18",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "mano queria cortar amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "error_code": "tenant_configuration_incomplete",
+          "human_confirmation_required": true,
+          "message": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+          "metadata": {
+            "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+            "missing": [
+              "kb/services.json:service_mapping"
+            ],
+            "workflow_name": "book_appointment"
+          },
+          "mode": "tenant_readiness_guardrail",
+          "ok": false,
+          "operational_status": "validation_error",
+          "reference": "unavailable",
+          "request_kind": "booking_request",
+          "retriable": false
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+        "route": "workflow",
+        "session_id": "s-9e91b34816284b18",
+        "slots": {
+          "date": "amanhã",
+          "service": "corte de cabelo"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-1",
+        "workflow": "book_appointment",
+        "workflow_status": "blocked"
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected workflow book_appointment, got None",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"hand",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8d0d79fe497d4-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:27:59 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "34ca902b-f3c9-4993",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?",
+            "route": "rag",
+            "session_id": "s-9e91b34816284b18",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?"
+        },
+        "session_id": "s-9e91b34816284b18",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-2"
+      },
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "pode ser corte",
+        "session_id": "s-9e91b34816284b18",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?",
+        "route": "rag",
+        "session_id": "s-9e91b34816284b18",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-2"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo certo, mudei para Corte. Qual dia funciona melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Tudo certo, mudei para Corte. Qual dia funciona melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"han",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo certo, mudei para Corte. Qual dia funciona melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Tudo certo, mudei para Corte. Qual dia funciona melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"Corte\",\"time\":\"16:00\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8d1170bcda051-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:28:12 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "2d41d584-869c-4422",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-3"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Tudo certo, mudei para Corte. Qual dia funciona melhor para você?",
+            "route": "workflow",
+            "session_id": "s-9e91b34816284b18",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 1,
+                "fallback_before": 0,
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": false,
+                "progress_reason": "none"
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "service": "Corte",
+                "time": "16:00"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Tudo certo, mudei para Corte. Qual dia funciona melhor para você?"
+        },
+        "session_id": "s-9e91b34816284b18",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-3"
+      },
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "16h? nao, 17h melhor",
+        "session_id": "s-9e91b34816284b18",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {
+          "fallback_after": 1,
+          "fallback_before": 0,
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": false,
+          "progress_reason": "none"
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Tudo certo, mudei para Corte. Qual dia funciona melhor para você?",
+        "route": "workflow",
+        "session_id": "s-9e91b34816284b18",
+        "slots": {
+          "service": "Corte",
+          "time": "16:00"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-3",
+        "workflow": "book_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-3"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+          "response body is not a JSON object",
+          "expected workflow book_appointment, got None"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+            "error": "HTTP 502",
+            "status_code": 502,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+        "error": "HTTP 502",
+        "headers": {
+          "CF-RAY": "9ee8d16998fa6238-OTP",
+          "Connection": "close",
+          "Content-Length": "155",
+          "Content-Type": "text/html",
+          "Date": "Sun, 19 Apr 2026 03:28:19 GMT",
+          "Server": "cloudflare"
+        },
+        "status_code": 502
+      },
+      "raw_response": null,
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "Audit User, 11999998888",
+        "session_id": "s-9e91b34816284b18",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 4,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": null,
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-4"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual dia fica melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Qual dia fica melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"servic",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-9e91b34816284b18\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual dia fica melhor para você?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-9e91b34816284b18\",\"reply\":\"Qual dia fica melhor para você?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"service\":\"Corte\",\"time\":\"16:00\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":1,\"fallback_after\":2,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-5\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8d193ea5626fc-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:28:26 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "31653eb4-5fb3-4a24",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-5"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Qual dia fica melhor para você?",
+            "route": "workflow",
+            "session_id": "s-9e91b34816284b18",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 2,
+                "fallback_before": 1,
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": false,
+                "progress_reason": "none"
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User",
+                "phone": "11999998888",
+                "service": "Corte",
+                "time": "16:00"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Qual dia fica melhor para você?"
+        },
+        "session_id": "s-9e91b34816284b18",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-5"
+      },
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "sim",
+        "session_id": "s-9e91b34816284b18",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 5,
+      "summary": {
+        "action_result": {
+          "fallback_after": 2,
+          "fallback_before": 1,
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": false,
+          "progress_reason": "none"
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Qual dia fica melhor para você?",
+        "route": "workflow",
+        "session_id": "s-9e91b34816284b18",
+        "slots": {
+          "customer_name": "Audit User",
+          "phone": "11999998888",
+          "service": "Corte",
+          "time": "16:00"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-5",
+        "workflow": "book_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_05_seed_colloquial_fragmented_booking-5"
+    }
+  ],
+  "tags": [
+    "booking",
+    "correction",
+    "fragmented",
+    "generated",
+    "ptbr"
+  ],
+  "transcript": "Turn 1 user: mano queria cortar amanhã\nTurn 1 assistant: Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\nTurn 2 user: pode ser corte\nTurn 2 assistant: Posso ajudar com seu corte. Quer saber o preço, ver detalhes ou já marcar?\nTurn 3 user: 16h? nao, 17h melhor\nTurn 3 assistant: Tudo certo, mudei para Corte. Qual dia funciona melhor para você?\nTurn 4 user: Audit User, 11999998888\nTurn 4 assistant: \nTurn 5 user: sim\nTurn 5 assistant: Qual dia fica melhor para você?"
+}

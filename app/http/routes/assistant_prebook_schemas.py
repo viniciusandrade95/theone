@@ -15,6 +15,7 @@ class PrebookCustomerIn(BaseModel):
 
 class PrebookBookingIn(BaseModel):
     service_id: str
+    service_name: str | None = Field(default=None, max_length=255)
     location_id: str | None = None
     starts_at: datetime | None = None
     ends_at: datetime | None = None
@@ -26,6 +27,7 @@ class PrebookBookingIn(BaseModel):
 
 class PrebookIn(BaseModel):
     tenant_id: str | None = None
+    conversation_id: str | None = None
     session_id: str | None = None
     trace_id: str | None = None
     idempotency_key: str | None = None

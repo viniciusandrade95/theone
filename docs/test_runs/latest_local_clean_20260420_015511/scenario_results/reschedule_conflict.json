@@ -1,0 +1,133 @@
+{
+  "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got rag",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
+      "step_index": 1
+    }
+  ],
+  "failures": [
+    "step 1: assertion_failure: expected route workflow, got rag",
+    "step 1: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 1: assertion_failure: unexpected RAG route"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_conflict",
+  "scenario_run_id": "20260420T005511Z-cd634988-reschedule_conflict",
+  "session_id": "s-61e131f1643d43db",
+  "started_at": "2026-04-20T00:56:01.578898+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "expected route workflow, got rag",
+          "expected workflow reschedule_appointment, got None",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-61e131f1643d43db\",\"status\":\"ok\",\"reply\":{\"text\":\"Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-61e131f1643d43db\",\"reply\":\"Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedênci",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-61e131f1643d43db\",\"status\":\"ok\",\"reply\":{\"text\":\"Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-61e131f1643d43db\",\"reply\":\"Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"local-booking-eval-20260420T005511Z-cd634988-reschedule_conflict-1\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "756",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:56:01 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T005511Z-cd634988-reschedule_conflict-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia.",
+            "route": "rag",
+            "session_id": "s-61e131f1643d43db",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia."
+        },
+        "session_id": "s-61e131f1643d43db",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T005511Z-cd634988-reschedule_conflict-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 15h",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia.",
+        "route": "rag",
+        "session_id": "s-61e131f1643d43db",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T005511Z-cd634988-reschedule_conflict-1",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "local-booking-eval-20260420T005511Z-cd634988-reschedule_conflict-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "conflict",
+    "crm_failure",
+    "requires_seeded_conflict"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 15h\nTurn 1 assistant: Na barbearia, sobre remarcação: Cortes podem ser remarcados com até 2h de antecedência, conforme disponibilidade da barbearia."
+}

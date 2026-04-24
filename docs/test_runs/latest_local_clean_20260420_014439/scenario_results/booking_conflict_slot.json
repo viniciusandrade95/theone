@@ -1,0 +1,262 @@
+{
+  "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests a slot that may already be occupied; assistant should not fake success if CRM rejects it.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got rag",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
+      "step_index": 2
+    }
+  ],
+  "failures": [
+    "step 2: assertion_failure: expected route workflow, got rag",
+    "step 2: assertion_failure: expected workflow book_appointment, got None",
+    "step 2: assertion_failure: unexpected RAG route"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "booking_conflict_slot",
+  "scenario_run_id": "20260420T004439Z-bddfcdc9-booking_conflict_slot",
+  "session_id": "s-8a22238a6b8e4bbc",
+  "started_at": "2026-04-20T00:44:54.878923+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"status\":\"ok\",\"reply\":{\"text\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"reply\":\"Não consigo iniciar esse fluxo com segurança porque",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"status\":\"ok\",\"reply\":{\"text\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"reply\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"blocked\",\"slots\":{\"date\":\"amanhã\",\"time\":\"15:00\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\",\"service\":\"corte\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":false,\"reference\":\"unavailable\",\"mode\":\"tenant_readiness_guardrail\",\"message\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"human_confirmation_required\":true,\"request_kind\":\"booking_request\",\"error_code\":\"tenant_configuration_incomplete\",\"retriable\":false,\"operational_status\":\"validation_error\",\"metadata\":{\"missing\":[\"kb/services.json:service_mapping\"],\"workflow_name\":\"book_appointment\",\"client_id\":\"demo_unhas\"}}}}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-1\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1564",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:44:52 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+            "route": "workflow",
+            "session_id": "s-8a22238a6b8e4bbc",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": "tenant_configuration_incomplete",
+                "human_confirmation_required": true,
+                "message": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+                "metadata": {
+                  "client_id": "demo_unhas",
+                  "missing": [
+                    "kb/services.json:service_mapping"
+                  ],
+                  "workflow_name": "book_appointment"
+                },
+                "mode": "tenant_readiness_guardrail",
+                "ok": false,
+                "operational_status": "validation_error",
+                "reference": "unavailable",
+                "request_kind": "booking_request",
+                "retriable": false
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User",
+                "date": "amanhã",
+                "phone": "11999998888",
+                "service": "corte",
+                "time": "15:00"
+              },
+              "status": "blocked"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados."
+        },
+        "session_id": "s-8a22238a6b8e4bbc",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "Quero marcar um corte amanhã às 15h para Audit User, telefone 11999998888",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "error_code": "tenant_configuration_incomplete",
+          "human_confirmation_required": true,
+          "message": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+          "metadata": {
+            "client_id": "demo_unhas",
+            "missing": [
+              "kb/services.json:service_mapping"
+            ],
+            "workflow_name": "book_appointment"
+          },
+          "mode": "tenant_readiness_guardrail",
+          "ok": false,
+          "operational_status": "validation_error",
+          "reference": "unavailable",
+          "request_kind": "booking_request",
+          "retriable": false
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+        "route": "workflow",
+        "session_id": "s-8a22238a6b8e4bbc",
+        "slots": {
+          "customer_name": "Audit User",
+          "date": "amanhã",
+          "phone": "11999998888",
+          "service": "corte",
+          "time": "15:00"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-1",
+        "workflow": "book_appointment",
+        "workflow_status": "blocked"
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected route workflow, got rag",
+          "expected workflow book_appointment, got None",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"route\":\"rag\",\"workflow\":null,\"hand",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8a22238a6b8e4bbc\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-2\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "674",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:44:54 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?",
+            "route": "rag",
+            "session_id": "s-8a22238a6b8e4bbc",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?"
+        },
+        "session_id": "s-8a22238a6b8e4bbc",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-2"
+      },
+      "request": {
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "message": "sim",
+        "session_id": "s-8a22238a6b8e4bbc",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?",
+        "route": "rag",
+        "session_id": "s-8a22238a6b8e4bbc",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_conflict_slot-2"
+    }
+  ],
+  "tags": [
+    "booking",
+    "conflict",
+    "crm_failure"
+  ],
+  "transcript": "Turn 1 user: Quero marcar um corte amanhã às 15h para Audit User, telefone 11999998888\nTurn 1 assistant: Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\nTurn 2 user: sim\nTurn 2 assistant: Não encontrei isso no guia deste negócio. Você quer que eu encaminhe para um atendente?"
+}

@@ -1,0 +1,329 @@
+{
+  "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+  "crm_verification": {
+    "matched": [],
+    "parsed_body": {
+      "items": [],
+      "page": 1,
+      "page_size": 100,
+      "total": 0
+    },
+    "raw_body": "{\"items\":[],\"total\":0,\"page\":1,\"page_size\":100}",
+    "reasons": [
+      "expected matching appointment to exist"
+    ],
+    "status": "FAIL",
+    "status_code": 200,
+    "total_items": 0
+  },
+  "description": "User provides service, date, time, customer name, phone, and confirms a real prebook.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "reply missing any expected text: registr, agend, pré-agendamento, confirm",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected action_result.ok=True, got False",
+      "step_index": 2
+    },
+    {
+      "category": "crm_verification_failure",
+      "message": "expected matching appointment to exist"
+    }
+  ],
+  "failures": [
+    "step 2: assertion_failure: reply missing any expected text: registr, agend, pré-agendamento, confirm",
+    "step 2: assertion_failure: expected action_result.ok=True, got False",
+    "crm_verification_failure: expected matching appointment to exist"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [
+    "conflict_or_unavailable"
+  ],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "booking_happy_path_full",
+  "scenario_run_id": "20260420T005511Z-cd634988-booking_happy_path_full",
+  "session_id": "s-534ccb2ba65d4186",
+  "started_at": "2026-04-20T00:55:13.060188+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-534ccb2ba65d4186\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-534ccb2ba65d4186\",\"reply\":\"Perfeito, troquei para Corte. Resumo para ",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-534ccb2ba65d4186\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-534ccb2ba65d4186\",\"reply\":\"Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"time\":\"16:17\",\"date\":\"2026-04-20\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\",\"service\":\"Corte\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:customer_name, date, phone, service, time\"}}}},\"trace_id\":\"local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-1\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1233",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:55:11 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-534ccb2ba65d4186",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:customer_name, date, phone, service, time"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "customer_name": "Audit User",
+                "date": "2026-04-20",
+                "phone": "11999998888",
+                "service": "Corte",
+                "time": "16:17"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-534ccb2ba65d4186",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:customer_name, date, phone, service, time"
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-534ccb2ba65d4186",
+        "slots": {
+          "customer_name": "Audit User",
+          "date": "2026-04-20",
+          "phone": "11999998888",
+          "service": "Corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-1",
+        "workflow": "book_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "reply missing any expected text: registr, agend, pré-agendamento, confirm",
+          "expected action_result.ok=True, got False"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-534ccb2ba65d4186\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-534ccb2ba65d4186\",\"reply\":\"Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"route\":\"workflow\",\"workflow\"",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-534ccb2ba65d4186\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-534ccb2ba65d4186\",\"reply\":\"Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"completed\",\"slots\":{\"time\":\"16:17\",\"date\":\"2026-04-20\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\",\"service\":\"Corte\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":false,\"reference\":\"unavailable\",\"mode\":\"prebooking_temporary_failure\",\"message\":\"Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"human_confirmation_required\":true,\"request_kind\":\"prebooking\",\"error_code\":\"http_500\",\"retriable\":true,\"metadata\":{\"status_code\":500,\"tenant_id\":\"demo_barbearia\",\"trace_id\":\"local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2\",\"idempotency_key\":\"wf:demo_barbearia:s-534ccb2ba65d4186:book_appointment:booking_request:18e66ab1b15af8f1\",\"error\":{\"ok\":false,\"mode\":\"prebooking_temporary_failure\",\"request_kind\":\"prebooking\",\"message\":\"Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"error_code\":\"http_500\",\"retriable\":true,\"reference\":\"unavailable\",\"human_confirmation_required\":true,\"operational_status\":\"temporary_failure\",\"details\":{\"error\":\"INTERNAL_ERROR\"}}},\"operational_status\":\"temporary_failure\",\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"affirmed\"}}}},\"trace_id\":\"local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1911",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:55:12 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+            "route": "workflow",
+            "session_id": "s-534ccb2ba65d4186",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": "http_500",
+                "human_confirmation_required": true,
+                "message": "Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+                "metadata": {
+                  "error": {
+                    "details": {
+                      "error": "INTERNAL_ERROR"
+                    },
+                    "error_code": "http_500",
+                    "human_confirmation_required": true,
+                    "message": "Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+                    "mode": "prebooking_temporary_failure",
+                    "ok": false,
+                    "operational_status": "temporary_failure",
+                    "reference": "unavailable",
+                    "request_kind": "prebooking",
+                    "retriable": true
+                  },
+                  "idempotency_key": "wf:demo_barbearia:s-534ccb2ba65d4186:book_appointment:booking_request:18e66ab1b15af8f1",
+                  "status_code": 500,
+                  "tenant_id": "demo_barbearia",
+                  "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2"
+                },
+                "mode": "prebooking_temporary_failure",
+                "ok": false,
+                "operational_status": "temporary_failure",
+                "pending_confirmation_kind": "workflow_confirmation",
+                "pending_confirmation_resolution": "affirmed",
+                "reference": "unavailable",
+                "request_kind": "prebooking",
+                "retriable": true
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User",
+                "date": "2026-04-20",
+                "phone": "11999998888",
+                "service": "Corte",
+                "time": "16:17"
+              },
+              "status": "completed"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano."
+        },
+        "session_id": "s-534ccb2ba65d4186",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2"
+      },
+      "request": {
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "message": "sim, pode confirmar",
+        "session_id": "s-534ccb2ba65d4186",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {
+          "error_code": "http_500",
+          "human_confirmation_required": true,
+          "message": "Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+          "metadata": {
+            "error": {
+              "details": {
+                "error": "INTERNAL_ERROR"
+              },
+              "error_code": "http_500",
+              "human_confirmation_required": true,
+              "message": "Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+              "mode": "prebooking_temporary_failure",
+              "ok": false,
+              "operational_status": "temporary_failure",
+              "reference": "unavailable",
+              "request_kind": "prebooking",
+              "retriable": true
+            },
+            "idempotency_key": "wf:demo_barbearia:s-534ccb2ba65d4186:book_appointment:booking_request:18e66ab1b15af8f1",
+            "status_code": 500,
+            "tenant_id": "demo_barbearia",
+            "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2"
+          },
+          "mode": "prebooking_temporary_failure",
+          "ok": false,
+          "operational_status": "temporary_failure",
+          "pending_confirmation_kind": "workflow_confirmation",
+          "pending_confirmation_resolution": "affirmed",
+          "reference": "unavailable",
+          "request_kind": "prebooking",
+          "retriable": true
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+        "route": "workflow",
+        "session_id": "s-534ccb2ba65d4186",
+        "slots": {
+          "customer_name": "Audit User",
+          "date": "2026-04-20",
+          "phone": "11999998888",
+          "service": "Corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2",
+        "workflow": "book_appointment",
+        "workflow_status": "completed"
+      },
+      "trace_id": "local-booking-eval-20260420T005511Z-cd634988-booking_happy_path_full-2"
+    }
+  ],
+  "tags": [
+    "booking",
+    "happy_path",
+    "crm_side_effect"
+  ],
+  "transcript": "Turn 1 user: Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888\nTurn 1 assistant: Perfeito, troquei para Corte. Resumo para confirmação: pré-agendamento de Corte no dia 20 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\nTurn 2 user: sim, pode confirmar\nTurn 2 assistant: Perfeito. Integração temporariamente indisponível. Vou encaminhar para atendimento humano."
+}

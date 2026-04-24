@@ -1,0 +1,137 @@
+{
+  "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User gives remarcação intent and date but no new time; assistant asks for the missing time.",
+  "failure_records": [],
+  "failures": [],
+  "final_verdict": "PASS",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_missing_time",
+  "scenario_run_id": "20260420T133334Z-58ffc38d-reschedule_missing_time",
+  "session_id": "s-7dab0d23e9ce4b45",
+  "started_at": "2026-04-20T13:34:05.693181+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-7dab0d23e9ce4b45\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-7dab0d23e9ce4b45\",\"reply\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":nu",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-7dab0d23e9ce4b45\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-7dab0d23e9ce4b45\",\"reply\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"amanhã\",\"service\":\"corte\",\"new_date\":\"2026-04-21\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":true,\"progress_reason\":\"operations:date, new_date, service\"}}}},\"trace_id\":\"autonomous-eval-deterministic-20260420T133334Z-58ffc38d-reschedule_missing_time-1\",\"client_id\":\"907ee7f1-d7f2-421f-a9c7-466ba8dd93b7\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1008",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 13:34:05 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260420T133334Z-58ffc38d-reschedule_missing_time-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "907ee7f1-d7f2-421f-a9c7-466ba8dd93b7",
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, ajustei para Corte. E qual horário você prefere?",
+            "route": "workflow",
+            "session_id": "s-7dab0d23e9ce4b45",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 1,
+                "fallback_before": 0,
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:date, new_date, service"
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "amanhã",
+                "new_date": "2026-04-21",
+                "service": "corte"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, ajustei para Corte. E qual horário você prefere?"
+        },
+        "session_id": "s-7dab0d23e9ce4b45",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T133334Z-58ffc38d-reschedule_missing_time-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "fallback_after": 1,
+          "fallback_before": 0,
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:date, new_date, service"
+        },
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "reply_text": "Perfeito, ajustei para Corte. E qual horário você prefere?",
+        "route": "workflow",
+        "session_id": "s-7dab0d23e9ce4b45",
+        "slots": {
+          "date": "amanhã",
+          "new_date": "2026-04-21",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T133334Z-58ffc38d-reschedule_missing_time-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260420T133334Z-58ffc38d-reschedule_missing_time-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "missing_data"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã\nTurn 1 assistant: Perfeito, ajustei para Corte. E qual horário você prefere?"
+}

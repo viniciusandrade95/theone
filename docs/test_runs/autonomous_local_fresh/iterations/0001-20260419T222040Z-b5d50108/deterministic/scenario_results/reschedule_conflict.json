@@ -1,0 +1,117 @@
+{
+  "conversation_id": null,
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+  "failure_records": [
+    {
+      "category": "upstream_runtime_failure",
+      "message": "HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar",
+      "step_index": 1
+    }
+  ],
+  "failures": [
+    "step 1: upstream_runtime_failure: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}",
+    "step 1: assertion_failure: expected route workflow, got None",
+    "step 1: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 1: assertion_failure: reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_conflict",
+  "scenario_run_id": "20260419T222040Z-b5d50108-reschedule_conflict",
+  "session_id": null,
+  "started_at": "2026-04-19T22:21:16.125751+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}",
+          "expected route workflow, got None",
+          "expected workflow reschedule_appointment, got None",
+          "reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"INTERNAL_ERROR\"}",
+            "error": "HTTP 500",
+            "status_code": 500,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"INTERNAL_ERROR\"}",
+        "error": "HTTP 500",
+        "headers": {
+          "Connection": "close",
+          "content-length": "26",
+          "content-type": "application/json",
+          "date": "Sun, 19 Apr 2026 22:21:15 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260419T222040Z-b5d50108-reschedule_conflict-1"
+        },
+        "status_code": 500
+      },
+      "raw_response": {
+        "error": "INTERNAL_ERROR"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 15h",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": null,
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-deterministic-20260419T222040Z-b5d50108-reschedule_conflict-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "conflict",
+    "crm_failure",
+    "requires_seeded_conflict"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 15h\nTurn 1 assistant: "
+}

@@ -1,0 +1,39 @@
+We are focusing only on chatbot1.
+
+Read this focus pack first:
+/home/vinicius/system-audit/workspace/theone/docs/test_runs/sidequest_focus_repeated_date_20260422_041814/README_FOR_CODEX.md
+
+The scenario JSON files are copied here:
+/home/vinicius/system-audit/workspace/theone/docs/test_runs/sidequest_focus_repeated_date_20260422_041814
+
+Current stable failures from the latest sidequest loop:
+- booking missing_phone guardrail: Repeated date question
+- booking fragmented state: Repeated date question
+- conversation.slot_loop
+- conversation.state_reset
+- conversation.short_confirmation_misrouted
+- conversation.time_flexible_mishandled
+
+Task:
+1. Inspect the copied JSON scenario files in the focus folder.
+2. Start with:
+   - booking_missing_phone.json
+   - booking_with_fragmented_inputs.json
+   - booking_with_short_affirmations.json
+3. Find the smallest conversation that reproduces "Repeated date question", slot loop, or state reset.
+4. Add a deterministic regression test in chatbot1 for that exact failure.
+5. Fix only booking workflow correctness:
+   - preserve active booking state across short/ambiguous turns
+   - do not wipe service/date/time/name/phone slots when booking is active
+   - ask for the next missing slot instead of repeating an already answered date
+   - do not fall back to RAG while booking workflow is active
+   - do not mark completed before required slots and confirmation are present
+6. Run the relevant chatbot1 tests.
+
+Important:
+- Do not touch deployment.
+- Do not touch Render/live config.
+- Do not optimize wording.
+- Do not fix CRM side effects yet.
+- Do not chase evaluator.layer_mixing first.
+- Focus only on booking repeated-date/state-reset/slot-loop behavior.

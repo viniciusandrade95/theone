@@ -1,0 +1,382 @@
+{
+  "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "Noisy Portuguese input should still preserve booking intent and collect/confirm correctly.",
+  "failure_records": [],
+  "failures": [],
+  "final_verdict": "PASS",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "booking_with_colloquial_ptbr",
+  "scenario_run_id": "20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr",
+  "session_id": "s-f878e7647af8485f",
+  "started_at": "2026-04-23T09:54:39.498319+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"74ad775b-8f32-4de3-a52c-a61a2fd28050\",\"session_id\":\"s-f878e7647af8485f\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f878e7647af8485f\",\"reply\":\"Perfeito, troquei para Cabelo. Resumo par",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"74ad775b-8f32-4de3-a52c-a61a2fd28050\",\"session_id\":\"s-f878e7647af8485f\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f878e7647af8485f\",\"reply\":\"Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"time\":\"16:17\",\"date\":\"2026-04-24\",\"service\":\"Corte\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:date, service, time\"}}}},\"trace_id\":\"sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-1\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1174",
+          "content-type": "application/json",
+          "date": "Thu, 23 Apr 2026 09:54:37 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-f878e7647af8485f",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:date, service, time"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "date": "2026-04-24",
+                "service": "Corte",
+                "time": "16:17"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-f878e7647af8485f",
+        "status": "ok",
+        "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "opa, queria corta o cabelo amanha la pras 4 e 17 da tarde",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:date, service, time"
+        },
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "reply_text": "Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-f878e7647af8485f",
+        "slots": {
+          "date": "2026-04-24",
+          "service": "Corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-1",
+        "workflow": "book_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-1"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"74ad775b-8f32-4de3-a52c-a61a2fd28050\",\"session_id\":\"s-f878e7647af8485f\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f878e7647af8485f\",\"reply\":\"Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"74ad775b-8f32-4de3-a52c-a61a2fd28050\",\"session_id\":\"s-f878e7647af8485f\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f878e7647af8485f\",\"reply\":\"Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"time\":\"16:17\",\"date\":\"2026-04-24\",\"service\":\"Corte\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User E O\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"continued_with_operations\",\"progress_detected\":true,\"progress_reason\":\"slots_changed:customer_name, phone\"}}}},\"trace_id\":\"sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-2\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1209",
+          "content-type": "application/json",
+          "date": "Thu, 23 Apr 2026 09:54:38 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-f878e7647af8485f",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "workflow_confirmation",
+                "pending_confirmation_resolution": "continued_with_operations",
+                "progress_detected": true,
+                "progress_reason": "slots_changed:customer_name, phone"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "customer_name": "Audit User E O",
+                "date": "2026-04-24",
+                "phone": "11999998888",
+                "service": "Corte",
+                "time": "16:17"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-f878e7647af8485f",
+        "status": "ok",
+        "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-2"
+      },
+      "request": {
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "message": "meu nome é Audit User e o zap é 11999998888",
+        "session_id": "s-f878e7647af8485f",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "workflow_confirmation",
+          "pending_confirmation_resolution": "continued_with_operations",
+          "progress_detected": true,
+          "progress_reason": "slots_changed:customer_name, phone"
+        },
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "reply_text": "Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-f878e7647af8485f",
+        "slots": {
+          "customer_name": "Audit User E O",
+          "date": "2026-04-24",
+          "phone": "11999998888",
+          "service": "Corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-2",
+        "workflow": "book_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-2"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"74ad775b-8f32-4de3-a52c-a61a2fd28050\",\"session_id\":\"s-f878e7647af8485f\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f878e7647af8485f\",\"reply\":\"Perfeito. Pré-agendamento registrado sob a referência PB-3D3D11",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"74ad775b-8f32-4de3-a52c-a61a2fd28050\",\"session_id\":\"s-f878e7647af8485f\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-f878e7647af8485f\",\"reply\":\"Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"completed\",\"slots\":{\"time\":\"16:17\",\"date\":\"2026-04-24\",\"service\":\"Corte\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User E O\",\"service_id\":\"BARB-001\",\"duration_min\":\"45\",\"timezone\":\"America/Sao_Paulo\",\"starts_at\":\"2026-04-24T19:17:00Z\",\"ends_at\":\"2026-04-24T20:02:00Z\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":true,\"reference\":\"PB-3D3D112B\",\"mode\":\"prebooking\",\"message\":\"Pré-reserva criada com sucesso.\",\"human_confirmation_required\":true,\"request_kind\":\"prebooking\",\"error_code\":null,\"retriable\":false,\"metadata\":{\"status_code\":200,\"tenant_id\":\"a9aa541b-0bd3-45c8-b99f-785c5a51656b\",\"client_id\":\"demo_barbearia\",\"trace_id\":\"sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3\",\"idempotency_key\":\"wf:demo_barbearia:s-f878e7647af8485f:book_appointment:booking_request:704a839a39783476\"},\"operational_status\":\"pending_human\",\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"affirmed\"}}}},\"trace_id\":\"sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1807",
+          "content-type": "application/json",
+          "date": "Thu, 23 Apr 2026 09:54:39 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui.",
+            "route": "workflow",
+            "session_id": "s-f878e7647af8485f",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": null,
+                "human_confirmation_required": true,
+                "message": "Pré-reserva criada com sucesso.",
+                "metadata": {
+                  "client_id": "demo_barbearia",
+                  "idempotency_key": "wf:demo_barbearia:s-f878e7647af8485f:book_appointment:booking_request:704a839a39783476",
+                  "status_code": 200,
+                  "tenant_id": "a9aa541b-0bd3-45c8-b99f-785c5a51656b",
+                  "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3"
+                },
+                "mode": "prebooking",
+                "ok": true,
+                "operational_status": "pending_human",
+                "pending_confirmation_kind": "workflow_confirmation",
+                "pending_confirmation_resolution": "affirmed",
+                "reference": "PB-3D3D112B",
+                "request_kind": "prebooking",
+                "retriable": false
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User E O",
+                "date": "2026-04-24",
+                "duration_min": "45",
+                "ends_at": "2026-04-24T20:02:00Z",
+                "phone": "11999998888",
+                "service": "Corte",
+                "service_id": "BARB-001",
+                "starts_at": "2026-04-24T19:17:00Z",
+                "time": "16:17",
+                "timezone": "America/Sao_Paulo"
+              },
+              "status": "completed"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui."
+        },
+        "session_id": "s-f878e7647af8485f",
+        "status": "ok",
+        "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3"
+      },
+      "request": {
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "message": "isso, manda bala",
+        "session_id": "s-f878e7647af8485f",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {
+          "error_code": null,
+          "human_confirmation_required": true,
+          "message": "Pré-reserva criada com sucesso.",
+          "metadata": {
+            "client_id": "demo_barbearia",
+            "idempotency_key": "wf:demo_barbearia:s-f878e7647af8485f:book_appointment:booking_request:704a839a39783476",
+            "status_code": 200,
+            "tenant_id": "a9aa541b-0bd3-45c8-b99f-785c5a51656b",
+            "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3"
+          },
+          "mode": "prebooking",
+          "ok": true,
+          "operational_status": "pending_human",
+          "pending_confirmation_kind": "workflow_confirmation",
+          "pending_confirmation_resolution": "affirmed",
+          "reference": "PB-3D3D112B",
+          "request_kind": "prebooking",
+          "retriable": false
+        },
+        "conversation_id": "74ad775b-8f32-4de3-a52c-a61a2fd28050",
+        "reply_text": "Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui.",
+        "route": "workflow",
+        "session_id": "s-f878e7647af8485f",
+        "slots": {
+          "customer_name": "Audit User E O",
+          "date": "2026-04-24",
+          "duration_min": "45",
+          "ends_at": "2026-04-24T20:02:00Z",
+          "phone": "11999998888",
+          "service": "Corte",
+          "service_id": "BARB-001",
+          "starts_at": "2026-04-24T19:17:00Z",
+          "time": "16:17",
+          "timezone": "America/Sao_Paulo"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3",
+        "workflow": "book_appointment",
+        "workflow_status": "completed"
+      },
+      "trace_id": "sidequest-20260423_105407-20260423T095417Z-c58c6c51-booking_with_colloquial_ptbr-3"
+    }
+  ],
+  "tags": [
+    "booking",
+    "ptbr",
+    "nlu",
+    "colloquial"
+  ],
+  "transcript": "Turn 1 user: opa, queria corta o cabelo amanha la pras 4 e 17 da tarde\nTurn 1 assistant: Perfeito, troquei para Cabelo. Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\nTurn 2 user: meu nome é Audit User e o zap é 11999998888\nTurn 2 assistant: Resumo para confirmação: pré-agendamento de Corte no dia 24 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\nTurn 3 user: isso, manda bala\nTurn 3 assistant: Perfeito. Pré-agendamento registrado sob a referência PB-3D3D112B. Próximo passo: um atendente vai confirmar a disponibilidade e continuar por aqui."
+}

@@ -941,19 +941,25 @@ def update_appointment(
             ):
                 # Only attribute conversions for appointments created via assistant prebook.
                 prebook_stmt = (
-                    select(AssistantPrebookRequestORM.id)
+                    select(
+                        AssistantPrebookRequestORM.id,
+                        AssistantPrebookRequestORM.conversation_id,
+                        AssistantPrebookRequestORM.session_id,
+                    )
                     .where(AssistantPrebookRequestORM.tenant_id == tenant_id)
                     .where(AssistantPrebookRequestORM.appointment_id == a.id)
                     .limit(1)
                 )
-                if session.execute(prebook_stmt).scalar_one_or_none() is not None:
+                prebook_row = session.execute(prebook_stmt).one_or_none()
+                if prebook_row is not None:
+                    _, prebook_conversation_id, prebook_session_id = prebook_row
                     AssistantFunnelEventsService(session).emit_once(
                         tenant_id=tenant_id,
                         dedupe_key=f"assistant_conversion_confirmed:{a.id}",
                         event_name=ASSISTANT_CONVERSION_CONFIRMED,
                         trace_id=trace_id,
-                        conversation_id=None,
-                        assistant_session_id=None,
+                        conversation_id=prebook_conversation_id,
+                        assistant_session_id=prebook_session_id,
                         customer_id=before_customer_id,
                         event_source="crm_appointment",
                         related_entity_type="appointment",

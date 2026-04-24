@@ -1,0 +1,332 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "common_failure_patterns": {
+    "assertion_failure": [
+      {
+        "count": 3,
+        "pattern": "expected workflow reschedule_appointment, got None"
+      },
+      {
+        "count": 3,
+        "pattern": "unexpected RAG route"
+      },
+      {
+        "count": 2,
+        "pattern": "reply missing any expected text: registr, agend, pré-agendamento, confirm"
+      },
+      {
+        "count": 2,
+        "pattern": "expected action_result.ok=True, got False"
+      },
+      {
+        "count": 2,
+        "pattern": "expected status awaiting_confirmation, got response=ok workflow=collecting"
+      },
+      {
+        "count": 2,
+        "pattern": "reply missing any expected text: remarcação, confirmar, confirmação"
+      },
+      {
+        "count": 2,
+        "pattern": "expected workflow reschedule_appointment, got book_appointment"
+      },
+      {
+        "count": 1,
+        "pattern": "expected status completed, got response=ok workflow=collecting"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+      },
+      {
+        "count": 1,
+        "pattern": "reply missing any expected text: indisponível, disponibilidade, sugerir, remarcação, confirmar"
+      }
+    ],
+    "crm_verification_failure": [
+      {
+        "count": 1,
+        "pattern": "expected matching appointment to exist"
+      }
+    ],
+    "heuristic_failure": [
+      {
+        "count": 2,
+        "pattern": "Repeated date question"
+      },
+      {
+        "count": 1,
+        "pattern": "RAG route during operational flow"
+      },
+      {
+        "count": 1,
+        "pattern": "Repeated time question"
+      },
+      {
+        "count": 1,
+        "pattern": "Expected final status awaiting_confirmation, got collecting"
+      }
+    ],
+    "upstream_runtime_failure": []
+  },
+  "completed_at": "2026-04-20T01:14:37.661017+00:00",
+  "fail_count": 8,
+  "generation": {
+    "error": "generator output was not valid JSON",
+    "source": "seed",
+    "status": "FALLBACK"
+  },
+  "iteration": 3,
+  "judge_enabled": false,
+  "mode": "hybrid",
+  "partial_count": 0,
+  "pass_count": 11,
+  "run_id": "20260420T011336Z-f0347a0e",
+  "scenario_verdicts": [
+    {
+      "failure_count": 3,
+      "scenario_name": "booking_happy_path_full",
+      "tags": [
+        "booking",
+        "happy_path",
+        "crm_side_effect"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_missing_name",
+      "tags": [
+        "booking",
+        "missing_data",
+        "guardrail"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 1,
+      "scenario_name": "booking_missing_phone",
+      "tags": [
+        "booking",
+        "missing_phone",
+        "guardrail"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_conflict_slot",
+      "tags": [
+        "booking",
+        "conflict",
+        "crm_failure"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_interrupted_then_resume",
+      "tags": [
+        "booking",
+        "interruption",
+        "robustness"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_user_changes_time_mid_flow",
+      "tags": [
+        "booking",
+        "change_of_mind",
+        "state"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "faq_then_booking",
+      "tags": [
+        "faq",
+        "booking",
+        "transition"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_with_short_affirmations",
+      "tags": [
+        "booking",
+        "affirmation",
+        "short_turns"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 3,
+      "scenario_name": "booking_with_fragmented_inputs",
+      "tags": [
+        "booking",
+        "fragmented",
+        "state"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_with_colloquial_ptbr",
+      "tags": [
+        "booking",
+        "ptbr",
+        "nlu",
+        "colloquial"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 4,
+      "scenario_name": "reschedule_happy_path",
+      "tags": [
+        "reschedule",
+        "happy_path",
+        "crm_side_effect",
+        "requires_existing_appointment"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 1,
+      "scenario_name": "reschedule_conflict",
+      "tags": [
+        "reschedule",
+        "conflict",
+        "crm_failure",
+        "requires_seeded_conflict"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "reschedule_missing_time",
+      "tags": [
+        "reschedule",
+        "missing_data"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 5,
+      "scenario_name": "reschedule_interrupted_then_resume",
+      "tags": [
+        "reschedule",
+        "interruption",
+        "robustness"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0003_01_seed_colloquial_fragmented_booking",
+      "tags": [
+        "booking",
+        "correction",
+        "fragmented",
+        "generated",
+        "ptbr"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 6,
+      "scenario_name": "generated_i0003_02_seed_reschedule_ambiguous",
+      "tags": [
+        "ambiguous",
+        "generated",
+        "reschedule"
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0003_03_seed_cancellation_colloquial",
+      "tags": [
+        "cancellation",
+        "generated",
+        "ptbr"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0003_04_seed_booking_with_faq_interruption",
+      "tags": [
+        "booking",
+        "faq",
+        "generated",
+        "interruption"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 3,
+      "scenario_name": "generated_i0003_05_seed_missing_time_booking",
+      "tags": [
+        "ambiguous",
+        "booking",
+        "generated",
+        "missing_time"
+      ],
+      "verdict": "FAIL"
+    }
+  ],
+  "started_at": "2026-04-20T01:13:36.259024+00:00",
+  "tenant_id": "907ee7f1-d7f2-421f-a9c7-466ba8dd93b7",
+  "top_5_failure_patterns": [
+    {
+      "count": 2,
+      "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+    },
+    {
+      "count": 2,
+      "pattern": "ambiguous generated reschedule: unexpected RAG route"
+    },
+    {
+      "count": 2,
+      "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+    },
+    {
+      "count": 1,
+      "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    },
+    {
+      "count": 1,
+      "pattern": "booking happy_path crm_side_effect: expected action_result.ok=True, got False"
+    }
+  ],
+  "top_failure_types": [
+    {
+      "count": 20,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 3,
+      "type": "loop_detected"
+    },
+    {
+      "count": 1,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 1,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 1,
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "top_judge_issues": [],
+  "total_scenarios": 19,
+  "worst_conversational_scores": []
+}

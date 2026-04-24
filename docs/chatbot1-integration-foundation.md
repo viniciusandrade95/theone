@@ -85,7 +85,8 @@ O `theone` já está numa posição muito boa para ser a fonte real de dados ope
 O `chatbot1` já demonstra maturidade como motor conversacional multi-tenant.
 
 #### O que já identificámos
-- Runtime FastAPI com `/chat`, `/chat/reset` e `/health`
+- Runtime FastAPI local com `/message`, `/reset` e `/health`
+- Referências antigas a `/chat` e `/chat/reset` devem ser lidas como nomes históricos do contrato inicial.
 - Input principal com `client_id`, `session_id` e `message`
 - Output rico com `route`, `workflow`, `answer`, `router`, `workflow_result`, `rag`, `facts_hit`, `operational`
 - Multi-tenancy via `ClientRegistry`
@@ -94,17 +95,17 @@ O `chatbot1` já demonstra maturidade como motor conversacional multi-tenant.
 - Workflow engine com estado por sessão
 - Continuidade conversacional e gestão de slot filling
 
-#### Problema principal já identificado
-O `chatbot1` ainda executa os workflows através de `FakeCalendarConnector`.
-
-Isto significa que hoje ele:
-- conversa bem
-- pergunta bem
-- conduz bem os fluxos
-- mas não executa sobre o domínio real do `theone`
+#### Estado operacional local atual
+O `chatbot1` já tem `TheOneConnector` para a integração local com `theone`,
+incluindo prebooking via `/crm/assistant/prebook`. O `FakeCalendarConnector`
+continua útil como fallback/test double, mas já não deve ser descrito como o
+centro do fluxo local validado.
 
 #### Conclusão sobre o `chatbot1`
-O `chatbot1` deve ser preservado como motor conversacional, mas precisa de trocar a camada de execução fake por integração real com o `theone`.
+O `chatbot1` deve ser preservado como motor conversacional. No estado local
+atual, o fluxo validado já usa `TheOneConnector` para prebooking com o `theone`;
+o `FakeCalendarConnector` permanece como fallback/test double, não como centro
+da integração local.
 
 ---
 
@@ -180,56 +181,58 @@ Decisão mantida.
 - identificação dos maiores gaps de integração
 - definição da arquitetura recomendada de alto nível
 - definição do princípio de source of truth no `theone`
-- identificação do maior bloqueio técnico atual: `FakeCalendarConnector`
+- validação local do proxy `theone` -> `chatbot1`
+- validação local do `TheOneConnector` para prebooking
+- fechamento da fase de testes do chatbot com sidequest/hybrid/autonomous verdes
 
 ### Principais conclusões já obtidas
 1. O `theone` está suficientemente maduro para ser a fonte operacional.
 2. O `chatbot1` está suficientemente maduro para ser o motor de conversa.
 3. A ligação é viável e forte.
-4. O ponto crítico não é a UI; é a fronteira entre conversa e execução real.
+4. O ponto crítico deixou de ser a ligação básica entre conversa e execução real; o próximo foco é grounding por tenant e piloto controlado.
 
 ---
 
 ## O que falta fazer
 
-### Bloco A — discovery técnico detalhado
-Ainda falta mapear com precisão:
-- todos os endpoints reais existentes no backend do `theone`
-- quais operações já existem de forma utilizável pelo `chatbot1`
-- quais operações ainda terão de ser criadas ou adaptadas
-- como o `theone` representa locations, professionals, policies e handoff do lado do backend
+### Bloco A — grounding do tenant piloto
+Ainda falta consolidar, para o tenant piloto:
+- `profile.yaml`
+- `kb/services.json`
+- `kb/facts.yaml`
+- FAQ/policies reais
+- aliases de serviços
+- timezone e regras operacionais
 
-### Bloco B — contrato de integração
-Ainda falta definir formalmente:
-- contrato entre `theone -> chatbot1`
-- contrato entre `chatbot1 -> theone`
-- payloads de ações operacionais
-- propagação de `trace_id`
-- regras de idempotência
+### Bloco B — piloto controlado
+Ainda falta definir:
+- tenant piloto
+- checklist de demo/piloto
+- perguntas e fluxos mínimos esperados
+- critérios de blocker vs melhoria
 
-### Bloco C — camada de integração no `theone`
-Ainda falta implementar:
-- `POST /api/chatbot/message`
-- `POST /api/chatbot/reset`
-- gestão de `conversation_id`
-- persistência de `chatbot_session_id`
-- UI inicial do assistente no dashboard
+### Bloco C — hardening pós-verde
+Ainda falta continuar, sem reabrir a fase fechada:
+- robustez conversacional curta
+- correção de slots sem perda de contexto
+- FAQ genérica mais consistente
+- fechamento pós-sucesso
 
-### Bloco D — execução real no `chatbot1`
-Ainda falta implementar:
-- substituição do `FakeCalendarConnector`
-- criação de `TheOneConnector`
-- wiring do workflow engine para ações reais
-- tratamento de erro operacional real
+### Bloco D — documentação operacional
+O runbook consolidado atual é:
+
+```text
+/home/vinicius/system-audit/workspace/LOCAL_RUNBOOK.md
+```
 
 ### Bloco E — grounding por tenant
-Ainda falta decidir e implementar:
+Ainda falta consolidar:
 - como o `chatbot1` recebe profile, facts, services, professionals e policies do `theone`
 - se vamos usar sync inicial ou provider remoto
 - como o tenant vai gerir FAQ/policies/dados usados no RAG
 
 ### Bloco F — observabilidade e rollout
-Ainda falta implementar:
+Ainda falta consolidar:
 - logs ponta a ponta
 - tracing consistente
 - métricas de conversa
@@ -247,7 +250,7 @@ A ideia inicial poderia sugerir uma ligação mais rápida através de um simple
 Esse plano foi ajustado.
 
 #### Novo entendimento
-Não basta ligar o `theone` ao endpoint `/chat`.
+Não basta ligar o `theone` a um endpoint conversacional bruto.
 É necessário tratar a integração como uma ligação entre:
 - sistema operacional de negócio (`theone`)
 - motor conversacional (`chatbot1`)

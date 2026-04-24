@@ -1,0 +1,387 @@
+{
+  "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User interrupts remarcação with FAQ and resumes without losing new date.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected status awaiting_confirmation, got response=ok workflow=collecting",
+      "step_index": 3
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing any expected text: remarcação, confirmar, confirmação",
+      "step_index": 3
+    },
+    {
+      "category": "heuristic_failure",
+      "message": "RAG route during operational flow",
+      "step_index": 2,
+      "type": "rag_during_operational_flow"
+    }
+  ],
+  "failures": [
+    "step 2: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 2: assertion_failure: unexpected RAG route",
+    "step 3: assertion_failure: expected status awaiting_confirmation, got response=ok workflow=collecting",
+    "step 3: assertion_failure: reply missing any expected text: remarcação, confirmar, confirmação",
+    "step 2: heuristic_failure: RAG route during operational flow"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": [
+      {
+        "category": "heuristic_failure",
+        "message": "RAG route during operational flow",
+        "step_index": 2,
+        "type": "rag_during_operational_flow"
+      }
+    ]
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_interrupted_then_resume",
+  "scenario_run_id": "20260420T031633Z-39116dbf-reschedule_interrupted_then_resume",
+  "session_id": "s-d0b6437c27c746e7",
+  "started_at": "2026-04-20T03:17:05.848383+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-d0b6437c27c746e7\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d0b6437c27c746e7\",\"reply\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":nu",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-d0b6437c27c746e7\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d0b6437c27c746e7\",\"reply\":\"Perfeito, ajustei para Corte. E qual horário você prefere?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"amanhã\",\"service\":\"corte\",\"new_date\":\"2026-04-21\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":true,\"progress_reason\":\"operations:date, new_date, service\"}}}},\"trace_id\":\"autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-1\",\"client_id\":\"907ee7f1-d7f2-421f-a9c7-466ba8dd93b7\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1019",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 03:17:04 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "907ee7f1-d7f2-421f-a9c7-466ba8dd93b7",
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, ajustei para Corte. E qual horário você prefere?",
+            "route": "workflow",
+            "session_id": "s-d0b6437c27c746e7",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 1,
+                "fallback_before": 0,
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:date, new_date, service"
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "amanhã",
+                "new_date": "2026-04-21",
+                "service": "corte"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, ajustei para Corte. E qual horário você prefere?"
+        },
+        "session_id": "s-d0b6437c27c746e7",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "fallback_after": 1,
+          "fallback_before": 0,
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:date, new_date, service"
+        },
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "reply_text": "Perfeito, ajustei para Corte. E qual horário você prefere?",
+        "route": "workflow",
+        "session_id": "s-d0b6437c27c746e7",
+        "slots": {
+          "date": "amanhã",
+          "new_date": "2026-04-21",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected workflow reschedule_appointment, got None",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-d0b6437c27c746e7\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d0b6437c27c746e7\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer o en",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-d0b6437c27c746e7\",\"status\":\"ok\",\"reply\":{\"text\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d0b6437c27c746e7\",\"reply\":\"Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-2\",\"client_id\":\"907ee7f1-d7f2-421f-a9c7-466ba8dd93b7\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "870",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 03:17:04 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "907ee7f1-d7f2-421f-a9c7-466ba8dd93b7",
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação.",
+            "route": "rag",
+            "session_id": "s-d0b6437c27c746e7",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação."
+        },
+        "session_id": "s-d0b6437c27c746e7",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-2"
+      },
+      "request": {
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "message": "qual o endereço mesmo?",
+        "session_id": "s-d0b6437c27c746e7",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "reply_text": "Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação.",
+        "route": "rag",
+        "session_id": "s-d0b6437c27c746e7",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-2"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected status awaiting_confirmation, got response=ok workflow=collecting",
+          "reply missing any expected text: remarcação, confirmar, confirmação"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-d0b6437c27c746e7\",\"status\":\"ok\",\"reply\":{\"text\":\"Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d0b6437c27c746e7\",\"reply\":\"Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja ",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-d0b6437c27c746e7\",\"status\":\"ok\",\"reply\":{\"text\":\"Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-d0b6437c27c746e7\",\"reply\":\"Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar.\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"amanhã\",\"service\":\"corte\",\"new_date\":\"2026-04-21\",\"new_time\":\"16:17\",\"time\":\"16:17\"},\"pending_confirmation\":false,\"action_result\":{\"reschedule_availability\":{\"outcome\":\"availability_check_failed\",\"ok\":false,\"target\":\"seu agendamento\",\"new_date\":\"2026-04-21\",\"new_time\":\"16:17\",\"suggestions\":[],\"error_code\":\"appointment_ambiguous\",\"retriable\":false,\"operational_status\":\"validation_error\"},\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\"}}}},\"trace_id\":\"autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-3\",\"client_id\":\"907ee7f1-d7f2-421f-a9c7-466ba8dd93b7\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1299",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 03:17:05 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-3"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "907ee7f1-d7f2-421f-a9c7-466ba8dd93b7",
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar.",
+            "route": "workflow",
+            "session_id": "s-d0b6437c27c746e7",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "reschedule_availability": {
+                  "error_code": "appointment_ambiguous",
+                  "new_date": "2026-04-21",
+                  "new_time": "16:17",
+                  "ok": false,
+                  "operational_status": "validation_error",
+                  "outcome": "availability_check_failed",
+                  "retriable": false,
+                  "suggestions": [],
+                  "target": "seu agendamento"
+                }
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "amanhã",
+                "new_date": "2026-04-21",
+                "new_time": "16:17",
+                "service": "corte",
+                "time": "16:17"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar."
+        },
+        "session_id": "s-d0b6437c27c746e7",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-3"
+      },
+      "request": {
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "message": "16h17",
+        "session_id": "s-d0b6437c27c746e7",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "reschedule_availability": {
+            "error_code": "appointment_ambiguous",
+            "new_date": "2026-04-21",
+            "new_time": "16:17",
+            "ok": false,
+            "operational_status": "validation_error",
+            "outcome": "availability_check_failed",
+            "retriable": false,
+            "suggestions": [],
+            "target": "seu agendamento"
+          }
+        },
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "reply_text": "Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar.",
+        "route": "workflow",
+        "session_id": "s-d0b6437c27c746e7",
+        "slots": {
+          "date": "amanhã",
+          "new_date": "2026-04-21",
+          "new_time": "16:17",
+          "service": "corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-3",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260420T031633Z-39116dbf-reschedule_interrupted_then_resume-3"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "interruption",
+    "robustness"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã\nTurn 1 assistant: Perfeito, ajustei para Corte. E qual horário você prefere?\nTurn 2 user: qual o endereço mesmo?\nTurn 2 assistant: Não encontrei isso no guia deste negócio. Você quer o endereço, como chegar ou informação de estacionamento? Se quiser, depois a gente retoma a remarcação.\nTurn 3 user: 16h17\nTurn 3 assistant: Encontrei mais de um agendamento possível. Informe a referência ou horário do agendamento que deseja remarcar."
+}

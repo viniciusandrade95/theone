@@ -54,6 +54,7 @@ class ChatbotSessionRepo:
         surface: str,
         conversation_id: str | None = None,
         customer_id: str | None = None,
+        start_new: bool = False,
     ):
         target = None
         if conversation_id:
@@ -85,6 +86,8 @@ class ChatbotSessionRepo:
             return target
 
         target.client_id = client_id
+        if start_new and not conversation_id:
+            self.reset(entity=target)
         if customer_id:
             target.customer_id = self._coerce_uuid(customer_id)
         return target

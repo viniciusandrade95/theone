@@ -1,0 +1,371 @@
+{
+  "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User starts with availability/FAQ language and then transitions into booking.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected slot service to be present",
+      "step_index": 2
+    }
+  ],
+  "failures": [
+    "step 2: assertion_failure: expected slot service to be present"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "faq_then_booking",
+  "scenario_run_id": "20260420T004439Z-bddfcdc9-faq_then_booking",
+  "session_id": "s-8268d455aa834666",
+  "started_at": "2026-04-20T00:45:08.842157+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8268d455aa834666\",\"status\":\"ok\",\"reply\":{\"text\":\"Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8268d455aa834666\",\"reply\":\"Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8268d455aa834666\",\"status\":\"ok\",\"reply\":{\"text\":\"Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8268d455aa834666\",\"reply\":\"Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"2026-04-20\"},\"pending_confirmation\":false,\"action_result\":{\"availability\":{\"outcome\":\"missing_info\",\"missing\":[\"service\"]},\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\"}}}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-1\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "960",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:45:06 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel.",
+            "route": "workflow",
+            "session_id": "s-8268d455aa834666",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "availability": {
+                  "missing": [
+                    "service"
+                  ],
+                  "outcome": "missing_info"
+                },
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none"
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "2026-04-20"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel."
+        },
+        "session_id": "s-8268d455aa834666",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "Tem vaga amanhã?",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "availability": {
+            "missing": [
+              "service"
+            ],
+            "outcome": "missing_info"
+          },
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none"
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel.",
+        "route": "workflow",
+        "session_id": "s-8268d455aa834666",
+        "slots": {
+          "date": "2026-04-20"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-1",
+        "workflow": "book_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected slot service to be present"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8268d455aa834666\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8268d455aa834666\",\"reply\":\"Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode es",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8268d455aa834666\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8268d455aa834666\",\"reply\":\"Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"2026-04-20\",\"time\":\"16:17\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\"},\"pending_confirmation\":false,\"action_result\":{\"validation_error\":{\"slot\":\"service\",\"code\":\"invalid_service\",\"suggested_value\":null},\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":0,\"fallback_after\":1,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-2\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1188",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:45:07 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?",
+            "route": "workflow",
+            "session_id": "s-8268d455aa834666",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 1,
+                "fallback_before": 0,
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": false,
+                "progress_reason": "none",
+                "validation_error": {
+                  "code": "invalid_service",
+                  "slot": "service",
+                  "suggested_value": null
+                }
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User",
+                "date": "2026-04-20",
+                "phone": "11999998888",
+                "time": "16:17"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?"
+        },
+        "session_id": "s-8268d455aa834666",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-2"
+      },
+      "request": {
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "message": "Quero corte às 16h17 para Audit User, telefone 11999998888",
+        "session_id": "s-8268d455aa834666",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {
+          "fallback_after": 1,
+          "fallback_before": 0,
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": false,
+          "progress_reason": "none",
+          "validation_error": {
+            "code": "invalid_service",
+            "slot": "service",
+            "suggested_value": null
+          }
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?",
+        "route": "workflow",
+        "session_id": "s-8268d455aa834666",
+        "slots": {
+          "customer_name": "Audit User",
+          "date": "2026-04-20",
+          "phone": "11999998888",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-2",
+        "workflow": "book_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-2"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8268d455aa834666\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8268d455aa834666\",\"reply\":\"Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel.\",\"route\":\"workflow\",",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-8268d455aa834666\",\"status\":\"ok\",\"reply\":{\"text\":\"Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-8268d455aa834666\",\"reply\":\"Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"date\":\"2026-04-20\",\"time\":\"16:17\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\"},\"pending_confirmation\":false,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"fallback_before\":1,\"fallback_after\":2,\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-3\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1030",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:45:08 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-3"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel.",
+            "route": "workflow",
+            "session_id": "s-8268d455aa834666",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "fallback_after": 2,
+                "fallback_before": 1,
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": false,
+                "progress_reason": "none"
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User",
+                "date": "2026-04-20",
+                "phone": "11999998888",
+                "time": "16:17"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel."
+        },
+        "session_id": "s-8268d455aa834666",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-3"
+      },
+      "request": {
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "message": "sim pode confirmar",
+        "session_id": "s-8268d455aa834666",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {
+          "fallback_after": 2,
+          "fallback_before": 1,
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": false,
+          "progress_reason": "none"
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel.",
+        "route": "workflow",
+        "session_id": "s-8268d455aa834666",
+        "slots": {
+          "customer_name": "Audit User",
+          "date": "2026-04-20",
+          "phone": "11999998888",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-3",
+        "workflow": "book_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-faq_then_booking-3"
+    }
+  ],
+  "tags": [
+    "faq",
+    "booking",
+    "transition"
+  ],
+  "transcript": "Turn 1 user: Tem vaga amanhã?\nTurn 1 assistant: Para qual serviço você quer consultar disponibilidade? Posso verificar Manicure, Pedicure ou Banho de Gel.\nTurn 2 user: Quero corte às 16h17 para Audit User, telefone 11999998888\nTurn 2 assistant: Perfeito, ajustei para Corte. Não encontrei esse serviço no catálogo. Você pode escolher entre: Manicure, Pedicure, Banho de Gel?\nTurn 3 user: sim pode confirmar\nTurn 3 assistant: Qual serviço você quer fazer no studio? Posso te ajudar com Manicure, Pedicure ou Banho de Gel."
+}

@@ -1,0 +1,376 @@
+{
+  "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "Cancellation request with colloquial phrasing.",
+  "failure_records": [],
+  "failures": [],
+  "final_verdict": "PASS",
+  "guardrails_observed": [
+    "conflict_or_unavailable"
+  ],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "generated_i0002_03_seed_cancellation_colloquial",
+  "scenario_run_id": "20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial",
+  "session_id": "s-33384d1573204ae5",
+  "started_at": "2026-04-19T03:26:48.375408+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-33384d1573204ae5\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-33384d1573204ae5\",\"reply\":\"Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação hu",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-33384d1573204ae5\",\"status\":\"ok\",\"reply\":{\"text\":\"Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-33384d1573204ae5\",\"reply\":\"Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"cancel_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"date\":\"2026-04-20\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:date\"}}}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8ced14b91e413-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:26:32 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "89f48208-6f48-4f8a",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-33384d1573204ae5",
+            "status": "ok",
+            "workflow": "cancel_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:date"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "date": "2026-04-20"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?"
+        },
+        "session_id": "s-33384d1573204ae5",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "não posso ir amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:date"
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-33384d1573204ae5",
+        "slots": {
+          "date": "2026-04-20"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-1",
+        "workflow": "cancel_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-1"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-33384d1573204ae5\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-33384d1573204ae5\",\"reply\":\"Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-33384d1573204ae5\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-33384d1573204ae5\",\"reply\":\"Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"cancel_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"date\":\"2026-04-20\",\"service\":\"corte\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"continued_with_operations\",\"progress_detected\":true,\"progress_reason\":\"operations:service\"}}}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8cef98f7ac9d9-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:26:40 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "076d3685-3661-4a77",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-33384d1573204ae5",
+            "status": "ok",
+            "workflow": "cancel_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "workflow_confirmation",
+                "pending_confirmation_resolution": "continued_with_operations",
+                "progress_detected": true,
+                "progress_reason": "operations:service"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "date": "2026-04-20",
+                "service": "corte"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-33384d1573204ae5",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-2"
+      },
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "cancela meu corte pfv",
+        "session_id": "s-33384d1573204ae5",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "workflow_confirmation",
+          "pending_confirmation_resolution": "continued_with_operations",
+          "progress_detected": true,
+          "progress_reason": "operations:service"
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-33384d1573204ae5",
+        "slots": {
+          "date": "2026-04-20",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-2",
+        "workflow": "cancel_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-2"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-33384d1573204ae5\",\"status\":\"ok\",\"reply\":{\"text\":\"Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-33384d1573204ae5\",\"reply\":\"Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano.\",\"route\":\"workfl",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-33384d1573204ae5\",\"status\":\"ok\",\"reply\":{\"text\":\"Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-33384d1573204ae5\",\"reply\":\"Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano.\",\"route\":\"workflow\",\"workflow\":\"cancel_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"completed\",\"slots\":{\"date\":\"2026-04-20\",\"service\":\"corte\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":false,\"reference\":\"unavailable\",\"mode\":\"cancel_request_temporary_failure\",\"message\":\"Integração temporariamente indisponível. Vou encaminhar para atendimento humano.\",\"human_confirmation_required\":true,\"request_kind\":\"cancel_request\",\"error_code\":\"http_404\",\"retriable\":true,\"metadata\":{\"status_code\":404,\"tenant_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\",\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3\",\"idempotency_key\":\"wf:4cd335f6-00bc-482a-8d91-154a775bcb7b:s-33384d1573204ae5:cancel_appointment:cancellation_request:499080d81c97c10a\"},\"operational_status\":\"temporary_failure\",\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"affirmed\"}}}},\"trace_id\":\"autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee8cf298809e43b-OTP",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 03:26:48 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "e0662728-4c44-48bd",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano.",
+            "route": "workflow",
+            "session_id": "s-33384d1573204ae5",
+            "status": "ok",
+            "workflow": "cancel_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": "http_404",
+                "human_confirmation_required": true,
+                "message": "Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+                "metadata": {
+                  "idempotency_key": "wf:4cd335f6-00bc-482a-8d91-154a775bcb7b:s-33384d1573204ae5:cancel_appointment:cancellation_request:499080d81c97c10a",
+                  "status_code": 404,
+                  "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+                  "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3"
+                },
+                "mode": "cancel_request_temporary_failure",
+                "ok": false,
+                "operational_status": "temporary_failure",
+                "pending_confirmation_kind": "workflow_confirmation",
+                "pending_confirmation_resolution": "affirmed",
+                "reference": "unavailable",
+                "request_kind": "cancel_request",
+                "retriable": true
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "2026-04-20",
+                "service": "corte"
+              },
+              "status": "completed"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano."
+        },
+        "session_id": "s-33384d1573204ae5",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3"
+      },
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "sim",
+        "session_id": "s-33384d1573204ae5",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 3,
+      "summary": {
+        "action_result": {
+          "error_code": "http_404",
+          "human_confirmation_required": true,
+          "message": "Integração temporariamente indisponível. Vou encaminhar para atendimento humano.",
+          "metadata": {
+            "idempotency_key": "wf:4cd335f6-00bc-482a-8d91-154a775bcb7b:s-33384d1573204ae5:cancel_appointment:cancellation_request:499080d81c97c10a",
+            "status_code": 404,
+            "tenant_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+            "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3"
+          },
+          "mode": "cancel_request_temporary_failure",
+          "ok": false,
+          "operational_status": "temporary_failure",
+          "pending_confirmation_kind": "workflow_confirmation",
+          "pending_confirmation_resolution": "affirmed",
+          "reference": "unavailable",
+          "request_kind": "cancel_request",
+          "retriable": true
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano.",
+        "route": "workflow",
+        "session_id": "s-33384d1573204ae5",
+        "slots": {
+          "date": "2026-04-20",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3",
+        "workflow": "cancel_appointment",
+        "workflow_status": "completed"
+      },
+      "trace_id": "autonomous-eval-generated-20260419T031916Z-87a82924-generated_i0002_03_seed_cancellation_colloquial-3"
+    }
+  ],
+  "tags": [
+    "cancellation",
+    "generated",
+    "ptbr"
+  ],
+  "transcript": "Turn 1 user: não posso ir amanhã\nTurn 1 assistant: Tudo bem, a data foi ajustada. Você confirma o cancelamento de 20 de abr e eu envio para confirmação humana?\nTurn 2 user: cancela meu corte pfv\nTurn 2 assistant: Perfeito, troquei para Corte: resumo de confirmação, cancelamento de 20 de abr. Tudo certo? Posso encaminhar para confirmação humana?\nTurn 3 user: sim\nTurn 3 assistant: Ok, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para um atendente humano."
+}

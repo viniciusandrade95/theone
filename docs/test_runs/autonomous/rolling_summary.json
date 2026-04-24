@@ -1,0 +1,490 @@
+{
+  "iteration_count": 8,
+  "iterations": [
+    {
+      "completed_at": "2026-04-19T03:06:15.217483+00:00",
+      "fail_count": 10,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 9,
+      "run_id": "20260419T025630Z-3922e31d",
+      "top_5_failure_patterns": [
+        {
+          "count": 4,
+          "pattern": "booking correction fragmented generated ptbr: Slot loss detected: date"
+        },
+        {
+          "count": 3,
+          "pattern": "booking missing_data guardrail: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"tr"
+        },
+        {
+          "count": 3,
+          "pattern": "booking missing_data guardrail: expected route workflow, got None"
+        },
+        {
+          "count": 3,
+          "pattern": "booking missing_data guardrail: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 3,
+          "pattern": "booking ptbr nlu colloquial: expected workflow book_appointment, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 55,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 8,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 5,
+          "type": "loop_detected"
+        },
+        {
+          "count": 4,
+          "type": "slot_loss"
+        },
+        {
+          "count": 2,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 2,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T03:19:01.829534+00:00",
+      "fail_count": 10,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 9,
+      "run_id": "20260419T031011Z-e2c01790",
+      "top_5_failure_patterns": [
+        {
+          "count": 3,
+          "pattern": "booking ptbr nlu colloquial: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "booking ptbr nlu colloquial: unexpected RAG route"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking fragmented state: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 25,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 5,
+          "type": "loop_detected"
+        },
+        {
+          "count": 3,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T03:28:26.800804+00:00",
+      "fail_count": 10,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 9,
+      "run_id": "20260419T031916Z-87a82924",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "booking ptbr nlu colloquial: expected workflow book_appointment, got create_lead"
+        },
+        {
+          "count": 2,
+          "pattern": "booking correction fragmented generated ptbr: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "booking correction fragmented generated ptbr: Slot loss detected: date"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 25,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 4,
+          "type": "loop_detected"
+        },
+        {
+          "count": 4,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 2,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 2,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 2,
+          "type": "slot_loss"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T14:00:09.931194+00:00",
+      "fail_count": 19,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T135644Z-79d20bb5",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: response body is not a JSON object"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 197,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 124,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T14:03:49.056052+00:00",
+      "fail_count": 19,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T140024Z-d2674921",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: response body is not a JSON object"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 197,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 124,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T14:16:01.076259+00:00",
+      "fail_count": 16,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T141238Z-14d5bcfd",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: response body is not a JSON object"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 183,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 94,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T14:44:09.181905+00:00",
+      "fail_count": 8,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 11,
+      "run_id": "20260419T143403Z-50d50d45",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "booking affirmation short_turns: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"tr"
+        },
+        {
+          "count": 2,
+          "pattern": "booking affirmation short_turns: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: unexpected RAG route"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got book_appointment"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 25,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "loop_detected"
+        },
+        {
+          "count": 3,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 2,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T14:55:00.429998+00:00",
+      "fail_count": 10,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 9,
+      "run_id": "20260419T144424Z-141fe370",
+      "top_5_failure_patterns": [
+        {
+          "count": 4,
+          "pattern": "booking missing_data guardrail: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 3,
+          "pattern": "ambiguous generated reschedule: expected workflow reschedule_appointment, got None"
+        },
+        {
+          "count": 3,
+          "pattern": "ambiguous generated reschedule: unexpected RAG route"
+        },
+        {
+          "count": 2,
+          "pattern": "booking missing_data guardrail: HTTP request failed with status 400: {\"error\":\"VALIDATION_ERROR\",\"details\":{\"message\":\"Chatbot service unavailable\"},\"tr"
+        },
+        {
+          "count": 2,
+          "pattern": "booking missing_data guardrail: expected route workflow, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 52,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 4,
+          "type": "loop_detected"
+        },
+        {
+          "count": 3,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 2,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 759,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 357,
+      "type": "upstream_runtime_failure"
+    },
+    {
+      "count": 21,
+      "type": "loop_detected"
+    },
+    {
+      "count": 15,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 13,
+      "type": "failure_to_complete_task"
+    },
+    {
+      "count": 7,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 6,
+      "type": "slot_loss"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 18,
+      "pattern": "booking fragmented state: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+    },
+    {
+      "count": 18,
+      "pattern": "booking fragmented state: response body is not a JSON object"
+    },
+    {
+      "count": 18,
+      "pattern": "booking fragmented state: expected route workflow, got None"
+    },
+    {
+      "count": 18,
+      "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+    },
+    {
+      "count": 15,
+      "pattern": "booking missing_phone guardrail: HTTP request failed with status 502: <!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name"
+    }
+  ],
+  "updated_at": "2026-04-19T14:55:00.432975+00:00"
+}

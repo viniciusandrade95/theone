@@ -50,29 +50,38 @@ Entregar uma integração interna no dashboard do `theone` que permita:
 - cancelamento/remarcação avançados automatizados
 - rollout multi-canal
 
+### Estado atual local
+- A fase de testes do chatbot está fechada; não reabrir sidequest debugging nem testes de fluxo conversacional.
+- Último run verde: `docs/test_runs/sidequest_local_20260422_223508`
+- Signoff: `/home/vinicius/system-audit/workspace/final_test_signoff_20260422_225617/FINAL_STATUS.txt`
+- Relatório de estado: `/home/vinicius/system-audit/workspace/PROJECT_STATE_REPORT.md`
+- Os resultados canônicos do autonomous tester são `autonomous/rolling_summary.json` e `autonomous/top_failures.md`; `autonomous_tester.txt` pode ficar vazio.
+- A antiga pendência de 5 testes 401 em `tests/api/test_assistant_workflows_reschedule.py` está resolvida/localmente verde.
+- Próximo foco: consolidação do ritual local, robustez curta e piloto interno controlado.
+
 ---
 
 ## Board de trabalho
 
 | ID | Task | Prioridade | Owner | Estado | Dependências | Bloqueios | Notes |
 |---|---|---|---|---|---|---|---|
-| T0.1 | Inventariar endpoints reais do backend do `theone` | P0 | senior_engineer | todo | - | - | Confirmar quais endpoints existem de facto no backend e quais precisam de adaptação |
-| T0.2 | Fechar scope da release 1 | P0 | product_ops | todo | - | - | Confirmar que a release inicial é dashboard-first |
-| T0.3 | Validar contrato técnico inicial | P0 | senior_engineer | todo | T0.1 | - | Usar `docs/chatbot1-integration-contract.md` como base |
-| T1.1 | Deploy do `chatbot1` em ambiente controlado | P0 | senior_engineer | todo | T0.3 | - | Serviço isolado com `/health`, `/chat`, `/chat/reset` |
-| T1.2 | Criar `/api/chatbot/message` no `theone` | P0 | fullstack | todo | T1.1, T0.3 | - | Proxy server-side obrigatório |
-| T1.3 | Criar `/api/chatbot/reset` no `theone` | P0 | fullstack | todo | T1.1, T0.3 | - | Reset de sessão/conversa |
-| T1.4 | Definir/persistir modelo de `conversation_id` | P0 | senior_engineer | todo | T0.3 | - | Mapear `conversation_id` <-> `chatbot_session_id` |
-| T1.5 | Criar UI inicial do assistente no dashboard | P0 | fullstack | todo | T1.2, T1.3, T1.4 | - | MVP interno com histórico + input + reset |
-| T1.6 | Propagar `trace_id` ponta a ponta | P0 | senior_engineer | todo | T1.1, T1.2 | - | Fundamental para observabilidade |
-| T1.7 | QA manual da integração mínima | P0 | product_ops | todo | T1.5, T1.6 | - | Testar conversa, reset, erros e persistência |
-| T2.1 | Definir endpoints operacionais do `theone` para assistant actions | P0 | senior_engineer | todo | T0.1 | - | `prebook`, `handoff`, `quote-request`, `consult-request`, etc. |
-| T2.2 | Criar `TheOneConnector` no `chatbot1` | P0 | senior_engineer | todo | T2.1 | - | Substituir o `FakeCalendarConnector` nos fluxos ativos |
-| T2.3 | Ligar workflow de prebooking ao CRM real | P0 | senior_engineer | todo | T2.2 | - | Primeiro workflow operacional real recomendado |
+| T0.1 | Inventariar endpoints reais do backend do `theone` | P0 | senior_engineer | done | - | - | Inventário coberto pelos docs e pelo código de rotas atuais |
+| T0.2 | Fechar scope da release 1 | P0 | product_ops | done | - | - | Scope permanece dashboard-first/local; sem rollout multi-canal |
+| T0.3 | Validar contrato técnico inicial | P0 | senior_engineer | done | T0.1 | - | Contrato validado para a integração local atual |
+| T1.1 | Disponibilizar `chatbot1` em ambiente local controlado | P0 | senior_engineer | done | T0.3 | - | Serviço local com `/health`, `/message`, `/reset`; sem trabalho de deploy |
+| T1.2 | Criar `/api/chatbot/message` no `theone` | P0 | fullstack | done | T1.1, T0.3 | - | Proxy server-side implementado |
+| T1.3 | Criar `/api/chatbot/reset` no `theone` | P0 | fullstack | done | T1.1, T0.3 | - | Reset de sessão/conversa implementado |
+| T1.4 | Definir/persistir modelo de `conversation_id` | P0 | senior_engineer | done | T0.3 | - | Mapeamento `conversation_id` <-> `chatbot_session_id` implementado |
+| T1.5 | Criar UI inicial do assistente no dashboard | P0 | fullstack | todo | T1.2, T1.3, T1.4 | - | Não reavaliado neste cleanup |
+| T1.6 | Propagar `trace_id` ponta a ponta | P0 | senior_engineer | done | T1.1, T1.2 | - | Trace propagado nos proxies e connector local |
+| T1.7 | QA local da integração mínima | P0 | product_ops | done | T1.5, T1.6 | - | Fechado por sidequest/local evidence; não reabrir |
+| T2.1 | Definir endpoints operacionais do `theone` para assistant actions | P0 | senior_engineer | done | T0.1 | - | `prebook` e rotas internas de workflow existem; quote/consult seguem como evolução |
+| T2.2 | Criar `TheOneConnector` no `chatbot1` | P0 | senior_engineer | done | T2.1 | - | Connector implementado |
+| T2.3 | Ligar workflow de prebooking ao CRM real | P0 | senior_engineer | done | T2.2 | - | Prebooking local validado contra `/crm/assistant/prebook` |
 | T2.4 | Ligar handoff real ao `theone` | P0 | senior_engineer | todo | T2.2 | - | Handoff visível/operável dentro do CRM |
-| T2.5 | Tornar resultado operacional visível no `theone` | P0 | fullstack | todo | T2.3, T2.4 | - | O utilizador precisa confirmar que a ação existiu de verdade |
-| T2.6 | Implementar idempotência mínima nas ações operacionais | P1 | senior_engineer | todo | T2.2 | - | Evitar duplicados por retry ou duplo submit |
-| T2.7 | QA de workflows reais | P0 | product_ops | todo | T2.5, T2.6 | - | Testar happy path e erro operacional |
+| T2.5 | Tornar resultado operacional visível no `theone` | P0 | fullstack | done | T2.3, T2.4 | - | Resultado operacional de prebooking validado localmente; handoff segue separado |
+| T2.6 | Implementar idempotência mínima nas ações operacionais | P1 | senior_engineer | done | T2.2 | - | Idempotência mínima de prebooking implementada |
+| T2.7 | QA local de workflows reais | P0 | product_ops | done | T2.5, T2.6 | - | Hybrid/autonomous verdes; fase de teste fechada |
 | T3.1 | Decidir estratégia de grounding inicial | P1 | senior_engineer | todo | T0.1 | - | Sync controlado vs provider remoto vs híbrido |
 | T3.2 | Mapear `theone` -> profile/facts/services/professionals | P1 | senior_engineer | todo | T3.1 | - | Estruturar dados consumíveis pelo `chatbot1` |
 | T3.3 | Preparar FAQ e policies iniciais do tenant piloto | P1 | product_ops | todo | T3.1 | - | Horário, morada, pagamentos, políticas |
@@ -193,7 +202,7 @@ Entregar uma integração interna no dashboard do `theone` que permita:
 |---|---|---|---|---|
 | R1 | Backend real do `theone` não expõe tudo o que o frontend sugere | Alto | Fazer T0.1 antes de desenhar demais | senior_engineer |
 | R2 | Scope creep para WhatsApp/public chat cedo demais | Alto | Dashboard-first e release 1 limitada | product_ops |
-| R3 | `FakeCalendarConnector` continuar no centro do fluxo | Alto | Priorizar T2.2 e T2.3 | senior_engineer |
+| R3 | `FakeCalendarConnector` voltar a ser assumido como centro do fluxo local | Médio | Manter docs alinhadas com `TheOneConnector` e prebooking real local | senior_engineer |
 | R4 | Falta de grounding gera respostas genéricas | Médio/Alto | T3.1 a T3.5 com tenant piloto bem preparado | senior_engineer + product_ops |
 | R5 | Sessão/conversa perder-se e quebrar continuidade | Alto | T1.4 como P0 | senior_engineer |
 | R6 | Ações operacionais duplicadas | Alto | Idempotência mínima em T2.6 | senior_engineer |
@@ -217,10 +226,10 @@ Entregar uma integração interna no dashboard do `theone` que permita:
 
 | ID | Pergunta | Owner | Estado |
 |---|---|---|---|
-| Q1 | Quais endpoints backend do `theone` já existem realmente? | senior_engineer | open |
+| Q1 | Quais endpoints backend do `theone` já existem realmente? | senior_engineer | resolved for local prebooking/proxy scope |
 | Q2 | Existe já modelo operacional de handoff no backend? | senior_engineer | open |
 | Q3 | Onde vivem professionals e policies no backend do `theone`? | senior_engineer | open |
-| Q4 | O primeiro workflow real será prebooking ou booking confirmado? | shared | open |
+| Q4 | O primeiro workflow real será prebooking ou booking confirmado? | shared | resolved: prebooking |
 | Q5 | O grounding inicial vai usar sync ou provider remoto? | senior_engineer | open |
 
 ---
@@ -228,27 +237,27 @@ Entregar uma integração interna no dashboard do `theone` que permita:
 ## Checklist de readiness da release inicial
 
 ### Arquitetura
-- [ ] `theone` confirmado como source of truth
-- [ ] contrato v1 validado
-- [ ] rotas `/api/chatbot/*` prontas
+- [x] `theone` confirmado como source of truth
+- [x] contrato v1 validado para a integração local atual
+- [x] rotas `/api/chatbot/*` prontas
 
 ### Produto
 - [ ] UI do assistente disponível no dashboard
-- [ ] conversa persistida
-- [ ] reset funcional
+- [x] conversa persistida
+- [x] reset funcional
 
 ### Operação
-- [ ] prebooking real funcional
+- [x] prebooking real funcional
 - [ ] handoff real funcional
-- [ ] resultado visível dentro do CRM
+- [x] resultado de prebooking visível/verificável dentro do CRM
 
 ### Observabilidade
-- [ ] `trace_id` ponta a ponta
-- [ ] logs básicos disponíveis
-- [ ] métricas mínimas instrumentadas
+- [x] `trace_id` ponta a ponta
+- [x] logs básicos disponíveis
+- [x] métricas mínimas instrumentadas
 
 ### Qualidade
-- [ ] QA manual executado
+- [x] QA local executado e fase de testes fechada
 - [ ] tenant piloto validado
 - [ ] blockers corrigidos
 

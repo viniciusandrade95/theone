@@ -19,6 +19,16 @@ from modules.tenants.repo.settings_sql import SqlTenantSettingsRepo
 router = APIRouter(tags=["auth"])
 
 
+def _issue_auth_token(*, tenant_id: str, user_id: str) -> str:
+    cfg = get_config()
+    return issue_token(
+        secret=cfg.SECRET_KEY,
+        tenant_id=tenant_id,
+        user_id=user_id,
+        ttl_seconds=cfg.AUTH_TOKEN_TTL_SECONDS,
+    )
+
+
 
 class RegisterIn(BaseModel):
     email: EmailStr
@@ -88,8 +98,7 @@ def register(payload: RegisterIn, request: Request, _tenant=Depends(require_tena
     user = svc.register(email=str(payload.email), password=payload.password)
     _ensure_default_location(tenant_id)
 
-    cfg = get_config()
-    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user.id)
+    token = _issue_auth_token(tenant_id=tenant_id, user_id=user.id)
     return AuthOut(user_id=user.id, tenant_id=tenant_id, email=user.email, token=token)
 
 
@@ -111,8 +120,7 @@ def signup(payload: SignupIn, request: Request):
     finally:
         clear_tenant_id()
 
-    cfg = get_config()
-    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant.id, user_id=user.id)
+    token = _issue_auth_token(tenant_id=tenant.id, user_id=user.id)
     return SignupOut(tenant_id=tenant.id, user_id=user.id, email=user.email, token=token)
 
 
@@ -123,10 +131,9 @@ def login(payload: RegisterIn, request: Request, _tenant=Depends(require_tenant_
 
     user = svc.authenticate(email=str(payload.email), password=payload.password)
 
-    cfg = get_config()
     tenant_id = require_tenant_id()
     _ensure_default_location(tenant_id)
-    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user.id)
+    token = _issue_auth_token(tenant_id=tenant_id, user_id=user.id)
     return AuthOut(user_id=user.id, tenant_id=tenant_id, email=user.email, token=token)
 
 
@@ -161,7 +168,7 @@ def login_email(payload: LoginEmailIn, request: Request):
     if len(valid) == 1:
         u = valid[0]
         _ensure_default_location(u.tenant_id)
-        token = issue_token(secret=cfg.SECRET_KEY, tenant_id=u.tenant_id, user_id=u.id)
+        token = _issue_auth_token(tenant_id=u.tenant_id, user_id=u.id)
         return LoginEmailOut(
             mode="authenticated",
             auth=AuthOut(user_id=u.id, tenant_id=u.tenant_id, email=u.email, token=token),
@@ -207,6 +214,6 @@ def select_workspace(payload: SelectWorkspaceIn, request: Request):
 
     user_id = allowed[tenant_id]
     _ensure_default_location(tenant_id)
-    token = issue_token(secret=cfg.SECRET_KEY, tenant_id=tenant_id, user_id=user_id)
+    token = _issue_auth_token(tenant_id=tenant_id, user_id=user_id)
 
     return AuthOut(user_id=user_id, tenant_id=tenant_id, email=preauth.email, token=token)

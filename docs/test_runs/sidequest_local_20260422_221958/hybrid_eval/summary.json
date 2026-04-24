@@ -1,0 +1,21 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "common_failure_families": {},
+  "common_failure_patterns": {
+    "assertion_failure": [],
+    "crm_verification_failure": [],
+    "upstream_runtime_failure": []
+  },
+  "completed_at": "2026-04-22T21:20:40.176670+00:00",
+  "fail_count": 0,
+  "failure_layer_counts": [],
+  "judge_enabled": false,
+  "partial_count": 0,
+  "pass_count": 14,
+  "run_id": "20260422T212009Z-ba5a0cea",
+  "started_at": "2026-04-22T21:20:09.722273+00:00",
+  "tenant_id": "a40b8ff1-1d3a-459b-b3e9-04e17f9fc170",
+  "top_judge_issues": [],
+  "total_scenarios": 14,
+  "worst_conversational_scores": []
+}
