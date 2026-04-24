@@ -98,3 +98,32 @@ def test_load_config_is_idempotent():
     cfg2 = load_config()
 
     assert cfg1 is cfg2
+
+
+def test_load_config_requires_assistant_connector_token_in_production():
+    _clear_env(["ASSISTANT_CONNECTOR_TOKEN"])
+    _set_env({
+        "ENV": "production",
+        "APP_NAME": "beauty-crm",
+        "DATABASE_URL": "postgresql://user:pass@localhost:5432/db",
+        "SECRET_KEY": "change-me",
+    })
+
+    with pytest.raises(RuntimeError) as e:
+        load_config()
+
+    assert "Missing required env var: ASSISTANT_CONNECTOR_TOKEN" in str(e.value)
+
+
+def test_load_config_accepts_assistant_connector_token_in_production():
+    _set_env({
+        "ENV": "production",
+        "APP_NAME": "beauty-crm",
+        "DATABASE_URL": "postgresql://user:pass@localhost:5432/db",
+        "SECRET_KEY": "change-me",
+        "ASSISTANT_CONNECTOR_TOKEN": "connector-secret",
+    })
+
+    cfg = load_config()
+
+    assert cfg.ASSISTANT_CONNECTOR_TOKEN == "connector-secret"
