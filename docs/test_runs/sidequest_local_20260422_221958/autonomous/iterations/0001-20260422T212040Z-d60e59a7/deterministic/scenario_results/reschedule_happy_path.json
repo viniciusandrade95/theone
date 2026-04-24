@@ -1,0 +1,293 @@
+{
+  "conversation_id": "12419671-5f84-40e8-a133-0a0dff7892a9",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests remarcação with enough new date/time data; environment should have exactly one upcoming appointment or an explicit target.",
+  "failure_records": [],
+  "failures": [],
+  "final_verdict": "PASS",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_happy_path",
+  "scenario_run_id": "20260422T212040Z-d60e59a7-reschedule_happy_path",
+  "session_id": "s-42c5a7963bcf4495",
+  "started_at": "2026-04-22T21:21:01.787921+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"12419671-5f84-40e8-a133-0a0dff7892a9\",\"session_id\":\"s-42c5a7963bcf4495\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-42c5a7963bcf4495\",\"reply\":\"Perfeito, troquei para Corte. R",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"12419671-5f84-40e8-a133-0a0dff7892a9\",\"session_id\":\"s-42c5a7963bcf4495\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-42c5a7963bcf4495\",\"reply\":\"Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"time\":\"16:17\",\"service\":\"corte\",\"new_date\":\"2026-04-23\",\"new_time\":\"16:17\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:new_date, new_time, service, time\",\"workflow_status\":\"awaiting_confirmation\",\"target_reference_selected\":null,\"reschedule_state\":{\"target_reference_required\":false,\"target_reference_candidates\":[],\"target_reference_selected\":null,\"old_appointment_date\":null,\"old_appointment_time\":null,\"old_service\":null,\"new_service\":null,\"new_date\":null,\"new_time\":null}}}}},\"trace_id\":\"autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-1\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1560",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 21:21:00 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "12419671-5f84-40e8-a133-0a0dff7892a9",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-42c5a7963bcf4495",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:new_date, new_time, service, time",
+                "reschedule_state": {
+                  "new_date": null,
+                  "new_service": null,
+                  "new_time": null,
+                  "old_appointment_date": null,
+                  "old_appointment_time": null,
+                  "old_service": null,
+                  "target_reference_candidates": [],
+                  "target_reference_required": false,
+                  "target_reference_selected": null
+                },
+                "target_reference_selected": null,
+                "workflow_status": "awaiting_confirmation"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "new_date": "2026-04-23",
+                "new_time": "16:17",
+                "service": "corte",
+                "time": "16:17"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-42c5a7963bcf4495",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 16h17",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:new_date, new_time, service, time",
+          "reschedule_state": {
+            "new_date": null,
+            "new_service": null,
+            "new_time": null,
+            "old_appointment_date": null,
+            "old_appointment_time": null,
+            "old_service": null,
+            "target_reference_candidates": [],
+            "target_reference_required": false,
+            "target_reference_selected": null
+          },
+          "target_reference_selected": null,
+          "workflow_status": "awaiting_confirmation"
+        },
+        "conversation_id": "12419671-5f84-40e8-a133-0a0dff7892a9",
+        "reply_text": "Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-42c5a7963bcf4495",
+        "slots": {
+          "new_date": "2026-04-23",
+          "new_time": "16:17",
+          "service": "corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-1"
+    },
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"12419671-5f84-40e8-a133-0a0dff7892a9\",\"session_id\":\"s-42c5a7963bcf4495\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-42c5a7963bcf4495\",\"reply\":\"Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendame",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"12419671-5f84-40e8-a133-0a0dff7892a9\",\"session_id\":\"s-42c5a7963bcf4495\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-42c5a7963bcf4495\",\"reply\":\"Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"completed\",\"slots\":{\"service\":\"corte\",\"new_date\":\"2026-04-23\",\"new_time\":\"16:17\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":false,\"reference\":\"unavailable\",\"mode\":\"reschedule_validation\",\"message\":\"Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.\",\"human_confirmation_required\":false,\"request_kind\":\"reschedule_request\",\"error_code\":\"appointment_not_found\",\"retriable\":false,\"metadata\":{\"status_code\":200,\"tenant_id\":\"a40b8ff1-1d3a-459b-b3e9-04e17f9fc170\",\"client_id\":\"demo_barbearia\",\"trace_id\":\"autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2\",\"idempotency_key\":\"wf:demo_barbearia:s-42c5a7963bcf4495:reschedule_appointment:reschedule_request:a21e19960051b5d3\"},\"operational_status\":\"validation_error\",\"pending_confirmation_kind\":\"workflow_confirmation\",\"pending_confirmation_resolution\":\"affirmed\"}}}},\"trace_id\":\"autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2\",\"client_id\":\"demo_barbearia\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1733",
+          "content-type": "application/json",
+          "date": "Wed, 22 Apr 2026 21:21:01 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_barbearia",
+        "conversation_id": "12419671-5f84-40e8-a133-0a0dff7892a9",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.",
+            "route": "workflow",
+            "session_id": "s-42c5a7963bcf4495",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": "appointment_not_found",
+                "human_confirmation_required": false,
+                "message": "Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.",
+                "metadata": {
+                  "client_id": "demo_barbearia",
+                  "idempotency_key": "wf:demo_barbearia:s-42c5a7963bcf4495:reschedule_appointment:reschedule_request:a21e19960051b5d3",
+                  "status_code": 200,
+                  "tenant_id": "a40b8ff1-1d3a-459b-b3e9-04e17f9fc170",
+                  "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2"
+                },
+                "mode": "reschedule_validation",
+                "ok": false,
+                "operational_status": "validation_error",
+                "pending_confirmation_kind": "workflow_confirmation",
+                "pending_confirmation_resolution": "affirmed",
+                "reference": "unavailable",
+                "request_kind": "reschedule_request",
+                "retriable": false
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "new_date": "2026-04-23",
+                "new_time": "16:17",
+                "service": "corte"
+              },
+              "status": "completed"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento."
+        },
+        "session_id": "s-42c5a7963bcf4495",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2"
+      },
+      "request": {
+        "conversation_id": "12419671-5f84-40e8-a133-0a0dff7892a9",
+        "message": "sim, pode confirmar",
+        "session_id": "s-42c5a7963bcf4495",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {
+          "error_code": "appointment_not_found",
+          "human_confirmation_required": false,
+          "message": "Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.",
+          "metadata": {
+            "client_id": "demo_barbearia",
+            "idempotency_key": "wf:demo_barbearia:s-42c5a7963bcf4495:reschedule_appointment:reschedule_request:a21e19960051b5d3",
+            "status_code": 200,
+            "tenant_id": "a40b8ff1-1d3a-459b-b3e9-04e17f9fc170",
+            "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2"
+          },
+          "mode": "reschedule_validation",
+          "ok": false,
+          "operational_status": "validation_error",
+          "pending_confirmation_kind": "workflow_confirmation",
+          "pending_confirmation_resolution": "affirmed",
+          "reference": "unavailable",
+          "request_kind": "reschedule_request",
+          "retriable": false
+        },
+        "conversation_id": "12419671-5f84-40e8-a133-0a0dff7892a9",
+        "reply_text": "Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento.",
+        "route": "workflow",
+        "session_id": "s-42c5a7963bcf4495",
+        "slots": {
+          "new_date": "2026-04-23",
+          "new_time": "16:17",
+          "service": "corte"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "completed"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260422T212040Z-d60e59a7-reschedule_happy_path-2"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "happy_path",
+    "crm_side_effect",
+    "requires_existing_appointment"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 16h17\nTurn 1 assistant: Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 23 de abr às 16:17. Tudo certo por aqui? Posso encaminhar para confirmação humana?\nTurn 2 user: sim, pode confirmar\nTurn 2 assistant: Perfeito. Não consegui confirmar a remarcação porque não encontrei esse agendamento. Confira a referência ou a data do agendamento."
+}

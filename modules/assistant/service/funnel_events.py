@@ -8,6 +8,9 @@ from modules.assistant.repo.funnel_event_repo import AssistantFunnelEventRepo
 
 
 # Explicit, finite taxonomy (v1). Keep names stable.
+ASSISTANT_CONVERSATION_STARTED = "assistant_conversation_started"
+ASSISTANT_CONVERSATION_RESET = "assistant_conversation_reset"
+
 ASSISTANT_MESSAGE_RECEIVED = "assistant_message_received"
 ASSISTANT_MESSAGE_REPLIED = "assistant_message_replied"
 ASSISTANT_FALLBACK = "assistant_fallback"
@@ -15,6 +18,11 @@ ASSISTANT_HANDOFF_REQUESTED = "assistant_handoff_requested"
 ASSISTANT_HANDOFF_CREATED = "assistant_handoff_created"
 ASSISTANT_PREBOOK_REQUESTED = "assistant_prebook_requested"
 ASSISTANT_PREBOOK_CREATED = "assistant_prebook_created"
+ASSISTANT_PREBOOK_FAILED = "assistant_prebook_failed"
+ASSISTANT_CUSTOMER_IDENTITY_MISSING = "assistant_customer_identity_missing"
+ASSISTANT_CUSTOMER_PHONE_MISSING = "assistant_customer_phone_missing"
+ASSISTANT_OPERATIONAL_FAILED = "assistant_operational_failed"
+
 ASSISTANT_QUOTE_REQUESTED = "assistant_quote_requested"
 ASSISTANT_QUOTE_CREATED = "assistant_quote_created"
 ASSISTANT_CONSULT_REQUESTED = "assistant_consult_requested"
@@ -88,4 +96,3 @@ class AssistantFunnelEventsService:
             metadata=metadata,
         )
         return created
-

@@ -1,0 +1,137 @@
+{
+  "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+  "failure_records": [],
+  "failures": [],
+  "final_verdict": "PASS",
+  "guardrails_observed": [],
+  "heuristics": {
+    "findings": []
+  },
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_conflict",
+  "scenario_run_id": "20260420T140942Z-540a6e31-reschedule_conflict",
+  "session_id": "s-6dcf626224d34ae4",
+  "started_at": "2026-04-20T14:10:10.952423+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [],
+        "status": "PASS"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-6dcf626224d34ae4\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6dcf626224d34ae4\",\"reply\":\"Perfeito, troquei para Corte. Resumo par",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"21f146a6-c5e0-4530-bf5e-024c1206d77c\",\"session_id\":\"s-6dcf626224d34ae4\",\"status\":\"ok\",\"reply\":{\"text\":\"Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-6dcf626224d34ae4\",\"reply\":\"Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"time\":\"15:00\",\"service\":\"corte\",\"new_date\":\"2026-04-21\",\"new_time\":\"15:00\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":true,\"progress_reason\":\"operations:new_date, new_time, service, time\"}}}},\"trace_id\":\"autonomous-eval-deterministic-20260420T140942Z-540a6e31-reschedule_conflict-1\",\"client_id\":\"907ee7f1-d7f2-421f-a9c7-466ba8dd93b7\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1240",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 14:10:10 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "autonomous-eval-deterministic-20260420T140942Z-540a6e31-reschedule_conflict-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "907ee7f1-d7f2-421f-a9c7-466ba8dd93b7",
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-6dcf626224d34ae4",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": true,
+                "progress_reason": "operations:new_date, new_time, service, time"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "new_date": "2026-04-21",
+                "new_time": "15:00",
+                "service": "corte",
+                "time": "15:00"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-6dcf626224d34ae4",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T140942Z-540a6e31-reschedule_conflict-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 15h",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": true,
+          "progress_reason": "operations:new_date, new_time, service, time"
+        },
+        "conversation_id": "21f146a6-c5e0-4530-bf5e-024c1206d77c",
+        "reply_text": "Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-6dcf626224d34ae4",
+        "slots": {
+          "new_date": "2026-04-21",
+          "new_time": "15:00",
+          "service": "corte",
+          "time": "15:00"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "autonomous-eval-deterministic-20260420T140942Z-540a6e31-reschedule_conflict-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "autonomous-eval-deterministic-20260420T140942Z-540a6e31-reschedule_conflict-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "conflict",
+    "crm_failure",
+    "requires_seeded_conflict"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 15h\nTurn 1 assistant: Perfeito, troquei para Corte. Resumo para confirmação: remarcação de seu próximo agendamento para 21 de abr às 15:00. Tudo certo? Posso encaminhar para confirmação humana?"
+}

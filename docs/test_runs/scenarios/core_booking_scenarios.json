@@ -1,0 +1,461 @@
+{
+  "version": 1,
+  "description": "Core live booking and rescheduling scenarios for theone -> chatbot1 hybrid evaluation.",
+  "scenarios": [
+    {
+      "name": "booking_happy_path_full",
+      "description": "User provides service, date, time, customer name, phone, and confirms a real prebook.",
+      "tags": ["booking", "happy_path", "crm_side_effect"],
+      "steps": [
+        {
+          "user_message": "Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim, pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "completed",
+          "expected_reply_contains_any": ["registr", "agend", "pré-agendamento", "confirm"],
+          "expected_reply_not_contains": ["prebooking_stub", "erro técnico"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_action_result_fields": {
+            "ok": true
+          },
+          "expected_no_rag_reset": true
+        }
+      ],
+      "crm_verification": {
+        "appointments": {
+          "expect_created": true,
+          "from_dt": "relative:tomorrow_start_utc",
+          "to_dt": "relative:day_after_tomorrow_start_utc",
+          "recent_created_within_seconds": 900,
+          "match": {
+            "start_time": "16:17",
+            "service_id": "944cc6ff-4283-444f-bcc9-8281c5a5a9f6",
+            "service_name_contains": "Corte"
+          }
+        }
+      },
+      "judge_expectations": {
+        "minimum_naturalness_score": 3,
+        "minimum_coherence_score": 4
+      }
+    },
+    {
+      "name": "booking_missing_name",
+      "description": "User tries to confirm without customer identity; assistant must ask for name before execution.",
+      "tags": ["booking", "missing_data", "guardrail"],
+      "steps": [
+        {
+          "user_message": "Quero marcar um corte amanhã às 15h",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_reply_contains": ["nome"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Audit User",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time", "customer_name"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["telefone"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_action_result_fields": {
+            "missing_customer_phone": true
+          },
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_missing_phone",
+      "description": "User starts without CRM customer identity; assistant must collect name first when needed, then phone before prebook callback.",
+      "tags": ["booking", "missing_phone", "guardrail"],
+      "steps": [
+        {
+          "user_message": "Quero marcar um corte amanhã às 15h",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["nome"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_action_result_fields": {
+            "missing_customer_identity": true
+          },
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Audit User",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar"],
+          "expected_slots_present": ["service", "date", "time", "customer_name"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["telefone"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_action_result_fields": {
+            "missing_customer_phone": true
+          },
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "11999998888",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar"],
+          "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_conflict_slot",
+      "description": "User requests a slot that may already be occupied; assistant should not fake success if CRM rejects it.",
+      "tags": ["booking", "conflict", "crm_failure"],
+      "steps": [
+        {
+          "user_message": "Quero marcar um corte amanhã às 15h para Audit User, telefone 11999998888",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_interrupted_then_resume",
+      "description": "User asks an FAQ in the middle of booking and then resumes without losing valid slots.",
+      "tags": ["booking", "interruption", "robustness"],
+      "steps": [
+        {
+          "user_message": "Quero marcar um corte amanhã às 18h",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Qual o endereço mesmo?",
+          "allow_rag_detour": true,
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Beleza, pode continuar",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_user_changes_time_mid_flow",
+      "description": "User changes the requested time after the initial summary.",
+      "tags": ["booking", "change_of_mind", "state"],
+      "steps": [
+        {
+          "user_message": "Quero marcar um corte amanhã às 15h para Audit User, telefone 11999998888",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Na verdade muda para 16h17",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_reply_contains": ["16"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "faq_then_booking",
+      "description": "User starts with availability/FAQ language and then transitions into booking.",
+      "tags": ["faq", "booking", "transition"],
+      "steps": [
+        {
+          "user_message": "Tem vaga amanhã?",
+          "expected_reply_not_contains": ["prebooking_stub"]
+        },
+        {
+          "user_message": "Quero corte às 16h17 para Audit User, telefone 11999998888",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "time"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim pode confirmar",
+          "expected_workflow": "book_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_with_short_affirmations",
+      "description": "Assistant handles short confirmations like sim/ok/pode.",
+      "tags": ["booking", "affirmation", "short_turns"],
+      "steps": [
+        {
+          "user_message": "Corte amanhã 16h17 Audit User 11999998888",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "ok",
+          "expected_workflow": "book_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_with_fragmented_inputs",
+      "description": "User gives required booking information across several short turns.",
+      "tags": ["booking", "fragmented", "state"],
+      "steps": [
+        {
+          "user_message": "Quero marcar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["serviço"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Corte",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_slots_present": ["service"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "amanhã",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "collecting",
+          "expected_slots_present": ["service", "date"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "16h17",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "Audit User, 11999998888",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_slots_present": ["service", "date", "time", "customer_name", "phone"],
+          "expected_reply_not_contains": ["handoff", "prebooking_stub"],
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim, pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "book_appointment",
+          "expected_status": "completed",
+          "expected_reply_contains_any": ["registr", "agend", "pré-agendamento", "confirm"],
+          "expected_reply_not_contains": ["handoff", "prebooking_stub", "erro técnico"],
+          "expected_action_result_fields": {
+            "ok": true
+          },
+          "expected_workflow_not": ["handoff_to_human"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "booking_with_colloquial_ptbr",
+      "description": "Noisy Portuguese input should still preserve booking intent and collect/confirm correctly.",
+      "tags": ["booking", "ptbr", "nlu", "colloquial"],
+      "steps": [
+        {
+          "user_message": "opa, queria corta o cabelo amanha la pras 4 e 17 da tarde",
+          "expected_workflow": "book_appointment",
+          "expected_slots_present": ["service", "date"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "meu nome é Audit User e o zap é 11999998888",
+          "expected_workflow": "book_appointment",
+          "expected_reply_contains_any": ["confirmação", "confirmar", "tudo certo", "posso encaminhar", "pré-agendamento"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "isso, manda bala",
+          "expected_workflow": "book_appointment",
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_happy_path",
+      "description": "User requests remarcação with enough new date/time data; environment should have exactly one upcoming appointment or an explicit target.",
+      "tags": ["reschedule", "happy_path", "crm_side_effect", "requires_existing_appointment"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã às 16h17",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_reply_contains_any": ["remarcação", "confirmar", "confirmação"],
+          "expected_slots_present": ["new_date", "new_time"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "sim, pode confirmar",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "completed",
+          "expected_reply_contains_any": ["remarcação", "remarcado", "confirmada", "confirmado"],
+          "expected_reply_not_contains": ["prebooking_stub", "erro técnico"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_conflict",
+      "description": "User requests a new slot that may be occupied; assistant should report unavailability or avoid fake success.",
+      "tags": ["reschedule", "conflict", "crm_failure", "requires_seeded_conflict"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã às 15h",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_reply_contains_any": ["indisponível", "disponibilidade", "sugerir", "remarcação", "confirmar"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_missing_time",
+      "description": "User gives remarcação intent and date but no new time; assistant asks for the missing time.",
+      "tags": ["reschedule", "missing_data"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "collecting",
+          "expected_reply_contains": ["horário"],
+          "expected_slots_present": ["new_date"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    },
+    {
+      "name": "reschedule_interrupted_then_resume",
+      "description": "User interrupts remarcação with FAQ and resumes without losing new date.",
+      "tags": ["reschedule", "interruption", "robustness"],
+      "steps": [
+        {
+          "user_message": "quero remarcar meu corte para amanhã",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "collecting",
+          "expected_slots_present": ["new_date"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "qual o endereço mesmo?",
+          "allow_rag_detour": true,
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        },
+        {
+          "user_message": "16h17",
+          "expected_route": "workflow",
+          "expected_workflow": "reschedule_appointment",
+          "expected_status": "awaiting_confirmation",
+          "expected_slots_present": ["new_date", "new_time"],
+          "expected_reply_contains_any": ["remarcação", "confirmar", "confirmação"],
+          "expected_reply_not_contains": ["prebooking_stub"],
+          "expected_no_rag_reset": true
+        }
+      ]
+    }
+  ]
+}

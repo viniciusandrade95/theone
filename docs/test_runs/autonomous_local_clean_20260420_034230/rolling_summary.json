@@ -1,0 +1,209 @@
+{
+  "iteration_count": 3,
+  "iterations": [
+    {
+      "completed_at": "2026-04-20T02:43:33.112352+00:00",
+      "fail_count": 9,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 10,
+      "run_id": "20260420T024231Z-2be38fc3",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: Repeated time question"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 12,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 7,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T02:44:50.127726+00:00",
+      "fail_count": 9,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 10,
+      "run_id": "20260420T024348Z-eb8f5585",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: Repeated time question"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 12,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 7,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T02:46:09.004977+00:00",
+      "fail_count": 9,
+      "iteration": 3,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 10,
+      "run_id": "20260420T024506Z-3b1b9c69",
+      "top_5_failure_patterns": [
+        {
+          "count": 2,
+          "pattern": "ambiguous generated reschedule: Repeated time question"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: Repeated time question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+        },
+        {
+          "count": 1,
+          "pattern": "booking missing_phone guardrail: Repeated date question"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 12,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 7,
+          "type": "loop_detected"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        },
+        {
+          "count": 1,
+          "type": "failure_to_complete_task"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 36,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 21,
+      "type": "loop_detected"
+    },
+    {
+      "count": 3,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 3,
+      "type": "rag_during_operational_flow"
+    },
+    {
+      "count": 3,
+      "type": "failure_to_complete_task"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 6,
+      "pattern": "ambiguous generated reschedule: Repeated time question"
+    },
+    {
+      "count": 6,
+      "pattern": "ambiguous booking generated missing_time: Repeated time question"
+    },
+    {
+      "count": 3,
+      "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    },
+    {
+      "count": 3,
+      "pattern": "booking happy_path crm_side_effect: expected matching appointment to exist"
+    },
+    {
+      "count": 3,
+      "pattern": "booking missing_phone guardrail: Repeated date question"
+    }
+  ],
+  "updated_at": "2026-04-20T02:46:09.005994+00:00"
+}

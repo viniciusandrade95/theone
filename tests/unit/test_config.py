@@ -68,6 +68,7 @@ def test_load_config_applies_defaults_for_optional_env():
     assert cfg.HTTP_PORT == 8000
     assert cfg.LOG_LEVEL == "INFO"
     assert cfg.TENANT_HEADER == "X-Tenant-ID"
+    assert cfg.AUTH_TOKEN_TTL_SECONDS == 604800
     assert cfg.WHATSAPP_WEBHOOK_SECRET is None
     assert cfg.CHATBOT_CLIENT_ID is None
 

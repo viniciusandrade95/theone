@@ -1,0 +1,209 @@
+{
+  "iteration_count": 3,
+  "iterations": [
+    {
+      "completed_at": "2026-04-20T13:44:55.644121+00:00",
+      "fail_count": 13,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 13,
+      "run_id": "20260420T134347Z-ee5d1ae9",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "ambiguous generated reschedule: Repeated date question"
+        },
+        {
+          "count": 2,
+          "pattern": "booking correction fragmented generated ptbr: Repeated date question"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: workflow appears to have reset to collecting with empty slots"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: Expected final status awaiting_confirmation, got completed"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 10,
+          "type": "loop_detected"
+        },
+        {
+          "count": 8,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 2,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T13:46:13.422091+00:00",
+      "fail_count": 14,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 12,
+      "run_id": "20260420T134505Z-facbbd7a",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "ambiguous generated reschedule: Repeated date question"
+        },
+        {
+          "count": 3,
+          "pattern": "ambiguous booking generated missing_time: workflow appears to have reset to collecting with empty slots"
+        },
+        {
+          "count": 3,
+          "pattern": "ambiguous booking generated missing_time: Expected final status awaiting_confirmation, got completed"
+        },
+        {
+          "count": 2,
+          "pattern": "booking correction fragmented generated ptbr: Repeated date question"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 10,
+          "type": "loop_detected"
+        },
+        {
+          "count": 9,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-20T13:47:31.212108+00:00",
+      "fail_count": 14,
+      "iteration": 3,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 12,
+      "run_id": "20260420T134623Z-4eabd407",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "ambiguous generated reschedule: Repeated date question"
+        },
+        {
+          "count": 3,
+          "pattern": "booking correction fragmented generated ptbr: Repeated date question"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: workflow appears to have reset to collecting with empty slots"
+        },
+        {
+          "count": 2,
+          "pattern": "ambiguous booking generated missing_time: Expected final status awaiting_confirmation, got completed"
+        },
+        {
+          "count": 1,
+          "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 11,
+          "type": "loop_detected"
+        },
+        {
+          "count": 8,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 2,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        },
+        {
+          "count": 1,
+          "type": "rag_during_operational_flow"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 31,
+      "type": "loop_detected"
+    },
+    {
+      "count": 25,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 7,
+      "type": "failure_to_complete_task"
+    },
+    {
+      "count": 3,
+      "type": "crm_verification_failure"
+    },
+    {
+      "count": 3,
+      "type": "rag_during_operational_flow"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 18,
+      "pattern": "ambiguous generated reschedule: Repeated date question"
+    },
+    {
+      "count": 7,
+      "pattern": "booking correction fragmented generated ptbr: Repeated date question"
+    },
+    {
+      "count": 7,
+      "pattern": "ambiguous booking generated missing_time: workflow appears to have reset to collecting with empty slots"
+    },
+    {
+      "count": 7,
+      "pattern": "ambiguous booking generated missing_time: Expected final status awaiting_confirmation, got completed"
+    },
+    {
+      "count": 3,
+      "pattern": "booking happy_path crm_side_effect: reply missing any expected text: registr, agend, pré-agendamento, confirm"
+    }
+  ],
+  "updated_at": "2026-04-20T13:47:31.213110+00:00"
+}

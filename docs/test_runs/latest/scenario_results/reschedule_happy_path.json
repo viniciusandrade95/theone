@@ -1,0 +1,313 @@
+{
+  "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User requests remarcação with enough new date/time data; environment should have exactly one upcoming appointment or an explicit target.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected status awaiting_confirmation, got response=ok workflow=collecting",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing any expected text: remarcação, confirmar, confirmação",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected status completed, got response=ok workflow=awaiting_confirmation",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow reschedule_appointment, got book_appointment",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing any expected text: remarcação, remarcado, confirmada, confirmado",
+      "step_index": 2
+    }
+  ],
+  "failures": [
+    "step 1: assertion_failure: expected status awaiting_confirmation, got response=ok workflow=collecting",
+    "step 1: assertion_failure: reply missing any expected text: remarcação, confirmar, confirmação",
+    "step 2: assertion_failure: expected status completed, got response=ok workflow=awaiting_confirmation",
+    "step 2: assertion_failure: expected workflow reschedule_appointment, got book_appointment",
+    "step 2: assertion_failure: reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [
+    "conflict_or_unavailable"
+  ],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_happy_path",
+  "scenario_run_id": "20260419T023240Z-d9cb33bc-reschedule_happy_path",
+  "session_id": "s-7566e5925386487b",
+  "started_at": "2026-04-19T02:37:32.224887+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "expected status awaiting_confirmation, got response=ok workflow=collecting",
+          "reply missing any expected text: remarcação, confirmar, confirmação"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-7566e5925386487b\",\"status\":\"ok\",\"reply\":{\"text\":\"Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-7566e5925386487b\",\"reply\":\"Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.\",\"rout",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-7566e5925386487b\",\"status\":\"ok\",\"reply\":{\"text\":\"Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-7566e5925386487b\",\"reply\":\"Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.\",\"route\":\"workflow\",\"workflow\":\"reschedule_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"collecting\",\"slots\":{\"time\":\"16:17\",\"date\":\"amanhã\",\"service\":\"corte\",\"new_date\":\"2026-04-19\",\"new_time\":\"16:17\"},\"pending_confirmation\":false,\"action_result\":{\"reschedule_availability\":{\"outcome\":\"availability_check_failed\",\"ok\":false,\"target\":\"seu agendamento\",\"new_date\":\"2026-04-19\",\"new_time\":\"16:17\",\"suggestions\":[],\"error_code\":\"http_404\",\"retriable\":true,\"operational_status\":\"temporary_failure\"},\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\"}}}},\"trace_id\":\"booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-1\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee886bd3b72d7f2-GIG",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 02:37:20 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "aa334fd7-c4fd-47f6",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.",
+            "route": "workflow",
+            "session_id": "s-7566e5925386487b",
+            "status": "ok",
+            "workflow": "reschedule_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "reschedule_availability": {
+                  "error_code": "http_404",
+                  "new_date": "2026-04-19",
+                  "new_time": "16:17",
+                  "ok": false,
+                  "operational_status": "temporary_failure",
+                  "outcome": "availability_check_failed",
+                  "retriable": true,
+                  "suggestions": [],
+                  "target": "seu agendamento"
+                }
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "date": "amanhã",
+                "new_date": "2026-04-19",
+                "new_time": "16:17",
+                "service": "corte",
+                "time": "16:17"
+              },
+              "status": "collecting"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano."
+        },
+        "session_id": "s-7566e5925386487b",
+        "status": "ok",
+        "trace_id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã às 16h17",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "reschedule_availability": {
+            "error_code": "http_404",
+            "new_date": "2026-04-19",
+            "new_time": "16:17",
+            "ok": false,
+            "operational_status": "temporary_failure",
+            "outcome": "availability_check_failed",
+            "retriable": true,
+            "suggestions": [],
+            "target": "seu agendamento"
+          }
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.",
+        "route": "workflow",
+        "session_id": "s-7566e5925386487b",
+        "slots": {
+          "date": "amanhã",
+          "new_date": "2026-04-19",
+          "new_time": "16:17",
+          "service": "corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-1",
+        "workflow": "reschedule_appointment",
+        "workflow_status": "collecting"
+      },
+      "trace_id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected status completed, got response=ok workflow=awaiting_confirmation",
+          "expected workflow reschedule_appointment, got book_appointment",
+          "reply missing any expected text: remarcação, remarcado, confirmada, confirmado"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-7566e5925386487b\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-7566e5925386487b\",\"reply\":\"Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35\",\"session_id\":\"s-7566e5925386487b\",\"status\":\"ok\",\"reply\":{\"text\":\"Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-7566e5925386487b\",\"reply\":\"Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"awaiting_confirmation\",\"slots\":{\"time\":\"16:17\",\"date\":\"2026-04-19\",\"service\":\"Corte\",\"new_date\":\"2026-04-19\",\"new_time\":\"16:17\"},\"pending_confirmation\":true,\"action_result\":{\"pending_confirmation_kind\":\"none\",\"pending_confirmation_resolution\":\"none\",\"progress_detected\":false,\"progress_reason\":\"none\"}}}},\"trace_id\":\"booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-2\",\"client_id\":\"4cd335f6-00bc-482a-8d91-154a775bcb7b\"}",
+        "error": null,
+        "headers": {
+          "CF-RAY": "9ee886e47bc0d7f6-GIG",
+          "Connection": "close",
+          "Content-Type": "application/json",
+          "Date": "Sun, 19 Apr 2026 02:37:32 GMT",
+          "Server": "cloudflare",
+          "Transfer-Encoding": "chunked",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cf-cache-status": "DYNAMIC",
+          "rndr-id": "d265f53b-ddfd-4c53",
+          "vary": "Accept-Encoding",
+          "x-render-origin-server": "cloudflare",
+          "x-trace-id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "4cd335f6-00bc-482a-8d91-154a775bcb7b",
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?",
+            "route": "workflow",
+            "session_id": "s-7566e5925386487b",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "pending_confirmation_kind": "none",
+                "pending_confirmation_resolution": "none",
+                "progress_detected": false,
+                "progress_reason": "none"
+              },
+              "pending_confirmation": true,
+              "slots": {
+                "date": "2026-04-19",
+                "new_date": "2026-04-19",
+                "new_time": "16:17",
+                "service": "Corte",
+                "time": "16:17"
+              },
+              "status": "awaiting_confirmation"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?"
+        },
+        "session_id": "s-7566e5925386487b",
+        "status": "ok",
+        "trace_id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-2"
+      },
+      "request": {
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "message": "sim, pode confirmar",
+        "session_id": "s-7566e5925386487b",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {
+          "pending_confirmation_kind": "none",
+          "pending_confirmation_resolution": "none",
+          "progress_detected": false,
+          "progress_reason": "none"
+        },
+        "conversation_id": "b0c58bb7-29ce-4b4a-9f83-7fa7715f7e35",
+        "reply_text": "Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?",
+        "route": "workflow",
+        "session_id": "s-7566e5925386487b",
+        "slots": {
+          "date": "2026-04-19",
+          "new_date": "2026-04-19",
+          "new_time": "16:17",
+          "service": "Corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-2",
+        "workflow": "book_appointment",
+        "workflow_status": "awaiting_confirmation"
+      },
+      "trace_id": "booking-eval-20260419T023240Z-d9cb33bc-reschedule_happy_path-2"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "happy_path",
+    "crm_side_effect",
+    "requires_existing_appointment"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã às 16h17\nTurn 1 assistant: Desculpe, a integração está temporariamente indisponível. Vou encaminhá-lo(a) para atendimento humano.\nTurn 2 user: sim, pode confirmar\nTurn 2 assistant: Resumo: pré‑agendamento de Corte no dia 19 de abr às 16:17. Está tudo certo? Posso encaminhar para confirmação humana?"
+}

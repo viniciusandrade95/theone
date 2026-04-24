@@ -195,6 +195,33 @@ def test_prebook_success():
     assert 'assistant_prebook_total{status="created"}' in metrics.text
 
 
+def test_prebook_falls_back_to_service_name_when_client_service_id_is_stale():
+    app = create_app()
+    client = TestClient(app)
+    tenant_id = str(uuid.uuid4())
+    token = _register_and_login(client, tenant_id)
+
+    service_id = _create_service(client, tenant_id=tenant_id, token=token)
+    _ = _default_location(client, tenant_id=tenant_id, token=token)
+
+    resp = client.post(
+        "/crm/assistant/prebook",
+        headers={"X-Tenant-ID": tenant_id, "X-Assistant-Token": "test-connector-token", "Idempotency-Key": "wf:test:stale-service"},
+        json={
+            "customer": {"name": "Maria", "phone": "+351900000000"},
+            "booking": {
+                "service_id": str(uuid.uuid4()),
+                "service_name": "Haircut",
+                "requested_date": _future_date(),
+                "requested_time": "12:00",
+                "timezone": "Europe/Lisbon",
+            },
+        },
+    )
+    assert resp.status_code == 201
+    assert resp.json()["data"]["service_id"] == service_id
+
+
 def test_prebook_generates_trace_id_when_missing():
     app = create_app()
     client = TestClient(app)

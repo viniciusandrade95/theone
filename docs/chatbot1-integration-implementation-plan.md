@@ -30,6 +30,15 @@ Motor de:
 - `theone` fala com `chatbot1`
 - `chatbot1` chama APIs reais do `theone` para ações operacionais
 
+### Estado local atual pós-sidequest verde
+- Stack local `theone` + `chatbot1` validada.
+- Proxy `theone` -> `chatbot1` validado por `/api/chatbot/message` e `/api/chatbot/reset`.
+- Integração local atual `chatbot1`: `/message`, `/reset` e `/health`.
+- Prebooking local validado via `TheOneConnector` e `/crm/assistant/prebook`.
+- Hybrid/autonomous/sidequest verdes no run `docs/test_runs/sidequest_local_20260422_223508`.
+- Fase de testes do chatbot fechada; não reabrir sidequest debugging a partir deste plano.
+- Runbook operacional: `/home/vinicius/system-audit/workspace/LOCAL_RUNBOOK.md`.
+
 ---
 
 ## Objetivo da release inicial
@@ -44,6 +53,7 @@ Entregar uma integração interna, robusta e controlada, no dashboard do `theone
 - booking conversacional público completo
 - automações irreversíveis sem validação
 - rollout multi-canal total
+- deploy/Render/prod nesta fase documental/local
 
 ---
 
@@ -205,7 +215,8 @@ T0.3
 
 #### Definition of Done
 - `/health` responde 200
-- `/chat` responde com contrato válido
+- `/message` responde com contrato válido no runtime local atual
+- `/chat` é apenas referência histórica em docs antigas
 - `X-Trace-Id` suportado
 
 ---
@@ -345,11 +356,13 @@ T0.1
 **Owner:** Senior Software Engineer
 
 #### Descrição
-Substituir a execução via `FakeCalendarConnector` por um connector real contra o `theone`.
+Estado local atual: `TheOneConnector` já existe e o prebooking local foi validado
+contra o `theone`. O `FakeCalendarConnector` permanece como fallback/test
+double, não como execução central dos fluxos locais validados.
 
 #### Casos iniciais obrigatórios
-- `create_prebooking`
-- `handoff`
+- `create_prebooking` — validado localmente
+- `handoff` — evolução separada
 
 #### Casos seguintes
 - `create_quote_request`
@@ -584,7 +597,9 @@ Sem inventário real do backend do `theone`, a integração operacional corre o 
 Sem proxy server-side no `theone`, o desenho fica frágil e inseguro.
 
 ### Dependência 3
-Sem substituir o `FakeCalendarConnector`, não existe integração operacional verdadeira.
+Para os casos ativos validados localmente, a execução já não deve depender do
+`FakeCalendarConnector`. Novas ações operacionais devem seguir o mesmo padrão
+do `TheOneConnector` e manter o fake apenas como fallback/test double.
 
 ### Dependência 4
 Sem grounding mínimo por tenant, o assistente pode parecer “genérico” e perder valor.

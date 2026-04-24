@@ -1,0 +1,306 @@
+{
+  "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+  "crm_verification": {
+    "matched": [],
+    "parsed_body": {
+      "items": [],
+      "page": 1,
+      "page_size": 100,
+      "total": 0
+    },
+    "raw_body": "{\"items\":[],\"total\":0,\"page\":1,\"page_size\":100}",
+    "reasons": [
+      "expected matching appointment to exist"
+    ],
+    "status": "FAIL",
+    "status_code": 200,
+    "total_items": 0
+  },
+  "description": "User provides service, date, time, customer name, phone, and confirms a real prebook.",
+  "failure_records": [
+    {
+      "category": "assertion_failure",
+      "message": "expected status awaiting_confirmation, got response=ok workflow=blocked",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected status completed, got response=ok workflow=None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got rag",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow book_appointment, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected action_result.ok=True, got None",
+      "step_index": 2
+    },
+    {
+      "category": "assertion_failure",
+      "message": "unexpected RAG route",
+      "step_index": 2
+    },
+    {
+      "category": "crm_verification_failure",
+      "message": "expected matching appointment to exist"
+    }
+  ],
+  "failures": [
+    "step 1: assertion_failure: expected status awaiting_confirmation, got response=ok workflow=blocked",
+    "step 1: assertion_failure: reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento",
+    "step 2: assertion_failure: expected status completed, got response=ok workflow=None",
+    "step 2: assertion_failure: expected route workflow, got rag",
+    "step 2: assertion_failure: expected workflow book_appointment, got None",
+    "step 2: assertion_failure: expected action_result.ok=True, got None",
+    "step 2: assertion_failure: unexpected RAG route",
+    "crm_verification_failure: expected matching appointment to exist"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "booking_happy_path_full",
+  "scenario_run_id": "20260420T004439Z-bddfcdc9-booking_happy_path_full",
+  "session_id": "s-094f927ca9f1408c",
+  "started_at": "2026-04-20T00:44:40.327264+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "expected status awaiting_confirmation, got response=ok workflow=blocked",
+          "reply missing any expected text: confirmação, confirmar, tudo certo, posso encaminhar, pré-agendamento"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-094f927ca9f1408c\",\"status\":\"ok\",\"reply\":{\"text\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-094f927ca9f1408c\",\"reply\":\"Não consigo iniciar esse fluxo com segurança porque",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-094f927ca9f1408c\",\"status\":\"ok\",\"reply\":{\"text\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-094f927ca9f1408c\",\"reply\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"route\":\"workflow\",\"workflow\":\"book_appointment\",\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":{\"status\":\"blocked\",\"slots\":{\"date\":\"amanhã\",\"time\":\"16:17\",\"phone\":\"11999998888\",\"customer_name\":\"Audit User\",\"service\":\"corte\"},\"pending_confirmation\":false,\"action_result\":{\"ok\":false,\"reference\":\"unavailable\",\"mode\":\"tenant_readiness_guardrail\",\"message\":\"Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\",\"human_confirmation_required\":true,\"request_kind\":\"booking_request\",\"error_code\":\"tenant_configuration_incomplete\",\"retriable\":false,\"operational_status\":\"validation_error\",\"metadata\":{\"missing\":[\"kb/services.json:service_mapping\"],\"workflow_name\":\"book_appointment\",\"client_id\":\"demo_unhas\"}}}}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-1\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "1566",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:44:38 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-1"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+            "route": "workflow",
+            "session_id": "s-094f927ca9f1408c",
+            "status": "ok",
+            "workflow": "book_appointment",
+            "workflow_result": {
+              "action_result": {
+                "error_code": "tenant_configuration_incomplete",
+                "human_confirmation_required": true,
+                "message": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+                "metadata": {
+                  "client_id": "demo_unhas",
+                  "missing": [
+                    "kb/services.json:service_mapping"
+                  ],
+                  "workflow_name": "book_appointment"
+                },
+                "mode": "tenant_readiness_guardrail",
+                "ok": false,
+                "operational_status": "validation_error",
+                "reference": "unavailable",
+                "request_kind": "booking_request",
+                "retriable": false
+              },
+              "pending_confirmation": false,
+              "slots": {
+                "customer_name": "Audit User",
+                "date": "amanhã",
+                "phone": "11999998888",
+                "service": "corte",
+                "time": "16:17"
+              },
+              "status": "blocked"
+            }
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados."
+        },
+        "session_id": "s-094f927ca9f1408c",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-1"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {
+          "error_code": "tenant_configuration_incomplete",
+          "human_confirmation_required": true,
+          "message": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+          "metadata": {
+            "client_id": "demo_unhas",
+            "missing": [
+              "kb/services.json:service_mapping"
+            ],
+            "workflow_name": "book_appointment"
+          },
+          "mode": "tenant_readiness_guardrail",
+          "ok": false,
+          "operational_status": "validation_error",
+          "reference": "unavailable",
+          "request_kind": "booking_request",
+          "retriable": false
+        },
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.",
+        "route": "workflow",
+        "session_id": "s-094f927ca9f1408c",
+        "slots": {
+          "customer_name": "Audit User",
+          "date": "amanhã",
+          "phone": "11999998888",
+          "service": "corte",
+          "time": "16:17"
+        },
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-1",
+        "workflow": "book_appointment",
+        "workflow_status": "blocked"
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-1"
+    },
+    {
+      "assertions": {
+        "reasons": [
+          "expected status completed, got response=ok workflow=None",
+          "expected route workflow, got rag",
+          "expected workflow book_appointment, got None",
+          "expected action_result.ok=True, got None",
+          "unexpected RAG route"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-094f927ca9f1408c\",\"status\":\"ok\",\"reply\":{\"text\":\"No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-094f927ca9f1408c\",\"reply\":\"No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final.\",\"route\":\"rag\",\"workflow\":null,\"ha",
+            "error": null,
+            "status_code": 200,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"conversation_id\":\"24f677c4-8d4f-4888-8296-57b704009270\",\"session_id\":\"s-094f927ca9f1408c\",\"status\":\"ok\",\"reply\":{\"text\":\"No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final.\",\"actions\":[]},\"intent\":null,\"handoff\":{\"requested\":false,\"reason\":null},\"meta\":{\"source\":\"chatbot1\",\"raw\":{\"status\":\"ok\",\"session_id\":\"s-094f927ca9f1408c\",\"reply\":\"No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final.\",\"route\":\"rag\",\"workflow\":null,\"handoff_requested\":false,\"handoff\":null,\"workflow_result\":null}},\"trace_id\":\"local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-2\",\"client_id\":\"demo_unhas\"}",
+        "error": null,
+        "headers": {
+          "Connection": "close",
+          "content-length": "684",
+          "content-type": "application/json",
+          "date": "Mon, 20 Apr 2026 00:44:39 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-2"
+        },
+        "status_code": 200
+      },
+      "raw_response": {
+        "client_id": "demo_unhas",
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "handoff": {
+          "reason": null,
+          "requested": false
+        },
+        "intent": null,
+        "meta": {
+          "raw": {
+            "handoff": null,
+            "handoff_requested": false,
+            "reply": "No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final.",
+            "route": "rag",
+            "session_id": "s-094f927ca9f1408c",
+            "status": "ok",
+            "workflow": null,
+            "workflow_result": null
+          },
+          "source": "chatbot1"
+        },
+        "reply": {
+          "actions": [],
+          "text": "No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final."
+        },
+        "session_id": "s-094f927ca9f1408c",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-2"
+      },
+      "request": {
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "message": "sim, pode confirmar",
+        "session_id": "s-094f927ca9f1408c",
+        "start_new": false,
+        "surface": "dashboard"
+      },
+      "step_index": 2,
+      "summary": {
+        "action_result": {},
+        "conversation_id": "24f677c4-8d4f-4888-8296-57b704009270",
+        "reply_text": "No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final.",
+        "route": "rag",
+        "session_id": "s-094f927ca9f1408c",
+        "slots": {},
+        "source": "chatbot1",
+        "status": "ok",
+        "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-2",
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "local-booking-eval-20260420T004439Z-bddfcdc9-booking_happy_path_full-2"
+    }
+  ],
+  "tags": [
+    "booking",
+    "happy_path",
+    "crm_side_effect"
+  ],
+  "transcript": "Turn 1 user: Quero marcar um corte amanhã às 16h17 para Audit User, telefone 11999998888\nTurn 1 assistant: Não consigo iniciar esse fluxo com segurança porque a configuração deste negócio está incompleta. Vou encaminhar para um atendente continuar sem inventar dados.\nTurn 2 user: sim, pode confirmar\nTurn 2 assistant: No studio, sobre confirmação: O pré-agendamento fica sujeito à confirmação humana final."
+}

@@ -1,0 +1,242 @@
+{
+  "iteration_count": 4,
+  "iterations": [
+    {
+      "completed_at": "2026-04-19T22:26:13.132357+00:00",
+      "fail_count": 19,
+      "iteration": 1,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T222514Z-3e4d17b5",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: expected route workflow, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 197,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 62,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T22:27:26.260804+00:00",
+      "fail_count": 19,
+      "iteration": 2,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T222628Z-d98651ec",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: expected route workflow, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 197,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 62,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T22:28:40.259789+00:00",
+      "fail_count": 19,
+      "iteration": 3,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T222742Z-f024cd49",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: expected route workflow, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 197,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 62,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-04-19T22:29:53.408493+00:00",
+      "fail_count": 19,
+      "iteration": 4,
+      "mode": "hybrid",
+      "partial_count": 0,
+      "pass_count": 0,
+      "run_id": "20260419T222855Z-7f8757f6",
+      "top_5_failure_patterns": [
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected route workflow, got None"
+        },
+        {
+          "count": 6,
+          "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+        },
+        {
+          "count": 5,
+          "pattern": "booking missing_phone guardrail: expected route workflow, got None"
+        }
+      ],
+      "top_failure_types": [
+        {
+          "count": 197,
+          "type": "assertion_failure"
+        },
+        {
+          "count": 62,
+          "type": "upstream_runtime_failure"
+        },
+        {
+          "count": 3,
+          "type": "failure_to_complete_task"
+        },
+        {
+          "count": 1,
+          "type": "crm_verification_failure"
+        }
+      ]
+    }
+  ],
+  "most_frequent_bugs": [
+    {
+      "count": 788,
+      "type": "assertion_failure"
+    },
+    {
+      "count": 248,
+      "type": "upstream_runtime_failure"
+    },
+    {
+      "count": 12,
+      "type": "failure_to_complete_task"
+    },
+    {
+      "count": 4,
+      "type": "crm_verification_failure"
+    }
+  ],
+  "top_5_failure_patterns": [
+    {
+      "count": 24,
+      "pattern": "booking fragmented state: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+    },
+    {
+      "count": 24,
+      "pattern": "booking fragmented state: expected route workflow, got None"
+    },
+    {
+      "count": 24,
+      "pattern": "booking fragmented state: expected workflow book_appointment, got None"
+    },
+    {
+      "count": 20,
+      "pattern": "booking missing_phone guardrail: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}"
+    },
+    {
+      "count": 20,
+      "pattern": "booking missing_phone guardrail: expected route workflow, got None"
+    }
+  ],
+  "updated_at": "2026-04-19T22:29:53.409548+00:00"
+}

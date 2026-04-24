@@ -1,9 +1,12 @@
 const TOKEN_KEY = "token";
 const TENANT_KEY = "tenant_id";
+const AUTH_COOKIE_MAX_AGE_SECONDS = Number(
+  process.env.NEXT_PUBLIC_AUTH_COOKIE_MAX_AGE_SECONDS ?? 60 * 60 * 24 * 7,
+);
 
 export function setAuthToken(token: string) {
   localStorage.setItem(TOKEN_KEY, token);
-  document.cookie = `token=${token}; path=/; SameSite=Lax`;
+  document.cookie = `token=${encodeURIComponent(token)}; path=/; max-age=${AUTH_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
 }
 
 export function getAuthToken() {
@@ -30,7 +33,7 @@ export function clearAuth() {
 
 export function setTenantId(tenantId: string) {
   localStorage.setItem(TENANT_KEY, tenantId);
-  document.cookie = `tenant_id=${encodeURIComponent(tenantId)}; path=/; SameSite=Lax`;
+  document.cookie = `tenant_id=${encodeURIComponent(tenantId)}; path=/; max-age=${AUTH_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
 }
 
 export function getTenantId() {

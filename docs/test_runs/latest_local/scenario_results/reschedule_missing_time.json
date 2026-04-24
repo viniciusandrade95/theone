@@ -1,0 +1,126 @@
+{
+  "conversation_id": null,
+  "crm_verification": {
+    "reasons": [
+      "no CRM verification configured"
+    ],
+    "status": "SKIPPED"
+  },
+  "description": "User gives remarcação intent and date but no new time; assistant asks for the missing time.",
+  "failure_records": [
+    {
+      "category": "upstream_runtime_failure",
+      "message": "HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected status collecting, got response=None workflow=None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected route workflow, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected workflow reschedule_appointment, got None",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "reply missing expected text: horário",
+      "step_index": 1
+    },
+    {
+      "category": "assertion_failure",
+      "message": "expected slot new_date to be present",
+      "step_index": 1
+    }
+  ],
+  "failures": [
+    "step 1: upstream_runtime_failure: HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}",
+    "step 1: assertion_failure: expected status collecting, got response=None workflow=None",
+    "step 1: assertion_failure: expected route workflow, got None",
+    "step 1: assertion_failure: expected workflow reschedule_appointment, got None",
+    "step 1: assertion_failure: reply missing expected text: horário",
+    "step 1: assertion_failure: expected slot new_date to be present"
+  ],
+  "final_verdict": "FAIL",
+  "guardrails_observed": [],
+  "judge": {
+    "status": "DISABLED"
+  },
+  "scenario_name": "reschedule_missing_time",
+  "scenario_run_id": "20260419T221942Z-84093b2a-reschedule_missing_time",
+  "session_id": null,
+  "started_at": "2026-04-19T22:20:33.192113+00:00",
+  "steps": [
+    {
+      "assertions": {
+        "reasons": [
+          "HTTP request failed with status 500: {\"error\":\"INTERNAL_ERROR\"}",
+          "expected status collecting, got response=None workflow=None",
+          "expected route workflow, got None",
+          "expected workflow reschedule_appointment, got None",
+          "reply missing expected text: horário",
+          "expected slot new_date to be present"
+        ],
+        "status": "FAIL"
+      },
+      "http": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "body_excerpt": "{\"error\":\"INTERNAL_ERROR\"}",
+            "error": "HTTP 500",
+            "status_code": 500,
+            "transient_upstream_failure": false
+          }
+        ],
+        "body_text": "{\"error\":\"INTERNAL_ERROR\"}",
+        "error": "HTTP 500",
+        "headers": {
+          "Connection": "close",
+          "content-length": "26",
+          "content-type": "application/json",
+          "date": "Sun, 19 Apr 2026 22:20:32 GMT",
+          "server": "uvicorn",
+          "x-trace-id": "local-booking-eval-20260419T221942Z-84093b2a-reschedule_missing_time-1"
+        },
+        "status_code": 500
+      },
+      "raw_response": {
+        "error": "INTERNAL_ERROR"
+      },
+      "request": {
+        "conversation_id": null,
+        "message": "quero remarcar meu corte para amanhã",
+        "session_id": null,
+        "start_new": true,
+        "surface": "dashboard"
+      },
+      "step_index": 1,
+      "summary": {
+        "action_result": {},
+        "conversation_id": null,
+        "reply_text": "",
+        "route": null,
+        "session_id": null,
+        "slots": {},
+        "source": null,
+        "status": null,
+        "trace_id": null,
+        "workflow": null,
+        "workflow_status": null
+      },
+      "trace_id": "local-booking-eval-20260419T221942Z-84093b2a-reschedule_missing_time-1"
+    }
+  ],
+  "tags": [
+    "reschedule",
+    "missing_data"
+  ],
+  "transcript": "Turn 1 user: quero remarcar meu corte para amanhã\nTurn 1 assistant: "
+}

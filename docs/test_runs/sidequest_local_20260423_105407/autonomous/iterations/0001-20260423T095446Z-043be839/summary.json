@@ -1,0 +1,228 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "common_failure_families": {},
+  "common_failure_patterns": {
+    "assertion_failure": [],
+    "crm_verification_failure": [],
+    "upstream_runtime_failure": []
+  },
+  "completed_at": "2026-04-23T09:55:19.846550+00:00",
+  "fail_count": 0,
+  "failure_layer_counts": [],
+  "generation": {
+    "error": "generator output was not valid JSON",
+    "source": "seed",
+    "status": "FALLBACK"
+  },
+  "iteration": 1,
+  "judge_enabled": false,
+  "mode": "hybrid",
+  "partial_count": 0,
+  "pass_count": 19,
+  "run_id": "20260423T095446Z-043be839",
+  "scenario_verdicts": [
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_happy_path_full",
+      "tags": [
+        "booking",
+        "happy_path",
+        "crm_side_effect"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_missing_name",
+      "tags": [
+        "booking",
+        "missing_data",
+        "guardrail"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_missing_phone",
+      "tags": [
+        "booking",
+        "missing_phone",
+        "guardrail"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_conflict_slot",
+      "tags": [
+        "booking",
+        "conflict",
+        "crm_failure"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_interrupted_then_resume",
+      "tags": [
+        "booking",
+        "interruption",
+        "robustness"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_user_changes_time_mid_flow",
+      "tags": [
+        "booking",
+        "change_of_mind",
+        "state"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "faq_then_booking",
+      "tags": [
+        "faq",
+        "booking",
+        "transition"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_with_short_affirmations",
+      "tags": [
+        "booking",
+        "affirmation",
+        "short_turns"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_with_fragmented_inputs",
+      "tags": [
+        "booking",
+        "fragmented",
+        "state"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "booking_with_colloquial_ptbr",
+      "tags": [
+        "booking",
+        "ptbr",
+        "nlu",
+        "colloquial"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "reschedule_happy_path",
+      "tags": [
+        "reschedule",
+        "happy_path",
+        "crm_side_effect",
+        "requires_existing_appointment"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "reschedule_conflict",
+      "tags": [
+        "reschedule",
+        "conflict",
+        "crm_failure",
+        "requires_seeded_conflict"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "reschedule_missing_time",
+      "tags": [
+        "reschedule",
+        "missing_data"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "reschedule_interrupted_then_resume",
+      "tags": [
+        "reschedule",
+        "interruption",
+        "robustness"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0001_01_seed_reschedule_ambiguous",
+      "tags": [
+        "ambiguous",
+        "generated",
+        "reschedule"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0001_02_seed_cancellation_colloquial",
+      "tags": [
+        "cancellation",
+        "generated",
+        "ptbr"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0001_03_seed_booking_with_faq_interruption",
+      "tags": [
+        "booking",
+        "faq",
+        "generated",
+        "interruption"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0001_04_seed_colloquial_fragmented_booking",
+      "tags": [
+        "booking",
+        "correction",
+        "fragmented",
+        "generated",
+        "ptbr"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "failure_count": 0,
+      "scenario_name": "generated_i0001_05_seed_missing_time_booking",
+      "tags": [
+        "ambiguous",
+        "booking",
+        "generated",
+        "missing_time"
+      ],
+      "verdict": "PASS"
+    }
+  ],
+  "started_at": "2026-04-23T09:54:46.407729+00:00",
+  "tenant_id": "a9aa541b-0bd3-45c8-b99f-785c5a51656b",
+  "top_5_failure_patterns": [],
+  "top_failure_types": [],
+  "top_judge_issues": [],
+  "total_scenarios": 19,
+  "worst_conversational_scores": []
+}

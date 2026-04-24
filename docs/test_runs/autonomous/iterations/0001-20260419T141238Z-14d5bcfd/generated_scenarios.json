@@ -1,0 +1,121 @@
+{
+  "generation": {
+    "error": "generator output was not valid JSON",
+    "source": "seed",
+    "status": "FALLBACK"
+  },
+  "scenarios": [
+    {
+      "description": "Ambiguous rescheduling request with a new time later.",
+      "expected_final_status": "unknown",
+      "generated": true,
+      "generation_iteration": 1,
+      "name": "generated_i0001_01_seed_reschedule_ambiguous",
+      "steps": [
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "reschedule_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "da pra mudar pra sexta?"
+        },
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "reschedule_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "meu corte"
+        },
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "reschedule_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "16h"
+        },
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "reschedule_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "pode"
+        }
+      ],
+      "tags": [
+        "ambiguous",
+        "generated",
+        "reschedule"
+      ]
+    },
+    {
+      "description": "Cancellation request with colloquial phrasing.",
+      "expected_final_status": "unknown",
+      "generated": true,
+      "generation_iteration": 1,
+      "name": "generated_i0001_02_seed_cancellation_colloquial",
+      "steps": [
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "cancel_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "não posso ir amanhã"
+        },
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "cancel_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "cancela meu corte pfv"
+        },
+        {
+          "expected_no_rag_reset": true,
+          "expected_reply_not_contains": [
+            "prebooking_stub",
+            "erro técnico"
+          ],
+          "expected_workflow": "cancel_appointment",
+          "expected_workflow_not": [
+            "handoff_to_human"
+          ],
+          "user_message": "sim"
+        }
+      ],
+      "tags": [
+        "cancellation",
+        "generated",
+        "ptbr"
+      ]
+    }
+  ]
+}
