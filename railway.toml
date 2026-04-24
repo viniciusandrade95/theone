@@ -1,6 +1,11 @@
 [build]
-buildCommand = "pip install -r requirements.txt"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "./.venv/bin/alembic upgrade head && ./.venv/bin/uvicorn main:app --host 0.0.0.0 --port $PORT"
+preDeployCommand = "alembic upgrade head"
+startCommand = "python -m uvicorn main:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/healthz"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
