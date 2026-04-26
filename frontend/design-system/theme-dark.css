@@ -1,0 +1,71 @@
+/* TheOne Premium Design System v0.1 — Dark theme aliases */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --mb-bg: #0F172A;
+  --mb-bg-soft: #111C32;
+  --mb-bg-warm: #1A2437;
+  --mb-surface: #172033;
+  --mb-surface-soft: #1E293B;
+  --mb-surface-glass: rgba(23, 32, 51, 0.74);
+  --mb-text: #F8FAFC;
+  --mb-muted: #AAB4C0;
+  --mb-muted-2: #7C8798;
+  --mb-line: #2B3649;
+
+  --mb-primary: #7DB3FF;
+  --mb-primary-dark: #4A8DF5;
+  --mb-primary-soft: #132B50;
+  --mb-accent: #F4A261;
+  --mb-accent-dark: #E88942;
+  --mb-accent-soft: #3A2618;
+  --mb-aqua: #60D7C8;
+  --mb-aqua-soft: #103C3A;
+
+  --mb-success: #54D48C;
+  --mb-success-soft: #123528;
+  --mb-warning: #F0A15A;
+  --mb-warning-soft: #3A2418;
+  --mb-danger: #FF7A7A;
+  --mb-danger-soft: #3A1E22;
+
+  --mb-shadow-xs: 0 6px 16px rgba(0, 0, 0, 0.18);
+  --mb-shadow-sm: 0 12px 28px rgba(0, 0, 0, 0.24);
+  --mb-shadow-md: 0 18px 42px rgba(0, 0, 0, 0.32);
+
+  --ds-bg: var(--mb-bg);
+  --ds-bg-soft: var(--mb-bg-soft);
+  --ds-bg-warm: var(--mb-bg-warm);
+  --ds-surface: var(--mb-surface);
+  --ds-surface-soft: var(--mb-surface-soft);
+  --ds-surface-glass: var(--mb-surface-glass);
+  --ds-text: var(--mb-text);
+  --ds-muted: var(--mb-muted);
+  --ds-muted-2: var(--mb-muted-2);
+  --ds-line: var(--mb-line);
+
+  --ds-primary: var(--mb-primary);
+  --ds-primary-strong: var(--mb-primary-dark);
+  --ds-primary-soft: var(--mb-primary-soft);
+
+  --ds-accent: var(--mb-accent);
+  --ds-accent-strong: var(--mb-accent-dark);
+  --ds-accent-soft: var(--mb-accent-soft);
+
+  --ds-aqua: var(--mb-aqua);
+  --ds-aqua-soft: var(--mb-aqua-soft);
+
+  --ds-success: var(--mb-success);
+  --ds-success-soft: var(--mb-success-soft);
+  --ds-warning: var(--mb-warning);
+  --ds-warning-soft: var(--mb-warning-soft);
+  --ds-danger: var(--mb-danger);
+  --ds-danger-soft: var(--mb-danger-soft);
+
+  --ds-app-background:
+    radial-gradient(circle at 86% 4%, rgba(125, 179, 255, 0.14), transparent 28%),
+    radial-gradient(circle at -8% 42%, rgba(96, 215, 200, 0.12), transparent 28%),
+    radial-gradient(circle at 24% 105%, rgba(244, 162, 97, 0.10), transparent 34%),
+    linear-gradient(180deg, var(--ds-bg) 0%, var(--ds-bg-soft) 48%, var(--ds-bg-warm) 100%);
+}
