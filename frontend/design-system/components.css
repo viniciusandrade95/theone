@@ -1,0 +1,264 @@
+/* TheOne Premium Design System v0.1 — Reusable component primitives
+ * These classes are intentionally framework-light so they can be used from
+ * React/Next pages, EJS prototypes, or Maxton-derived mockups.
+ */
+
+.ds-premium-bg {
+  min-height: 100%;
+  background: var(--ds-app-background);
+  color: var(--ds-text);
+  font-family: var(--mb-font-sans);
+}
+
+.ds-responsive-container {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+  padding: var(--mb-space-4);
+}
+
+.ds-mobile-shell {
+  min-height: 100dvh;
+  padding: var(--mb-space-3) var(--mb-space-4) calc(var(--mb-mobile-nav-height) + var(--mb-space-4));
+  background: var(--ds-app-background);
+}
+
+.ds-tablet-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.55fr);
+  gap: var(--mb-space-4);
+  padding: var(--mb-space-5);
+  background: var(--ds-app-background);
+}
+
+.ds-desktop-shell {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  min-height: 100dvh;
+  background: var(--ds-app-background);
+}
+
+.ds-card {
+  background: var(--ds-surface-glass);
+  border: var(--mb-border-width) solid var(--ds-line);
+  border-radius: var(--mb-radius-lg);
+  box-shadow: var(--mb-shadow-sm);
+  color: var(--ds-text);
+  backdrop-filter: blur(18px);
+}
+
+.ds-card-solid {
+  background: var(--ds-surface);
+  border: var(--mb-border-width) solid var(--ds-line);
+  border-radius: var(--mb-radius-lg);
+  box-shadow: var(--mb-shadow-sm);
+  color: var(--ds-text);
+}
+
+.ds-card-soft {
+  background: var(--ds-surface-soft);
+  border: var(--mb-border-width) solid var(--ds-line);
+  border-radius: var(--mb-radius-lg);
+  color: var(--ds-text);
+}
+
+.ds-button {
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: var(--mb-radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mb-space-2);
+  padding-inline: var(--mb-space-4);
+  font-weight: 850;
+  transition:
+    transform var(--mb-motion-fast) var(--mb-ease-standard),
+    background-color var(--mb-motion-normal) var(--mb-ease-standard),
+    box-shadow var(--mb-motion-normal) var(--mb-ease-standard);
+}
+
+.ds-button:active {
+  transform: translateY(1px);
+}
+
+.ds-button-primary {
+  background: var(--ds-primary-strong);
+  color: #fff;
+  box-shadow: var(--mb-shadow-xs);
+}
+
+.ds-button-secondary {
+  background: var(--ds-primary-soft);
+  color: var(--ds-primary-strong);
+}
+
+.ds-button-ghost {
+  background: transparent;
+  color: var(--ds-primary-strong);
+}
+
+.ds-search,
+.ds-input {
+  min-height: 2.75rem;
+  border: var(--mb-border-width) solid var(--ds-line);
+  border-radius: var(--mb-radius-md);
+  background: var(--ds-surface-glass);
+  color: var(--ds-text);
+  box-shadow: var(--mb-shadow-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--mb-space-2);
+  padding-inline: var(--mb-space-3);
+  backdrop-filter: blur(16px);
+}
+
+.ds-search input,
+.ds-input input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ds-text);
+  font: inherit;
+}
+
+.ds-search input::placeholder,
+.ds-input input::placeholder {
+  color: var(--ds-muted-2);
+}
+
+.ds-chip {
+  min-height: 1.75rem;
+  border-radius: var(--mb-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--mb-space-3);
+  background: var(--ds-primary-soft);
+  color: var(--ds-primary-strong);
+  font-size: var(--mb-font-size-xs);
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.ds-chip-accent {
+  background: var(--ds-accent-soft);
+  color: var(--ds-accent-strong);
+}
+
+.ds-chip-success {
+  background: var(--ds-success-soft);
+  color: var(--ds-success);
+}
+
+.ds-chip-warning {
+  background: var(--ds-warning-soft);
+  color: var(--ds-warning);
+}
+
+.ds-metric-card {
+  min-height: 5rem;
+  padding: var(--mb-space-3) var(--mb-space-4);
+  background: var(--ds-surface-glass);
+  border: var(--mb-border-width) solid var(--ds-line);
+  border-radius: var(--mb-radius-lg);
+  box-shadow: var(--mb-shadow-xs);
+  backdrop-filter: blur(14px);
+}
+
+.ds-metric-label {
+  display: block;
+  color: var(--ds-muted);
+  font-size: var(--mb-font-size-xs);
+  font-weight: 850;
+  margin-bottom: var(--mb-space-1);
+}
+
+.ds-metric-value {
+  display: block;
+  color: var(--ds-text);
+  font-size: var(--mb-font-size-xl);
+  line-height: var(--mb-line-height-tight);
+  font-weight: 950;
+  letter-spacing: var(--mb-letter-tight);
+}
+
+.ds-metric-trend {
+  display: block;
+  margin-top: var(--mb-space-2);
+  color: var(--ds-success);
+  font-size: var(--mb-font-size-xs);
+  font-weight: 850;
+}
+
+.ds-attention-strip {
+  min-height: 3.875rem;
+  border-radius: var(--mb-radius-lg);
+  padding: var(--mb-space-3) var(--mb-space-4);
+  background: linear-gradient(135deg, var(--ds-accent-soft), color-mix(in srgb, var(--ds-surface) 70%, transparent));
+  border: var(--mb-border-width) solid color-mix(in srgb, var(--ds-accent) 28%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mb-space-3);
+}
+
+.ds-attention-title {
+  display: block;
+  color: var(--ds-text);
+  font-size: var(--mb-font-size-sm);
+  font-weight: 900;
+}
+
+.ds-attention-subtitle {
+  display: block;
+  color: var(--ds-muted);
+  font-size: var(--mb-font-size-xs);
+  margin-top: var(--mb-space-1);
+}
+
+.ds-mobile-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--mb-z-nav);
+  min-height: var(--mb-mobile-nav-height);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: var(--mb-space-2) var(--mb-space-2) var(--mb-space-3);
+  background: var(--ds-surface-glass);
+  border-top: var(--mb-border-width) solid var(--ds-line);
+  backdrop-filter: blur(18px);
+}
+
+.ds-mobile-nav-item {
+  color: var(--ds-muted);
+  text-align: center;
+  text-decoration: none;
+  font-size: var(--mb-font-size-xs);
+  font-weight: 800;
+}
+
+.ds-mobile-nav-item[aria-current="page"] {
+  color: var(--ds-primary-strong);
+}
+
+@media (min-width: 48rem) {
+  .ds-mobile-shell {
+    padding: var(--mb-space-5);
+  }
+
+  .ds-mobile-nav {
+    position: sticky;
+    border-radius: var(--mb-radius-xl);
+    margin-inline: var(--mb-space-5);
+    bottom: var(--mb-space-4);
+  }
+}
+
+@media (min-width: 64rem) {
+  .ds-mobile-nav {
+    display: none;
+  }
+}
