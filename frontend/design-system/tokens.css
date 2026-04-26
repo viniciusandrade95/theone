@@ -1,0 +1,80 @@
+/* TheOne Premium Design System v0.1 — Mist Blue
+ * Foundation tokens only. No product page should depend on Maxton classes directly.
+ */
+
+:root {
+  /* Color primitives: light */
+  --mb-bg: #F6F9FE;
+  --mb-bg-soft: #FAFCFF;
+  --mb-bg-warm: #F7F3ED;
+  --mb-surface: #FFFFFF;
+  --mb-surface-soft: #F7FAFC;
+  --mb-surface-glass: rgba(255, 255, 255, 0.76);
+  --mb-text: #101828;
+  --mb-muted: #667085;
+  --mb-muted-2: #98A2B3;
+  --mb-line: #E6ECF2;
+
+  --mb-primary: #3577F0;
+  --mb-primary-dark: #175CD3;
+  --mb-primary-soft: #EAF2FF;
+  --mb-accent: #F4A261;
+  --mb-accent-dark: #C56B2C;
+  --mb-accent-soft: #FFF1E4;
+  --mb-aqua: #60D7C8;
+  --mb-aqua-soft: #E9FBF8;
+
+  --mb-success: #16A34A;
+  --mb-success-soft: #EAFBF0;
+  --mb-warning: #EA7A2A;
+  --mb-warning-soft: #FFF1E4;
+  --mb-danger: #C53030;
+  --mb-danger-soft: #FFEEEE;
+
+  /* Typography */
+  --mb-font-sans: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --mb-font-size-xs: 0.75rem;
+  --mb-font-size-sm: 0.8125rem;
+  --mb-font-size-md: 0.9375rem;
+  --mb-font-size-lg: 1.125rem;
+  --mb-font-size-xl: 1.5rem;
+  --mb-font-size-display: 1.875rem;
+  --mb-line-height-tight: 1.05;
+  --mb-line-height-normal: 1.4;
+  --mb-letter-tight: -0.04em;
+
+  /* Spacing */
+  --mb-space-1: 0.25rem;
+  --mb-space-2: 0.5rem;
+  --mb-space-3: 0.75rem;
+  --mb-space-4: 1rem;
+  --mb-space-5: 1.5rem;
+  --mb-space-6: 2rem;
+  --mb-space-7: 2.5rem;
+
+  /* Radius */
+  --mb-radius-sm: 0.75rem;
+  --mb-radius-md: 1.125rem;
+  --mb-radius-lg: 1.5rem;
+  --mb-radius-xl: 1.875rem;
+  --mb-radius-pill: 999px;
+
+  /* Border/shadow */
+  --mb-border-width: 1px;
+  --mb-shadow-xs: 0 6px 16px rgba(16, 24, 40, 0.04);
+  --mb-shadow-sm: 0 12px 28px rgba(16, 24, 40, 0.06);
+  --mb-shadow-md: 0 18px 42px rgba(16, 24, 40, 0.08);
+
+  /* Motion */
+  --mb-motion-fast: 120ms;
+  --mb-motion-normal: 180ms;
+  --mb-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout / z-index */
+  --mb-mobile-nav-height: 4.625rem;
+  --mb-mobile-content-max: 30rem;
+  --mb-tablet-breakpoint: 48rem;
+  --mb-desktop-breakpoint: 64rem;
+  --mb-z-nav: 30;
+  --mb-z-overlay: 50;
+}

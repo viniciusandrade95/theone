@@ -1,0 +1,41 @@
+/* TheOne Premium Design System v0.1 — Light theme aliases */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --ds-bg: var(--mb-bg);
+  --ds-bg-soft: var(--mb-bg-soft);
+  --ds-bg-warm: var(--mb-bg-warm);
+  --ds-surface: var(--mb-surface);
+  --ds-surface-soft: var(--mb-surface-soft);
+  --ds-surface-glass: var(--mb-surface-glass);
+  --ds-text: var(--mb-text);
+  --ds-muted: var(--mb-muted);
+  --ds-muted-2: var(--mb-muted-2);
+  --ds-line: var(--mb-line);
+
+  --ds-primary: var(--mb-primary);
+  --ds-primary-strong: var(--mb-primary-dark);
+  --ds-primary-soft: var(--mb-primary-soft);
+
+  --ds-accent: var(--mb-accent);
+  --ds-accent-strong: var(--mb-accent-dark);
+  --ds-accent-soft: var(--mb-accent-soft);
+
+  --ds-aqua: var(--mb-aqua);
+  --ds-aqua-soft: var(--mb-aqua-soft);
+
+  --ds-success: var(--mb-success);
+  --ds-success-soft: var(--mb-success-soft);
+  --ds-warning: var(--mb-warning);
+  --ds-warning-soft: var(--mb-warning-soft);
+  --ds-danger: var(--mb-danger);
+  --ds-danger-soft: var(--mb-danger-soft);
+
+  --ds-app-background:
+    radial-gradient(circle at 86% 4%, rgba(53, 119, 240, 0.18), transparent 28%),
+    radial-gradient(circle at -8% 42%, rgba(96, 215, 200, 0.20), transparent 28%),
+    radial-gradient(circle at 24% 105%, rgba(244, 162, 97, 0.18), transparent 34%),
+    linear-gradient(180deg, var(--ds-bg) 0%, var(--ds-bg-soft) 48%, var(--ds-bg-warm) 100%);
+}
