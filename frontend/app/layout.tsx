@@ -1,3 +1,7 @@
+import "../design-system/tokens.css";
+import "../design-system/theme-light.css";
+import "../design-system/theme-dark.css";
+import "../design-system/components.css";
 import "./globals.css";
 import { Inter } from "next/font/google";
 
