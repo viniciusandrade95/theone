@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendMiniCard } from "@/components/dashboard/TrendMiniCard";
 import { api } from "@/lib/api";
 import { appPath } from "@/lib/paths";
 import type { DashboardAppointmentItem, DashboardOverview, InactiveCustomerItem } from "@/lib/contracts/dashboard";
@@ -36,21 +34,8 @@ function appointmentHref(appointmentId: string) {
   return appPath(`/dashboard/appointments?appointment_id=${encoded}#appointment-${encoded}`);
 }
 
-const secondaryLinkClass =
-  "inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2";
-
-function StatCard({ label, value, hint }: { label: string; value: number; hint?: string }) {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-3xl font-semibold text-slate-900">{value}</p>
-        {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
-      </CardContent>
-    </Card>
-  );
+function sortAppointments(items: DashboardAppointmentItem[]) {
+  return [...items].sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 }
 
 function AppointmentRow({ item, tz, badge }: { item: DashboardAppointmentItem; tz: string; badge?: string }) {
@@ -61,25 +46,26 @@ function AppointmentRow({ item, tz, badge }: { item: DashboardAppointmentItem; t
   const meta = [item.service_name, item.location_name].filter(Boolean).join(" • ");
 
   return (
-    <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 p-3">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href={appointmentHref(item.id)} className="text-sm font-semibold text-slate-900 hover:underline">
-            {time}
-          </Link>
-          {badge ? (
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{badge}</span>
-          ) : null}
-        </div>
-        <div className="mt-1 truncate text-sm text-slate-700">
-          <Link href={appPath(`/dashboard/customers/${encodeURIComponent(item.customer_id)}`)} className="hover:underline">
+    <div className="rounded-2xl border border-[var(--ds-line)] bg-[var(--ds-surface)] p-3 shadow-[var(--mb-shadow-xs)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href={appointmentHref(item.id)} className="text-sm font-extrabold text-[var(--ds-text)] hover:underline">
+              {time}
+            </Link>
+            {badge ? <span className="ds-chip ds-chip-accent">{badge}</span> : null}
+          </div>
+          <Link
+            href={appPath(`/dashboard/customers/${encodeURIComponent(item.customer_id)}`)}
+            className="mt-1 block truncate text-sm font-semibold text-[var(--ds-text)] hover:underline"
+          >
             {item.customer_name}
           </Link>
+          {meta ? <div className="mt-1 truncate text-xs text-[var(--ds-muted)]">{meta}</div> : null}
         </div>
-        {meta ? <div className="mt-1 truncate text-xs text-slate-500">{meta}</div> : null}
-      </div>
-      <div className="shrink-0 text-right text-xs text-slate-500">
-        <div>{formatInTz(item.starts_at, tz, { weekday: "short", month: "short", day: "2-digit" })}</div>
+        <div className="shrink-0 text-right text-xs font-semibold text-[var(--ds-muted)]">
+          {formatInTz(item.starts_at, tz, { weekday: "short", month: "short", day: "2-digit" })}
+        </div>
       </div>
     </div>
   );
@@ -87,23 +73,35 @@ function AppointmentRow({ item, tz, badge }: { item: DashboardAppointmentItem; t
 
 function InactiveCustomerRow({ item }: { item: InactiveCustomerItem }) {
   return (
-    <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 p-3">
-      <div className="min-w-0">
-        <Link
-          href={appPath(`/dashboard/customers/${encodeURIComponent(item.id)}`)}
-          className="text-sm font-semibold text-slate-900 hover:underline"
-        >
-          {item.name}
-        </Link>
-        <div className="mt-1 truncate text-xs text-slate-500">
-          {[item.phone, item.email].filter(Boolean).join(" • ") || "No contact info"}
+    <div className="rounded-2xl border border-[var(--ds-line)] bg-[var(--ds-surface)] p-3 shadow-[var(--mb-shadow-xs)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            href={appPath(`/dashboard/customers/${encodeURIComponent(item.id)}`)}
+            className="text-sm font-extrabold text-[var(--ds-text)] hover:underline"
+          >
+            {item.name}
+          </Link>
+          <div className="mt-1 truncate text-xs text-[var(--ds-muted)]">
+            {[item.phone, item.email].filter(Boolean).join(" • ") || "No contact info"}
+          </div>
+        </div>
+        <div className="shrink-0 text-right text-xs text-[var(--ds-muted)]">
+          <div>Last visit</div>
+          <div className="font-extrabold text-[var(--ds-text)]">{item.last_completed_at ? new Date(item.last_completed_at).toLocaleDateString() : "Never"}</div>
         </div>
       </div>
-      <div className="shrink-0 text-right text-xs text-slate-500">
-        <div>{item.last_completed_at ? "Last visit:" : "Last visit:"}</div>
-        <div className="font-semibold text-slate-700">{item.last_completed_at ? new Date(item.last_completed_at).toLocaleDateString() : "Never"}</div>
-      </div>
     </div>
+  );
+}
+
+function MetricCard({ label, value, hint, tone = "default" }: { label: string; value: string | number; hint?: string; tone?: "default" | "primary" }) {
+  return (
+    <article className={`ds-metric-card ${tone === "primary" ? "bg-[var(--ds-primary-soft)]" : ""}`}>
+      <span className="ds-metric-label">{label}</span>
+      <strong className="ds-metric-value">{value}</strong>
+      {hint ? <span className="ds-metric-trend text-[var(--ds-muted)]">{hint}</span> : null}
+    </article>
   );
 }
 
@@ -142,63 +140,20 @@ export default function DashboardPage() {
   }, []);
 
   const tz = overview?.timezone ?? "UTC";
+  const counts = overview?.counts;
 
-  const opportunityCards = useMemo(() => {
-    const counts = overview?.counts;
-    return [
-      {
-        title: "Confirm bookings",
-        value: counts?.appointments_pending_confirmation_count ?? 0,
-        description: "Appointments awaiting confirmation.",
-        href: appPath("/dashboard/appointments"),
-        pill:
-          (counts?.appointments_pending_confirmation_count ?? 0) > 0
-            ? ({ label: "Action", tone: "warning" } as const)
-            : ({ label: "Clear", tone: "neutral" } as const),
-      },
-      {
-        title: "Win back customers",
-        value: counts?.inactive_customers_count ?? 0,
-        description: "No completed visit in 60 days.",
-        href: appPath("/dashboard/customers"),
-        pill:
-          (counts?.inactive_customers_count ?? 0) > 0
-            ? ({ label: "Opportunity", tone: "positive" } as const)
-            : ({ label: "Clear", tone: "neutral" } as const),
-      },
-      {
-        title: "No-show watch",
-        value: counts?.recent_no_shows_count ?? 0,
-        description: "No-shows in the last 14 days.",
-        href: appPath("/dashboard/appointments"),
-        pill:
-          (counts?.recent_no_shows_count ?? 0) > 0
-            ? ({ label: "Review", tone: "warning" } as const)
-            : ({ label: "Clear", tone: "neutral" } as const),
-      },
-      {
-        title: "Online bookings",
-        value: counts?.new_online_bookings_count ?? 0,
-        description: "Created online today (proxy).",
-        href: appPath("/dashboard/appointments"),
-        pill:
-          (counts?.new_online_bookings_count ?? 0) > 0
-            ? ({ label: "New", tone: "positive" } as const)
-            : ({ label: "None", tone: "neutral" } as const),
-      },
-    ];
-  }, [overview?.counts]);
+  const todayAppointments = useMemo(() => sortAppointments(overview?.sections.appointments_today ?? []), [overview?.sections.appointments_today]);
+  const pendingAppointments = overview?.sections.appointments_pending_confirmation ?? [];
+  const newOnlineBookings = overview?.sections.new_online_bookings ?? [];
+  const inactiveCustomers = overview?.sections.inactive_customers ?? [];
+  const recentNoShows = overview?.sections.recent_no_shows ?? [];
 
-  const quickActions = useMemo(
-    () => [
-      { label: "Create customer", href: "/dashboard/customers/new" },
-      { label: "Create appointment", href: "/dashboard/appointments" },
-      { label: "Send message", href: "/dashboard/customers" },
-      { label: "Enable booking online", href: "/dashboard/settings/booking" },
-      { label: "Import customers", href: "/dashboard/customers/import" },
-    ],
-    [],
-  );
+  const nextAppointment = useMemo(() => {
+    const now = Date.now();
+    return todayAppointments.find((item) => new Date(item.ends_at).getTime() >= now) ?? todayAppointments[0] ?? null;
+  }, [todayAppointments]);
+
+  const lastAppointment = todayAppointments.length ? todayAppointments[todayAppointments.length - 1] : null;
 
   const deliverySnapshot = useMemo(() => {
     const counts = { queued: 0, sent: 0, delivered: 0, read: 0, failed: 0, manual: 0 };
@@ -235,194 +190,207 @@ export default function DashboardPage() {
     return { counts, latestUpdate, total };
   }, [recentOutbound]);
 
+  const actionCount =
+    (counts?.appointments_pending_confirmation_count ?? 0) +
+    (counts?.new_online_bookings_count ?? 0) +
+    deliverySnapshot.counts.failed;
+
+  const attentionLabel = [
+    (counts?.appointments_pending_confirmation_count ?? 0) > 0 ? `${counts?.appointments_pending_confirmation_count} bookings to confirm` : null,
+    (counts?.new_online_bookings_count ?? 0) > 0 ? `${counts?.new_online_bookings_count} new online bookings` : null,
+    deliverySnapshot.counts.failed > 0 ? `${deliverySnapshot.counts.failed} failed WhatsApp sends` : null,
+  ]
+    .filter(Boolean)
+    .join(" • ");
+
+  const currentDateLabel = new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "2-digit" }).format(new Date());
+  const nextStartTime = nextAppointment ? formatInTz(nextAppointment.starts_at, tz, { hour: "2-digit", minute: "2-digit" }) : "—";
+  const nextEndTime = nextAppointment ? formatInTz(nextAppointment.ends_at, tz, { hour: "2-digit", minute: "2-digit" }) : null;
+  const dayEndTime = lastAppointment ? formatInTz(lastAppointment.ends_at, tz, { hour: "2-digit", minute: "2-digit" }) : "—";
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Overview</h1>
-          <p className="text-sm text-slate-500">Today’s operational snapshot. Times shown in {tz}.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="secondary" onClick={() => window.location.reload()} disabled={isLoading}>
-            Refresh
-          </Button>
-        </div>
-      </div>
-
-      {loadError ? (
-        <Card>
-          <CardContent className="py-4 text-sm text-rose-700">{loadError}</CardContent>
-        </Card>
-      ) : null}
-
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
-        <StatCard label="Appointments today" value={overview?.counts.appointments_today_count ?? 0} />
-        <StatCard label="Pending confirmation" value={overview?.counts.appointments_pending_confirmation_count ?? 0} />
-        <StatCard label="Tasks today" value={overview?.counts.tasks_today_count ?? 0} hint="Not available yet" />
-        <StatCard label="Inactive customers" value={overview?.counts.inactive_customers_count ?? 0} />
-        <StatCard label="Scheduled reminders" value={overview?.counts.scheduled_reminders_count ?? 0} hint="Not available yet" />
-        <StatCard label="Recent no-shows" value={overview?.counts.recent_no_shows_count ?? 0} hint="Last 14 days" />
-        <StatCard label="New online bookings today" value={overview?.counts.new_online_bookings_count ?? 0} hint="Proxy-based" />
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {opportunityCards.map((card) => (
-          <TrendMiniCard
-            key={card.title}
-            title={card.title}
-            value={card.value}
-            description={card.description}
-            href={card.href}
-            pill={card.pill}
-          />
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>WhatsApp delivery</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex flex-wrap gap-2 text-sm">
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-              Sending {deliverySnapshot.counts.queued}
-            </span>
-            <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-              Sent {deliverySnapshot.counts.sent}
-            </span>
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-              Delivered {deliverySnapshot.counts.delivered}
-            </span>
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-              Read {deliverySnapshot.counts.read}
-            </span>
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-              Manual {deliverySnapshot.counts.manual}
-            </span>
-            <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
-              Failed {deliverySnapshot.counts.failed}
-            </span>
+    <div className="ds-premium-bg -m-4 min-h-screen p-4 md:-m-6 md:p-6 xl:rounded-[2rem]">
+      <div className="mx-auto flex max-w-7xl flex-col gap-5">
+        <header className="ds-card relative overflow-hidden p-5">
+          <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-[var(--ds-primary-soft)] blur-2xl" />
+          <div className="pointer-events-none absolute -left-10 bottom-0 h-28 w-28 rounded-full bg-[var(--ds-aqua-soft)] blur-2xl" />
+          <div className="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="max-w-2xl">
+              <div className="mb-3 inline-flex rounded-full border border-[var(--ds-line)] bg-[var(--ds-surface-glass)] px-3 py-1 text-xs font-extrabold text-[var(--ds-muted)]">
+                {currentDateLabel} · {actionCount > 0 ? `${actionCount} actions pending` : "all clear"}
+              </div>
+              <h1 className="text-3xl font-black tracking-[-0.04em] text-[var(--ds-text)] md:text-4xl">Good morning, João</h1>
+              <p className="mt-2 text-sm font-medium text-[var(--ds-muted)]">
+                Your day, bookings, customer attention and next actions in one calm place. Times shown in {tz}.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="secondary" onClick={() => window.location.reload()} disabled={isLoading}>
+                {isLoading ? "Refreshing…" : "Refresh"}
+              </Button>
+            </div>
           </div>
-          <p className="text-xs text-slate-500">
-            Provider sends are trackable. Manual sends can’t be confirmed (they show as Manual). Last update:{" "}
-            <span className="font-semibold text-slate-700">
-              {deliverySnapshot.latestUpdate ? new Date(deliverySnapshot.latestUpdate).toLocaleString() : "—"}
-            </span>
-            {deliverySnapshot.total > 0 ? <span className="text-slate-400"> • last {deliverySnapshot.total} messages</span> : null}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Link href={appPath("/dashboard/customers")} className={secondaryLinkClass}>
-              View customers
-            </Link>
-            <Link href={appPath("/dashboard/outbound/templates")} className={secondaryLinkClass}>
-              Manage templates
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+        </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick actions</CardTitle>
-        </CardHeader>
-      <CardContent className="flex flex-wrap gap-2">
-          {quickActions.map((action) => (
-            <Link key={action.href} href={appPath(action.href)} className={secondaryLinkClass}>
-              {action.label}
-            </Link>
-          ))}
-        </CardContent>
-      </Card>
+        {loadError ? <div className="ds-attention-strip border-rose-200 bg-[var(--ds-danger-soft)] text-[var(--ds-danger)]">{loadError}</div> : null}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Appointments today</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {(overview?.sections.appointments_today ?? []).length === 0 ? (
-              <p className="text-sm text-slate-500">No appointments to handle today.</p>
-            ) : (
-              overview?.sections.appointments_today.map((item) => <AppointmentRow key={item.id} item={item} tz={tz} />)
-            )}
-          </CardContent>
-        </Card>
+        <label className="ds-search max-w-2xl">
+          <span className="text-lg text-[var(--ds-muted)]">⌕</span>
+          <input placeholder="Search customers, appointments or services…" />
+        </label>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Appointments pending confirmation</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {(overview?.sections.appointments_pending_confirmation ?? []).length === 0 ? (
-              <p className="text-sm text-slate-500">No appointments pending confirmation.</p>
-            ) : (
-              overview?.sections.appointments_pending_confirmation.map((item) => (
-                <AppointmentRow key={item.id} item={item} tz={tz} badge="Needs confirmation" />
-              ))
-            )}
-          </CardContent>
-        </Card>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(22rem,0.75fr)]">
+          <main className="space-y-5">
+            <section className="ds-card p-4 md:p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span className="ds-metric-label">Live agenda</span>
+                  <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ds-text)]">{nextAppointment ? "Next appointment" : "No appointments left today"}</h2>
+                </div>
+                <Link href={appPath("/dashboard/calendar")} className="ds-button ds-button-secondary min-h-9 px-3 text-xs">
+                  Open agenda
+                </Link>
+              </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Inactive customers</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {(overview?.sections.inactive_customers ?? []).length === 0 ? (
-              <p className="text-sm text-slate-500">No inactive customers found.</p>
-            ) : (
-              overview?.sections.inactive_customers.map((item) => <InactiveCustomerRow key={item.id} item={item} />)
-            )}
-            <p className="pt-2 text-xs text-slate-500">Inactive = no completed appointment in the last 60 days.</p>
-          </CardContent>
-        </Card>
+              <div className="mt-4 rounded-3xl border border-[var(--ds-line)] bg-[var(--ds-surface)] p-4 shadow-[var(--mb-shadow-xs)]">
+                <div className="grid gap-4 md:grid-cols-[7rem_1fr] md:items-center">
+                  <div className="text-4xl font-black tracking-[-0.05em] text-[var(--ds-primary-strong)]">{nextStartTime}</div>
+                  <div className="min-w-0">
+                    <div className="text-lg font-black text-[var(--ds-text)]">{nextAppointment?.customer_name ?? "Use the calendar to plan the next slot"}</div>
+                    <div className="mt-1 text-sm text-[var(--ds-muted)]">
+                      {nextAppointment
+                        ? `${[nextAppointment.service_name, nextAppointment.location_name].filter(Boolean).join(" • ") || "Appointment"}${nextEndTime ? ` · ends ${nextEndTime}` : ""}`
+                        : "Create a booking or block time for focus."}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                  <span className="ds-chip">Today: {counts?.appointments_today_count ?? 0}</span>
+                  <span className="ds-chip ds-chip-accent">Day ends {dayEndTime}</span>
+                  <span className="ds-chip">Confirmations: {counts?.appointments_pending_confirmation_count ?? 0}</span>
+                </div>
+              </div>
+            </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>New online bookings today</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {(overview?.sections.new_online_bookings ?? []).length === 0 ? (
-              <p className="text-sm text-slate-500">No new online bookings today.</p>
-            ) : (
-              overview?.sections.new_online_bookings.map((item) => (
-                <AppointmentRow key={item.id} item={item} tz={tz} badge="Online booking (proxy)" />
-              ))
-            )}
-            <p className="pt-2 text-xs text-slate-500">
-              Uses proxy: created_by_user_id is empty and created_at is within today window.
-            </p>
-          </CardContent>
-        </Card>
+            <section className="ds-attention-strip">
+              <div>
+                <span className="ds-attention-title">
+                  {actionCount > 0 ? `${actionCount} actions need your attention` : "No urgent actions right now"}
+                </span>
+                <span className="ds-attention-subtitle">
+                  {attentionLabel || "No pending confirmations, online bookings or failed WhatsApp sends."}
+                </span>
+              </div>
+              <Link href={appPath("/dashboard/appointments")} className="ds-button ds-button-primary min-h-9 px-3 text-xs">
+                Resolve
+              </Link>
+            </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent no-shows</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {(overview?.sections.recent_no_shows ?? []).length === 0 ? (
-              <p className="text-sm text-slate-500">No recent no-shows.</p>
-            ) : (
-              overview?.sections.recent_no_shows.map((item) => <AppointmentRow key={item.id} item={item} tz={tz} badge="No-show" />)
-            )}
-          </CardContent>
-        </Card>
+            <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Link href={appPath("/dashboard/appointments")} className="ds-card-soft p-4 text-center text-sm font-black text-[var(--ds-text)] hover:shadow-[var(--mb-shadow-sm)]">
+                <span className="block text-xl text-[var(--ds-primary-strong)]">＋</span>
+                Book
+              </Link>
+              <Link href={appPath("/dashboard/customers/new")} className="ds-card-soft bg-[var(--ds-accent-soft)] p-4 text-center text-sm font-black text-[var(--ds-text)] hover:shadow-[var(--mb-shadow-sm)]">
+                <span className="block text-xl text-[var(--ds-primary-strong)]">☺</span>
+                Client
+              </Link>
+              <Link href={appPath("/dashboard/customers")} className="ds-card-soft p-4 text-center text-sm font-black text-[var(--ds-text)] hover:shadow-[var(--mb-shadow-sm)]">
+                <span className="block text-xl text-[var(--ds-primary-strong)]">✉</span>
+                Message
+              </Link>
+              <Link href={appPath("/dashboard/settings/booking")} className="ds-card-soft bg-[var(--ds-aqua-soft)] p-4 text-center text-sm font-black text-[var(--ds-text)] hover:shadow-[var(--mb-shadow-sm)]">
+                <span className="block text-xl text-[var(--ds-primary-strong)]">↗</span>
+                Booking link
+              </Link>
+            </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Tasks & reminders</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-500">
-            <p>Tasks and scheduled reminders are not implemented yet in this MVP.</p>
-            {overview?.notes?.length ? (
-              <ul className="list-disc space-y-1 pl-5 text-xs">
-                {overview.notes.slice(0, 3).map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
-            ) : null}
-          </CardContent>
-        </Card>
+            <section className="grid gap-3 md:grid-cols-4">
+              <MetricCard label="Appointments today" value={counts?.appointments_today_count ?? 0} hint="From today's calendar" tone="primary" />
+              <MetricCard label="Pending confirmation" value={counts?.appointments_pending_confirmation_count ?? 0} hint="Needs action" />
+              <MetricCard label="New online bookings" value={counts?.new_online_bookings_count ?? 0} hint="Created today" />
+              <MetricCard label="Revenue today" value="—" hint="Finance source not connected yet" />
+            </section>
+
+            <section className="grid gap-4 lg:grid-cols-2">
+              <div className="ds-card p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-black text-[var(--ds-text)]">Today's appointments</h2>
+                  <Link href={appPath("/dashboard/calendar")} className="text-xs font-extrabold text-[var(--ds-primary-strong)]">
+                    Calendar
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {todayAppointments.length === 0 ? (
+                    <p className="text-sm text-[var(--ds-muted)]">No appointments to handle today.</p>
+                  ) : (
+                    todayAppointments.slice(0, 4).map((item) => <AppointmentRow key={item.id} item={item} tz={tz} />)
+                  )}
+                </div>
+              </div>
+
+              <div className="ds-card p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-black text-[var(--ds-text)]">Needs confirmation</h2>
+                  <Link href={appPath("/dashboard/appointments")} className="text-xs font-extrabold text-[var(--ds-primary-strong)]">
+                    View all
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {pendingAppointments.length === 0 ? (
+                    <p className="text-sm text-[var(--ds-muted)]">No appointments pending confirmation.</p>
+                  ) : (
+                    pendingAppointments.slice(0, 4).map((item) => <AppointmentRow key={item.id} item={item} tz={tz} badge="Confirm" />)
+                  )}
+                </div>
+              </div>
+            </section>
+          </main>
+
+          <aside className="space-y-5">
+            <section className="ds-card p-4">
+              <h2 className="mb-3 text-lg font-black text-[var(--ds-text)]">WhatsApp delivery</h2>
+              <div className="grid grid-cols-2 gap-2 text-xs font-extrabold">
+                <span className="ds-chip">Sending {deliverySnapshot.counts.queued}</span>
+                <span className="ds-chip">Sent {deliverySnapshot.counts.sent}</span>
+                <span className="ds-chip ds-chip-success">Delivered {deliverySnapshot.counts.delivered}</span>
+                <span className="ds-chip ds-chip-success">Read {deliverySnapshot.counts.read}</span>
+                <span className="ds-chip ds-chip-accent">Manual {deliverySnapshot.counts.manual}</span>
+                <span className="ds-chip ds-chip-warning">Failed {deliverySnapshot.counts.failed}</span>
+              </div>
+              <p className="mt-3 text-xs text-[var(--ds-muted)]">
+                Last update: {deliverySnapshot.latestUpdate ? new Date(deliverySnapshot.latestUpdate).toLocaleString() : "—"}
+                {deliverySnapshot.total > 0 ? ` · last ${deliverySnapshot.total} messages` : ""}
+              </p>
+            </section>
+
+            <section className="ds-card p-4">
+              <h2 className="mb-3 text-lg font-black text-[var(--ds-text)]">Customer opportunities</h2>
+              <div className="space-y-2">
+                {inactiveCustomers.length === 0 ? (
+                  <p className="text-sm text-[var(--ds-muted)]">No inactive customers found.</p>
+                ) : (
+                  inactiveCustomers.slice(0, 4).map((item) => <InactiveCustomerRow key={item.id} item={item} />)
+                )}
+              </div>
+              <p className="mt-3 text-xs text-[var(--ds-muted)]">Inactive = no completed appointment in the last 60 days.</p>
+            </section>
+
+            <section className="ds-card p-4">
+              <h2 className="mb-3 text-lg font-black text-[var(--ds-text)]">Operational signals</h2>
+              <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                <MetricCard label="Inactive customers" value={counts?.inactive_customers_count ?? 0} hint="Win-back candidates" />
+                <MetricCard label="Recent no-shows" value={counts?.recent_no_shows_count ?? 0} hint="Last 14 days" />
+                <MetricCard label="Tasks today" value={counts?.tasks_today_count ?? 0} hint="Not available yet" />
+              </div>
+              {recentNoShows.length > 0 ? (
+                <div className="mt-3 space-y-2">
+                  {recentNoShows.slice(0, 2).map((item) => <AppointmentRow key={item.id} item={item} tz={tz} badge="No-show" />)}
+                </div>
+              ) : null}
+            </section>
+          </aside>
+        </div>
       </div>
     </div>
   );
